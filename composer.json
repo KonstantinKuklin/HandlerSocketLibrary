@@ -1,0 +1,30 @@
+{
+    "name": "konstantin-kuklin/handler-socket-library",
+    "type": "library",
+    "description": "HandlerSocket protocol wrapper on native PHP",
+    "keywords": ["php", "library", "handler-socket", "handlersocket"],
+    "homepage": "https://github.com/KonstantinKuklin/HandlerSocketLibrary",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Konstantin Kuklin",
+            "email": "konstantin.kuklin@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "konstantin-kuklin/stream-library": "dev-master"
+    },
+
+    "autoload": {
+        "classmap": [
+            "src/HS"
+        ]
+    },
+
+    "autoload-dev": {
+        "classmap": [
+            "tests/HS/"
+        ]
+    }
+}

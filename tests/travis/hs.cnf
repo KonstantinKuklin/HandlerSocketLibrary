@@ -1,0 +1,9 @@
+[mysqld]
+plugin-load=handlersocket.so
+loose_handlersocket_port = 9998
+loose_handlersocket_port_wr = 9999
+loose_handlersocket_threads = 16
+loose_handlersocket_threads_wr = 1
+handlersocket_plain_secret = Password_Read1
+handlersocket_plain_secret_wr = Password_Write1
+open_files_limit = 65535
