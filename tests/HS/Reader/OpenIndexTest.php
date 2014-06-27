@@ -19,13 +19,12 @@ class OpenIndexTest extends TestCommon
         $indexRequest = $hsReader->openIndex(
             1,
             $this->getDatabase(),
-            'hs_read',
+            $this->getTableName(),
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
 
         $hsReader->getResponses();
-
         $this->assertFalse($indexRequest->getResponse()->isSuccessfully(), 'Fail if auth not needed.');
     }
 
@@ -36,13 +35,12 @@ class OpenIndexTest extends TestCommon
         $indexRequest = $hsReader->openIndex(
             1,
             $this->getDatabase(),
-            'hs_read',
+            $this->getTableName(),
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
 
         $hsReader->getResponses();
-
         $this->assertTrue($indexRequest->getResponse()->isSuccessfully(), 'Fail auth works wrong.');
     }
 } 

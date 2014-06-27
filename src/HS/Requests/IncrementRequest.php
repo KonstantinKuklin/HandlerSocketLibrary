@@ -17,24 +17,21 @@ class IncrementRequest extends RequestAbstract
     private $keys = null;
     private $limit = null;
     private $offset = null;
-    private $values = null;
 
     /**
-     * @param int    $indexId`
+     * @param int    $indexId
      * @param string $comparisonOperation
      * @param array  $keys
-     * @param array  $values
      * @param int    $limit
      * @param int    $offset
      */
-    public function __construct($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function __construct($indexId, $comparisonOperation, $keys, $limit = 1, $offset = 0)
     {
         $this->indexId = $indexId;
         $this->comparisonOperation = $comparisonOperation;
         $this->keys = $keys;
         $this->limit = $limit;
         $this->offset = $offset;
-        $this->values = $values;
     }
 
     /**
@@ -47,13 +44,14 @@ class IncrementRequest extends RequestAbstract
             array(
                 $this->indexId,
                 $this->comparisonOperation,
-                count($this->keys),
-                $this->paramListToParamString($this->keys),
-                $this->limit,
-                $this->offset,
-                '+'
+                count($this->keys)
             ),
-            $this->values
+            $this->keys,
+            array(
+                $this->offset,
+                $this->limit,
+                '+'
+            )
         );
     }
 

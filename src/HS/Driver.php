@@ -56,11 +56,13 @@ class Driver implements StreamDriverInterface
     );
 
     /**
-     * @{inheritdoc}
+     * @param $data
+     *
+     * @return string
      */
-    public function prepareSendData($data)
+    public static function prepareSendDataStatic($data)
     {
-        $decodedData = array_map(array($this, 'decodeData'), $data);
+        $decodedData = array_map('self::decodeData', $data);
 
         return implode(self::DELIMITER, $decodedData) . self::EOL;
     }
@@ -68,11 +70,29 @@ class Driver implements StreamDriverInterface
     /**
      * @{inheritdoc}
      */
-    public function prepareReceiveData($data)
+    public function prepareSendData($data)
+    {
+        return self::prepareSendDataStatic($data);
+    }
+
+    /**
+     * @param $data
+     *
+     * @return array
+     */
+    public static function prepareReceiveDataStatic($data)
     {
         $dataList = explode(self::DELIMITER, $data);
 
-        return array_map(array($this, 'decodeData'), $dataList);
+        return array_map('self::decodeData', $dataList);
+    }
+
+    /**
+     * @{inheritdoc}
+     */
+    public function prepareReceiveData($data)
+    {
+        return self::prepareReceiveDataStatic($data);
     }
 
     /**
@@ -80,7 +100,7 @@ class Driver implements StreamDriverInterface
      *
      * @return string
      */
-    public function decodeData($data)
+    public static function decodeData($data)
     {
         return strtr($data, self::$decodeMap);
     }
@@ -90,7 +110,7 @@ class Driver implements StreamDriverInterface
      *
      * @return string
      */
-    public function encodeData($data)
+    public static function encodeData($data)
     {
         return strtr($data, self::$encodeMap);
     }

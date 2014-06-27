@@ -67,7 +67,7 @@ class OpenIndexRequest extends RequestAbstract
             $this->dbName,
             $this->tableName,
             empty($this->indexName) ? 'PRIMARY' : $this->indexName, // if no index use PRIMARY
-            $this->paramListToParamString($this->columns)
+            implode(',', $this->columns)
         );
     }
 

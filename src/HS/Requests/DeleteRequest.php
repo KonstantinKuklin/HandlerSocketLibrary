@@ -40,14 +40,18 @@ class DeleteRequest extends RequestAbstract
     public function getRequestParameters()
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
-        return array(
-            $this->indexId,
-            $this->comparisonOperation,
-            count($this->keys),
-            $this->paramListToParamString($this->keys),
-            $this->limit,
-            $this->offset,
-            'D'
+        return array_merge(
+            array(
+                $this->indexId,
+                $this->comparisonOperation,
+                count($this->keys)
+            ),
+            $this->keys,
+            array(
+                $this->offset,
+                $this->limit,
+                'D'
+            )
         );
     }
 

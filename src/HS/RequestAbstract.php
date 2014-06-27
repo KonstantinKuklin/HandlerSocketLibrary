@@ -19,6 +19,14 @@ abstract class RequestAbstract implements RequestInterface
     }
 
     /**
+     * @return string
+     */
+    public function getRequestString()
+    {
+        return Driver::prepareSendDataStatic($this->getRequestParameters());
+    }
+
+    /**
      * {@inheritdoc}
      */
     abstract public function getRequestParameters();
@@ -27,14 +35,4 @@ abstract class RequestAbstract implements RequestInterface
      * {@inheritdoc}
      */
     abstract public function setResponseData($data);
-
-    /**
-     * @param array $paramList
-     *
-     * @return string
-     */
-    protected function paramListToParamString($paramList)
-    {
-        return implode(',', $paramList);
-    }
 } 

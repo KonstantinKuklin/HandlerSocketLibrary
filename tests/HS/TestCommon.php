@@ -17,6 +17,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     const PORT_RO = 9998;
     const PORT_RW = 9999;
     const DATABASE = 'hs';
+    const TABLE = 'hs_test';
 
     const READ_PASSWORD = 'Password_Read1';
     const WRITE_PASSWORD = 'Password_Write1';
@@ -43,9 +44,20 @@ class TestCommon extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getSqlFilePath()
     {
         return self::SQL_FILE;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTableName()
+    {
+        return self::TABLE;
     }
 
     /**
@@ -56,6 +68,9 @@ class TestCommon extends \PHPUnit_Framework_TestCase
         return self::$hsReader;
     }
 
+    /**
+     * @return Writer|null
+     */
     protected function getWriter()
     {
         return self::$hsWriter;
@@ -69,52 +84,20 @@ class TestCommon extends \PHPUnit_Framework_TestCase
         return self::DATABASE;
     }
 
+    /**
+     * @return string
+     */
     protected function getReadPassword()
     {
         return self::READ_PASSWORD;
     }
 
+    /**
+     * @return string
+     */
     protected function getWritePassword()
     {
         return self::WRITE_PASSWORD;
-    }
-
-    protected function splitSQL($file, $delimiter = ';')
-    {
-        set_time_limit(0);
-
-        if (is_file($file) === true) {
-            $file = fopen($file, 'r');
-            if (is_resource($file) === true) {
-                $query = array();
-
-                while (feof($file) === false) {
-                    $query[] = fgets($file);
-
-                    if (preg_match('~' . preg_quote($delimiter, '~') . '\s*$~iS', end($query)) === 1) {
-                        $query = trim(implode('', $query));
-
-                        if (mysql_query($query) === false) {
-                            echo 'ERROR: ' . $query . "\n";
-                        } else {
-                            echo 'SUCCESS: ' . $query . "\n";
-                        }
-
-                        while (ob_get_level() > 0) {
-                            ob_end_flush();
-                        }
-                        flush();
-                    }
-                    if (is_string($query) === true) {
-                        $query = array();
-                    }
-                }
-
-                return fclose($file);
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -145,7 +128,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      * @param string              $assertMessage
      * @param int                 $expectedCount
      */
-    protected function checkCountRequestSended($socket, $assertMessage, $expectedCount)
+    protected function checkCountRequestSent($socket, $assertMessage, $expectedCount)
     {
         $responseList = $socket->getResponses();
         $this->assertEquals($expectedCount, count($responseList), $assertMessage);

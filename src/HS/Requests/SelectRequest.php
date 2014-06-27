@@ -32,13 +32,18 @@ class SelectRequest extends RequestAbstract
      */
     public function getRequestParameters()
     {
-        return array(
-            $this->indexId,
-            $this->comparisonOperation,
-            count($this->keys),
-            $this->paramListToParamString($this->keys),
-            $this->limit,
-            $this->offset
+        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...]
+        return array_merge(
+            array(
+                $this->indexId,
+                $this->comparisonOperation,
+                count($this->keys)
+            ),
+            $this->keys,
+            array(
+                $this->offset,
+                $this->limit
+            )
         );
     }
 

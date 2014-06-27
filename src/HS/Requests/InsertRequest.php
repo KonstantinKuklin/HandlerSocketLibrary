@@ -24,10 +24,13 @@ class InsertRequest extends RequestAbstract
      */
     public function getRequestParameters()
     {
-        return array(
-            $this->indexId,
-            count($this->values),
-            $this->paramListToParamString($this->values),
+        return array_merge(
+            array(
+                $this->indexId,
+                '+',
+                count($this->values)
+            ),
+            $this->values
         );
     }
 

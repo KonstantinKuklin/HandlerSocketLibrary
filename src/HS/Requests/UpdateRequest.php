@@ -42,15 +42,17 @@ class UpdateRequest extends RequestAbstract
      */
     public function getRequestParameters()
     {
-        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
+        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD <m1> ... <mk>
         return array_merge(
             array(
                 $this->indexId,
                 $this->comparisonOperation,
-                count($this->keys),
-                $this->paramListToParamString($this->keys),
-                $this->limit,
+                count($this->keys)
+            ),
+            $this->keys,
+            array(
                 $this->offset,
+                $this->limit,
                 'U'
             ),
             $this->values
