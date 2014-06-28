@@ -9,7 +9,6 @@ use HS\Responses\SelectResponse;
 
 class SelectRequest extends RequestAbstract
 {
-
     private $indexId = null;
     private $comparisonOperation = null;
     private $keys = null;

@@ -3,8 +3,8 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS;
+namespace HS\Exceptions;
 
-interface WriterInterface
+class HSException extends \Exception
 {
 } 

@@ -8,7 +8,6 @@ namespace HS;
 
 interface RequestInterface
 {
-
     /**
      * @return ResponseInterface
      */
@@ -18,6 +17,11 @@ interface RequestInterface
      * @return array
      */
     public function getRequestParameters();
+
+    /**
+     * @return string
+     */
+    public function getRequestString();
 
     /**
      * @param array $data

@@ -2,10 +2,10 @@
 
 namespace HS;
 
+use HS\Exceptions\WrongParameterException;
 use HS\Requests\AuthRequest;
 use HS\Requests\OpenIndexRequest;
 use HS\Requests\SelectRequest;
-use SplQueue;
 use Stream\Stream;
 
 /**
@@ -13,33 +13,25 @@ use Stream\Stream;
  */
 class Reader implements ReaderInterface
 {
-    /**
-     * @var null|\Stream\Stream
-     */
+    /** @var null|\Stream\Stream */
     private $stream = null;
-    /**
-     * @var int
-     */
+
+    /** @var int */
     private $currentIndexIterator = 1;
-    /**
-     * @var array
-     */
+
+    /** @var array */
     private $indexList = array();
 
-
+    /** @var array */
     private $requestQueue = array();
-    /**
-     * @var array
-     */
+
+    /** @var array */
     private $keysList = array();
 
-//    private $keysQueue = null;
-
-    /**
-     * @var Driver
-     */
+    /** @var Driver */
     private $driver = null;
 
+    /** @var null|string */
     private $authKey = null;
 
     /**
@@ -51,8 +43,6 @@ class Reader implements ReaderInterface
     {
         $this->driver = new Driver();
         $this->stream = new Stream($url, Stream::PROTOCOL_TCP, $port, $this->driver);
-        //$this->requestQueue = new SplQueue();
-        $this->keysQueue = new SplQueue();
         $this->authKey = $authKey;
 
         // if auth set then try to auth
@@ -64,11 +54,21 @@ class Reader implements ReaderInterface
     /**
      * @param string $authKey
      *
+     * @throws WrongParameterException
      * @return \HS\Requests\AuthRequest
      */
     public function authenticate($authKey)
     {
-        $authRequest = new AuthRequest($authKey);
+        if (!is_string($authKey) || is_string($authKey) && strlen($authKey) < 1) {
+            throw new WrongParameterException(
+                sprintf(
+                    "Authenticate command require string password value, but got %s with value %s.",
+                    gettype($authKey),
+                    $authKey
+                )
+            );
+        }
+        $authRequest = new AuthRequest(trim($authKey));
         $this->addRequestToQueue($authRequest);
 
         return $authRequest;
@@ -97,27 +97,24 @@ class Reader implements ReaderInterface
      *               To open the primary key, use PRIMARY as $indexName.
      * @param array  $columns
      *               Is a array of column names.
-     * @param array  $fColumns
-     *               Is a array of column names.This parameter is optional.
      *
      * @return OpenIndexRequest
      */
-    public function openIndex($indexId, $dbName, $tableName, $indexName, $columns, $fColumns = array())
+    public function openIndex($indexId, $dbName, $tableName, $indexName, $columns)
     {
-        $indexRequest = new OpenIndexRequest($indexId, $dbName, $tableName, $indexName, $columns, $fColumns);
+        $indexRequest = new OpenIndexRequest($indexId, $dbName, $tableName, $indexName, $columns);
         $this->addRequestToQueue($indexRequest);
         $this->setKeysToIndexId($indexId, $columns);
 
         return $indexRequest;
     }
 
-    // пытаемся определить открыта ли уже эта БД и таблица на чтение, если нет - открываем
     /**
-     * @param       $dbName
-     * @param       $tableName
-     * @param       $indexName
-     * @param       $columns
-     * @param array $fcolumns
+     * @param string $dbName
+     * @param string $tableName
+     * @param string $indexName
+     * @param array  $columns
+     * @param array  $fcolumns
      *
      * @return bool|int
      */
@@ -125,7 +122,6 @@ class Reader implements ReaderInterface
     {
         $columnsToSearch = $columns;
         if (is_array($columns)) {
-//            sort($columnsToSearch);
             $columnsToSearch = implode('', $columnsToSearch);
         } else {
             $columnsToSearch = '';
@@ -169,9 +165,8 @@ class Reader implements ReaderInterface
      *
      * @return SelectRequest
      */
-    public function select(
-        $indexId, $comparisonOperation, $keys, $limit = 0, $offset = 0
-    ) {
+    public function select($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 0)
+    {
         $selectRequest = new SelectRequest(
             $indexId,
             $comparisonOperation,
@@ -184,30 +179,6 @@ class Reader implements ReaderInterface
         $this->addRequestToQueue($selectRequest);
 
         return $selectRequest;
-    }
-
-    /**
-     * @param RequestInterface $request
-     */
-    protected function addRequestToQueue($request)
-    {
-        $this->requestQueue[] = $request;
-    }
-
-//    /**
-//     * @return RequestInterface
-//     */
-//    protected function getRequestFromQueue()
-//    {
-//        return array_shift($this->requestQueue);
-//    }
-
-    /**
-     * @return bool
-     */
-    protected function isRequestQueueEmpty()
-    {
-        return empty($this->requestQueue);
     }
 
     /**
@@ -233,7 +204,30 @@ class Reader implements ReaderInterface
         return $responsesList;
     }
 
-    // Отсылаем все команды, которые находятся в очереди
+    /**
+     * @return int
+     */
+    public function getCountRequestsInQueue()
+    {
+        return count($this->requestQueue);
+    }
+
+    /**
+     * @param RequestInterface $request
+     */
+    protected function addRequestToQueue($request)
+    {
+        $this->requestQueue[] = $request;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isRequestQueueEmpty()
+    {
+        return empty($this->requestQueue);
+    }
+
     /**
      * @throws \Stream\Exceptions\StreamException
      */
@@ -243,6 +237,25 @@ class Reader implements ReaderInterface
             /** @var $request RequestInterface */
             $this->getStream()->sendContents($request->getRequestParameters());
         }
+    }
+
+    /**
+     * @param int   $indexId
+     * @param array $keys
+     */
+    protected function setKeysToIndexId($indexId, $keys)
+    {
+        $this->keysList[$indexId] = $keys;
+    }
+
+    /**
+     * @param $indexId
+     *
+     * @return mixed
+     */
+    protected function getKeysByIndexId($indexId)
+    {
+        return $this->keysList[$indexId];
     }
 
     /**
@@ -273,16 +286,6 @@ class Reader implements ReaderInterface
         return false;
     }
 
-//    protected function addKeysToQueue($keys)
-//    {
-//        $this->keysQueue->push($keys);
-//    }
-//
-//    protected function getKeysFromQueue()
-//    {
-//        return $this->keysQueue->shift();
-//    }
-
     /**
      * @param $indexMapValue
      * @param $indexId
@@ -290,20 +293,6 @@ class Reader implements ReaderInterface
     private function addIndexIdToArray($indexMapValue, $indexId)
     {
         $this->indexList[$indexMapValue] = $indexId;
-    }
-
-    /**
-     * @param int   $indexId
-     * @param array $keys
-     */
-    protected function setKeysToIndexId($indexId, $keys)
-    {
-        $this->keysList[$indexId] = $keys;
-    }
-
-    protected function getKeysByIndexId($indexId)
-    {
-        return $this->keysList[$indexId];
     }
 
     /**

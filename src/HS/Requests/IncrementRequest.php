@@ -5,33 +5,23 @@
 
 namespace HS\Requests;
 
-
-use HS\RequestAbstract;
 use HS\Responses\IncrementResponse;
+use HS\Writer;
 
-class IncrementRequest extends RequestAbstract
+class IncrementRequest extends ModifyRequestAbstract
 {
-
-    private $indexId = null;
-    private $comparisonOperation = null;
-    private $keys = null;
-    private $limit = null;
-    private $offset = null;
-
     /**
      * @param int    $indexId
      * @param string $comparisonOperation
      * @param array  $keys
+     * @param array  $values
      * @param int    $limit
      * @param int    $offset
      */
-    public function __construct($indexId, $comparisonOperation, $keys, $limit = 1, $offset = 0)
+    public function __construct($indexId, $comparisonOperation, $keys, $values, $offset = 0, $limit = 1)
     {
-        $this->indexId = $indexId;
-        $this->comparisonOperation = $comparisonOperation;
-        $this->keys = $keys;
-        $this->limit = $limit;
-        $this->offset = $offset;
+        parent::__construct($indexId, $comparisonOperation, $keys, $offset, $limit);
+        $this->setValues($values);
     }
 
     /**
@@ -39,20 +29,7 @@ class IncrementRequest extends RequestAbstract
      */
     public function getRequestParameters()
     {
-        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
-        return array_merge(
-            array(
-                $this->indexId,
-                $this->comparisonOperation,
-                count($this->keys)
-            ),
-            $this->keys,
-            array(
-                $this->offset,
-                $this->limit,
-                '+'
-            )
-        );
+        return $this->getRequestParametersWithMod(Writer::COMMAND_INCREMENT);
     }
 
     /**

@@ -12,8 +12,13 @@ use HS\Requests\IncrementRequest;
 use HS\Requests\InsertRequest;
 use HS\Requests\UpdateRequest;
 
-class Writer extends Reader
+class Writer extends Reader implements WriterInterface
 {
+    const COMMAND_UPDATE = 'U';
+    const COMMAND_DELETE = 'D';
+    const COMMAND_INCREMENT = '+';
+    const COMMAND_DECREMENT = '-';
+
     /**
      * {@inheritdoc}
      */

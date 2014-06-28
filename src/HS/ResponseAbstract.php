@@ -5,7 +5,6 @@
 
 namespace HS;
 
-
 use HS\Errors\AuthenticationError;
 use HS\Errors\CommandNotFoundError;
 use HS\Errors\OpenTableError;
@@ -22,10 +21,14 @@ abstract class ResponseAbstract implements ResponseInterface
 
     protected $data = null;
 
-    public function __construct($request, &$data)
+    /**
+     * @param RequestInterface $request
+     * @param array            $data
+     */
+    public function __construct(RequestInterface $request, &$data)
     {
         $this->request = $request;
-        $code = (int)array_shift($data);
+        $code = array_shift($data);
         $this->setCode($code);
 
         if ($this->code != 0) {
@@ -82,9 +85,12 @@ abstract class ResponseAbstract implements ResponseInterface
         return $this->error;
     }
 
+    /**
+     * @param int $code
+     */
     protected function setCode($code)
     {
-        $this->code = $code;
+        $this->code = (int)$code;
     }
 
     /**

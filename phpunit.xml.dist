@@ -16,7 +16,8 @@
     <testsuites>
         <testsuite name="HandlerSocket library Test Suite">
             <directory suffix="Test.php">./tests/HS</directory>
-            <directory suffix="Test.php">./tests/HS/HSReader</directory>
+            <directory suffix="Test.php">./tests/HS/Reader</directory>
+            <directory suffix="Test.php">./tests/HS/Writer</directory>
         </testsuite>
     </testsuites>
 

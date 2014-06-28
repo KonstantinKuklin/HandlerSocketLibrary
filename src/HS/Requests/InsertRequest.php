@@ -13,6 +13,10 @@ class InsertRequest extends RequestAbstract
     private $indexId = null;
     private $values = null;
 
+    /**
+     * @param int   $indexId
+     * @param array $values
+     */
     public function __construct($indexId, $values)
     {
         $this->indexId = $indexId;

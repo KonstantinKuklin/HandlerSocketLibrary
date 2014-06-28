@@ -5,7 +5,6 @@
 
 namespace HS;
 
-
 interface ResponseInterface
 {
     /**

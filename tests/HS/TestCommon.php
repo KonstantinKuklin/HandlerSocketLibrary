@@ -13,7 +13,7 @@ use HS\ResponseInterface;
 class TestCommon extends \PHPUnit_Framework_TestCase
 {
 
-    const IP = '127.0.0.1';
+    const HOST = '127.0.0.1';
     const PORT_RO = 9998;
     const PORT_RW = 9999;
     const DATABASE = 'hs';
@@ -27,21 +27,29 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     /**
      * @var null|Reader
      */
-    protected static $hsReader = null;
+    protected $reader = null;
     /**
      * @var null|Writer
      */
-    protected static $hsWriter = null;
+    protected $writer = null;
 
     public function __construct()
     {
-        if (self::$hsReader === null) {
-            self::$hsReader = new Reader(self::IP, self::PORT_RO, $this->getReadPassword());
+        if ($this->reader === null) {
+            $this->reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword());
         }
 
-        if (self::$hsWriter === null) {
-            self::$hsWriter = new Writer(self::IP, self::PORT_RW, $this->getWritePassword());
+        if ($this->writer === null) {
+            $this->writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getHost()
+    {
+        return self::HOST;
     }
 
     /**
@@ -65,15 +73,15 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      */
     protected function getReader()
     {
-        return self::$hsReader;
+        return $this->reader;
     }
 
     /**
-     * @return Writer|null
+     * @return Writer
      */
     protected function getWriter()
     {
-        return self::$hsWriter;
+        return $this->writer;
     }
 
     /**

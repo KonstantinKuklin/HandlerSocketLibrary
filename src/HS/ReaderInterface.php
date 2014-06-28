@@ -8,7 +8,6 @@ namespace HS;
 
 interface ReaderInterface
 {
-
     /**
      * @return ResponseInterface[]
      */

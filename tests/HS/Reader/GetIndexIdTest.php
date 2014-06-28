@@ -3,8 +3,9 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS;
+namespace HS\Tests\HSReader;
 
-interface WriterInterface
-{
+
+class GetIndexIdTest {
+
 } 

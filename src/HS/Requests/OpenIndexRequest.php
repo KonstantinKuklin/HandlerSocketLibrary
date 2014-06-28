@@ -10,13 +10,11 @@ use HS\Responses\OpenIndexResponse;
  */
 class OpenIndexRequest extends RequestAbstract
 {
-
     private $indexId = null;
     private $dbName = null;
     private $tableName = null;
     private $indexName = null;
     private $columns = null;
-    private $fColumns = null;
 
     /**
      * Opening index
@@ -41,19 +39,18 @@ class OpenIndexRequest extends RequestAbstract
      *               To open the primary key, use PRIMARY as $indexName.
      * @param array  $columns
      *               Is a array of column names.
-     * @param array  $fColumns
-     *               Is a array of column names.This parameter is optional.
      *
      * @return OpenIndexRequest
      */
-    public function __construct($indexId, $dbName, $tableName, $indexName, $columns, $fColumns = array())
+    public function __construct($indexId, $dbName, $tableName, $indexName, $columns)
     {
-        $this->indexId = $indexId;
-        $this->dbName = $dbName;
-        $this->tableName = $tableName;
-        $this->indexName = $indexName;
-        $this->columns = $columns;
-        $this->fColumns = $fColumns;
+        $this->indexId = $this->validateIndexId($indexId);
+        $this->dbName = $this->validateDbName($dbName);
+        $this->tableName = $this->validateTableName($tableName);
+
+        // if no index use PRIMARY
+        $this->indexName = $this->validateIndexName(empty($indexName) ? 'PRIMARY' : $indexName);
+        $this->columns = $this->validateColumns($columns);
     }
 
     /**
@@ -66,7 +63,7 @@ class OpenIndexRequest extends RequestAbstract
             $this->indexId,
             $this->dbName,
             $this->tableName,
-            empty($this->indexName) ? 'PRIMARY' : $this->indexName, // if no index use PRIMARY
+            $this->indexName,
             implode(',', $this->columns)
         );
     }
@@ -77,5 +74,23 @@ class OpenIndexRequest extends RequestAbstract
     public function setResponseData($data)
     {
         $this->response = new OpenIndexResponse($this, $data);
+    }
+
+    /**
+     * @param array $columns
+     *
+     * @throws \HS\Exceptions\WrongParameterException
+     * @return array
+     */
+    protected function validateColumns($columns)
+    {
+        if (!$this->validateArray($columns, true)) {
+            $this->getWrongParameterException(
+                "Wrong columns value, must be array of values but can't contain array and object inside.",
+                $columns
+            );
+        }
+
+        return $columns;
     }
 }

@@ -11,15 +11,15 @@ class GetResponseTest extends TestCommon
 {
     public function testSelectExistedValue()
     {
-        $hsReader = $this->getReader();
+        $reader = $this->getReader();
 
-        $indexId = $hsReader->getIndexId(
+        $indexId = $reader->getIndexId(
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $hsReader->select($indexId, '=', array(42));
+        $selectRequest = $reader->select($indexId, '=', array(42));
 
         $expectedResult = array(
             array(
@@ -34,7 +34,7 @@ class GetResponseTest extends TestCommon
             )
         );
 
-        $this->checkAssertionLastResponseData($hsReader, 'first test method', $expectedResult);
+        $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
     }
 
     public function testSelectWithZeroValue()
