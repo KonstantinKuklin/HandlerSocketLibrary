@@ -47,8 +47,8 @@ abstract class ModifyRequestAbstract extends RequestAbstract
             ),
             $this->keys,
             array(
-                $this->offset,
                 $this->limit,
+                $this->offset,
             )
         );
     }

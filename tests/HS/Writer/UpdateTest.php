@@ -7,20 +7,20 @@ use \HS\Tests\TestCommon;
 
 class UpdateTest extends TestCommon
 {
-    public function test1()
+    public function testSingleUpdate()
     {
-        $hsWriter = $this->getWriter();
+        $writer = $this->getWriter();
 
-        $indexId = $hsWriter->getIndexId(
+        $indexId = $writer->getIndexId(
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
             array('key', 'text')
         );
-        $updateRequest = $hsWriter->update($indexId, '=', array('2'), array('2', 'new'));
+        $updateRequest = $writer->update($indexId, '=', array(2), array(2, 'new'));
 
-        $selectRequest = $hsWriter->select($indexId, '=', array(2));
-        $hsWriter->getResponses();
+        $selectRequest = $writer->select($indexId, '=', array(2));
+        $writer->getResponses();
 
         $data = $selectRequest->getResponse()->getData();
 

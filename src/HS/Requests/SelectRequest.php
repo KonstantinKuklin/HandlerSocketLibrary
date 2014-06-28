@@ -40,8 +40,8 @@ class SelectRequest extends RequestAbstract
             ),
             $this->keys,
             array(
+                $this->limit,
                 $this->offset,
-                $this->limit
             )
         );
     }
