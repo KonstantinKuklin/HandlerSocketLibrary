@@ -114,11 +114,10 @@ class Reader implements ReaderInterface
      * @param string $tableName
      * @param string $indexName
      * @param array  $columns
-     * @param array  $fcolumns
      *
-     * @return bool|int
+     * @return int
      */
-    public function getIndexId($dbName, $tableName, $indexName, $columns, $fcolumns = array())
+    public function getIndexId($dbName, $tableName, $indexName, $columns)
     {
         $columnsToSearch = $columns;
         if (is_array($columns)) {
@@ -130,7 +129,7 @@ class Reader implements ReaderInterface
         $indexMapValue = $dbName . $tableName . $indexName . $columnsToSearch;
         if (!$indexId = $this->getIndexIdFromArray($indexMapValue)) {
             $indexId = $this->getCurrentIterator();
-            $this->openIndex($indexId, $dbName, $tableName, $indexName, $columns, $fcolumns);
+            $this->openIndex($indexId, $dbName, $tableName, $indexName, $columns);
             $this->addIndexIdToArray($indexMapValue, $indexId);
         }
 
