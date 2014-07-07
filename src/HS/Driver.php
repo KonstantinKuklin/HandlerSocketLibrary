@@ -76,7 +76,7 @@ class Driver implements StreamDriverInterface
     }
 
     /**
-     * @param $data
+     * @param string $data
      *
      * @return array
      */

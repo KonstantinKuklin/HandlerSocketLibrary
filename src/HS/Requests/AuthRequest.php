@@ -12,6 +12,9 @@ class AuthRequest extends RequestAbstract
 {
     private $authKey = null;
 
+    /**
+     * @param string $authKey
+     */
     public function __construct($authKey)
     {
         $this->authKey = $authKey;
