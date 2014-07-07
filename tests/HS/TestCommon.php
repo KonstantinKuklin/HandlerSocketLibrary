@@ -25,11 +25,11 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     const SQL_FILE = '../tests/resources/preTests.sql';
 
     /**
-     * @var null|Reader
+     * @var Reader
      */
     protected $reader = null;
     /**
-     * @var null|Writer
+     * @var Writer
      */
     protected $writer = null;
 

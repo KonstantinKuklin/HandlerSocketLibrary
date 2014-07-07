@@ -5,6 +5,7 @@
 
 namespace HS\Tests\HSReader;
 
+use HS\HSInterface;
 use HS\Tests\TestCommon;
 
 class GetResponseTest extends TestCommon
@@ -19,7 +20,7 @@ class GetResponseTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->select($indexId, '=', array(42));
+        $selectRequest = $reader->select($indexId, HSInterface::EQUAL, array(42));
 
         $expectedResult = array(
             array(
@@ -41,7 +42,7 @@ class GetResponseTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('float'));
-        $hsReader->select($id, '=', array(100));
+        $hsReader->select($id, HSInterface::EQUAL, array(100));
 
         $expectedValue = array(array('float' => 0));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);
@@ -51,7 +52,7 @@ class GetResponseTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('text'));
-        $hsReader->select($id, '=', array(10001));
+        $hsReader->select($id, HSInterface::EQUAL, array(10001));
 
         $expectedValue = array(array("text" => "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);;

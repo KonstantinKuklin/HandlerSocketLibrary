@@ -13,7 +13,7 @@ use Stream\Stream;
  */
 class Reader implements ReaderInterface
 {
-    /** @var null|\Stream\Stream */
+    /** @var \Stream\Stream */
     private $stream = null;
 
     /** @var int */
@@ -193,7 +193,7 @@ class Reader implements ReaderInterface
         $responsesList = array();
         foreach ($this->requestQueue as &$request) {
             /** @var $request RequestInterface */
-            $response = $this->getStream()->getContents(1024, Driver::EOL);
+            $response = $this->getStream()->getContentsByStreamGetLine(1024, Driver::EOL);
             $request->setResponseData($response);
             $responseObject = $request->getResponse();
             $responsesList[] = $responseObject;

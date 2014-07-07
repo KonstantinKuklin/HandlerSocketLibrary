@@ -22,7 +22,7 @@ class AuthenticateTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fail authentication request with bad parameter, sent int.");
+        $this->fail("Not fail authentication request with wrong auth key, sent int.");
     }
 
     public function testEmptyString()
@@ -35,10 +35,10 @@ class AuthenticateTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fail authentication request with bad parameter, sent empty string.");
+        $this->fail("Not fail authentication request with wrong auth key, sent empty string.");
     }
 
-    public function testValid()
+    public function testValidMissedStringToAuth()
     {
         $reader = $this->getReader();
         $authKey = "text";

@@ -5,10 +5,8 @@
 
 namespace HS\Tests\HSReader;
 
-use HS\Driver;
 use HS\Exceptions\WrongParameterException;
 use HS\Tests\TestCommon;
-use HS\Reader;
 use Stream\Stream;
 
 class OpenIndexTest extends TestCommon
@@ -254,6 +252,5 @@ class OpenIndexTest extends TestCommon
 
         $reader->getResponses();
         $this->assertTrue($openIndexSecond->getResponse()->isSuccessfully(), "Fall reopen index");
-
     }
 } 

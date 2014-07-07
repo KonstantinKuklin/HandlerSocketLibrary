@@ -6,7 +6,6 @@
 namespace HS\Tests\HSReader;
 
 
-use HS\Driver;
 use HS\Reader;
 use HS\Tests\TestCommon;
 use Stream\Exceptions\PortValidateStreamException;
@@ -17,6 +16,7 @@ class ConstructorTest extends TestCommon
     public function testInvalidPortException()
     {
         $portWrong = '-1';
+
         try {
             $reader = new Reader($this->getHost(), $portWrong);
         } catch (PortValidateStreamException $e) {
@@ -26,15 +26,16 @@ class ConstructorTest extends TestCommon
         $this->fail("Reader constructor didn't fall with exception PortValidateStreamException on wrong port set.");
     }
 
-    public function testFineWork()
+    public function testGoodConnectionToReadPort()
     {
-        $portGood = 9999;
+        $portGood = 9998;
+
         try {
             $reader = new Reader($this->getHost(), $portGood);
         } catch (\Exception $e) {
             $this->fail(
                 sprintf(
-                    "Fail with valid parameters to constructor. Host:%s, port:%s",
+                    "Fall with valid parameters to constructor. Host:%s, port:%s",
                     $this->getHost(),
                     $portGood
                 )
@@ -50,6 +51,7 @@ class ConstructorTest extends TestCommon
 
         $reader = new Reader($this->getHost(), $portGood, $pass);
         $this->assertEquals(1, $reader->getCountRequestsInQueue(), "Auth request not added on init hs reader.");
+        $reader->getResponses();
     }
 
     public function testAuthRequestNotAdded()
@@ -58,5 +60,6 @@ class ConstructorTest extends TestCommon
 
         $reader = new Reader($this->getHost(), $portGood);
         $this->assertEquals(0, $reader->getCountRequestsInQueue(), "Auth request added on init hs reader.");
+        $reader->getResponses();
     }
 } 
