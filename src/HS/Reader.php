@@ -272,7 +272,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param $index
+     * @param string $index
      *
      * @return bool
      */
@@ -286,8 +286,8 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param $indexMapValue
-     * @param $indexId
+     * @param string $indexMapValue
+     * @param integer $indexId
      */
     private function addIndexIdToArray($indexMapValue, $indexId)
     {
