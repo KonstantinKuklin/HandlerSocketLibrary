@@ -11,9 +11,8 @@
             "email": "konstantin.kuklin@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "konstantin-kuklin/stream-library": "dev-master"
+        "konstantin-kuklin/stream-library": "0.*"
     },
 
     "autoload": {
