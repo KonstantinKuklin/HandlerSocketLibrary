@@ -34,6 +34,7 @@ class Writer extends Reader implements WriterInterface
         );
 
         $this->addRequestToQueue($updateRequest);
+        $this->incrementCountQuery();
 
         return $updateRequest;
     }
@@ -52,6 +53,7 @@ class Writer extends Reader implements WriterInterface
         );
 
         $this->addRequestToQueue($updateRequest);
+        $this->incrementCountQuery();
 
         return $updateRequest;
     }
@@ -71,6 +73,7 @@ class Writer extends Reader implements WriterInterface
         );
 
         $this->addRequestToQueue($updateRequest);
+        $this->incrementCountQuery();
 
         return $updateRequest;
     }
@@ -90,6 +93,7 @@ class Writer extends Reader implements WriterInterface
         );
 
         $this->addRequestToQueue($updateRequest);
+        $this->incrementCountQuery();
 
         return $updateRequest;
     }
@@ -105,6 +109,7 @@ class Writer extends Reader implements WriterInterface
         );
 
         $this->addRequestToQueue($updateRequest);
+        $this->incrementCountQuery();
 
         return $updateRequest;
     }

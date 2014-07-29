@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "konstantin-kuklin/stream-library": "0.*"
+        "konstantin-kuklin/stream-library": "0.*",
+        "phpunit/php-timer": "*"
     },
 
     "autoload": {

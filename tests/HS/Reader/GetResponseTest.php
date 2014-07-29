@@ -36,6 +36,8 @@ class GetResponseTest extends TestCommon
         );
 
         $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
+        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
+        $this->assertTrue($reader->getTimeQueries() > 0, "Time queries time spent is wrong.");
     }
 
     public function testSelectWithZeroValue()

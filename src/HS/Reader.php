@@ -6,6 +6,7 @@ use HS\Exceptions\WrongParameterException;
 use HS\Requests\AuthRequest;
 use HS\Requests\OpenIndexRequest;
 use HS\Requests\SelectRequest;
+use PHP_Timer;
 use Stream\Stream;
 
 /**
@@ -13,7 +14,13 @@ use Stream\Stream;
  */
 class Reader implements ReaderInterface
 {
-    /** @var \Stream\Stream */
+    /** @var int */
+    private $countQueries = 0;
+
+    /** @var double */
+    private $timeQueries = 0;
+
+    /** @var Stream */
     private $stream = null;
 
     /** @var int */
@@ -35,9 +42,9 @@ class Reader implements ReaderInterface
     private $authKey = null;
 
     /**
-     * @param $url
-     * @param $port
-     * @param $authKey
+     * @param string $url
+     * @param int    $port
+     * @param string $authKey
      */
     public function __construct($url, $port, $authKey = null)
     {
@@ -55,7 +62,7 @@ class Reader implements ReaderInterface
      * @param string $authKey
      *
      * @throws WrongParameterException
-     * @return \HS\Requests\AuthRequest
+     * @return AuthRequest
      */
     public function authenticate($authKey)
     {
@@ -70,6 +77,7 @@ class Reader implements ReaderInterface
         }
         $authRequest = new AuthRequest(trim($authKey));
         $this->addRequestToQueue($authRequest);
+        $this->incrementCountQuery();
 
         return $authRequest;
     }
@@ -105,6 +113,7 @@ class Reader implements ReaderInterface
         $indexRequest = new OpenIndexRequest($indexId, $dbName, $tableName, $indexName, $columns);
         $this->addRequestToQueue($indexRequest);
         $this->setKeysToIndexId($indexId, $columns);
+        $this->incrementCountQuery();
 
         return $indexRequest;
     }
@@ -148,19 +157,16 @@ class Reader implements ReaderInterface
      *      <limit> <offset>
      *
      *
-     * @param $indexId             int
-     *                             Is a number. This number must be an <indexId> specified by a
-     *                             'open_index' request executed previously on the same connection.
-     * @param $comparisonOperation string
-     *                             Specifies the comparison operation to use. The current version of
-     *                             HandlerSocket supports '=', '>', '>=', '<', and '<='.
-     * @param $keys                array
-     *                             Specify the index column values to fetch.
-     * @param $limit               int
-     * @param $offset              int
-     *                             are numbers. When omitted, it works
-     *                             as if 1 and 0 are specified. These parameter works like LIMIT of SQL.
-     *                             These values don't include the number of records skipped by a filter.
+     * @param int    $indexId
+     *               Is a number. This number must be an <indexId> specified by a
+     *               'open_index' request executed previously on the same connection.
+     * @param string $comparisonOperation
+     *               Specifies the comparison operation to use. The current version of
+     *               HandlerSocket supports '=', '>', '>=', '<', and '<='.
+     * @param array  $keys
+     *               Specify the index column values to fetch.
+     * @param int    $limit
+     * @param int    $offset
      *
      * @return SelectRequest
      */
@@ -176,6 +182,7 @@ class Reader implements ReaderInterface
         );
 
         $this->addRequestToQueue($selectRequest);
+        $this->incrementCountQuery();
 
         return $selectRequest;
     }
@@ -186,6 +193,7 @@ class Reader implements ReaderInterface
      */
     public function getResponses()
     {
+        PHP_Timer::start();
         if (!$this->isRequestQueueEmpty()) {
             $this->sendRequests();
         }
@@ -199,6 +207,7 @@ class Reader implements ReaderInterface
             $responsesList[] = $responseObject;
         }
         $this->requestQueue = array();
+        $this->addTimeQueries(PHP_Timer::stop());
 
         return $responsesList;
     }
@@ -212,6 +221,22 @@ class Reader implements ReaderInterface
     }
 
     /**
+     * @return int
+     */
+    public function getCountQueries()
+    {
+        return $this->countQueries;
+    }
+
+    /**
+     * @return double
+     */
+    public function getTimeQueries()
+    {
+        return $this->timeQueries;
+    }
+
+    /**
      * @param RequestInterface $request
      */
     protected function addRequestToQueue($request)
@@ -220,7 +245,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     protected function isRequestQueueEmpty()
     {
@@ -248,9 +273,9 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param $indexId
+     * @param int $indexId
      *
-     * @return mixed
+     * @return array
      */
     protected function getKeysByIndexId($indexId)
     {
@@ -258,7 +283,23 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param bool $increment
+     * @return void
+     */
+    protected function incrementCountQuery()
+    {
+        $this->countQueries++;
+    }
+
+    /**
+     * @param double $time
+     */
+    protected function addTimeQueries($time)
+    {
+        $this->timeQueries += $time;
+    }
+
+    /**
+     * @param boolean $increment
      *
      * @return int
      */
@@ -274,7 +315,7 @@ class Reader implements ReaderInterface
     /**
      * @param string $index
      *
-     * @return bool
+     * @return boolean
      */
     private function getIndexIdFromArray($index)
     {
@@ -287,7 +328,7 @@ class Reader implements ReaderInterface
 
     /**
      * @param string $indexMapValue
-     * @param integer $indexId
+     * @param int    $indexId
      */
     private function addIndexIdToArray($indexMapValue, $indexId)
     {
