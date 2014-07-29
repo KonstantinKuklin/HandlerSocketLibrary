@@ -1,5 +1,5 @@
 {
-    "name": "konstantin-kuklin/handler-socket-library",
+    "name": "konstantin-kuklin/handlersocket-library",
     "type": "library",
     "description": "HandlerSocket protocol wrapper on native PHP",
     "keywords": ["php", "library", "handler-socket", "handlersocket"],
