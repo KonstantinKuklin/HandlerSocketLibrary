@@ -47,6 +47,8 @@ class Reader implements ReaderInterface
     /** @var bool */
     private $debug = false;
 
+    public $debugResponseList = array();
+
     /**
      * @param string  $url
      * @param int     $port
@@ -246,6 +248,7 @@ class Reader implements ReaderInterface
                     // add info of spent time for this request
                     $responseObject->setTime($currentRequestTime);
                     $this->addTimeQueries($currentRequestTime);
+                    $this->debugResponseList[] = $responseObject;
                 }
                 $responsesList[] = $responseObject;
                 // add time to general time counter
@@ -281,6 +284,14 @@ class Reader implements ReaderInterface
     public function getTimeQueries()
     {
         return $this->timeQueries;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlConnection()
+    {
+        return $this->getStream()->getUrlConnection();
     }
 
     /**
