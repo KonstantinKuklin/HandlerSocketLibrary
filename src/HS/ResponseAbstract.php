@@ -19,7 +19,11 @@ abstract class ResponseAbstract implements ResponseInterface
     /** @var null|\Hs\Error */
     protected $error = null;
 
+    /** @var array|null */
     protected $data = null;
+
+    /** @var double */
+    protected $time = 0;
 
     /**
      * @param RequestInterface $request
@@ -113,4 +117,18 @@ abstract class ResponseAbstract implements ResponseInterface
         return $this->data;
     }
 
+    /**
+     * @param float $time
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTime(){
+        return $this->time;
+    }
 } 

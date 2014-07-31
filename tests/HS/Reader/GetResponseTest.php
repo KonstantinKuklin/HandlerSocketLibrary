@@ -6,10 +6,45 @@
 namespace HS\Tests\HSReader;
 
 use HS\HSInterface;
+use HS\Reader;
+use HS\ResponseAbstract;
 use HS\Tests\TestCommon;
 
 class GetResponseTest extends TestCommon
 {
+    public function testSelectExistedValueWithDebug()
+    {
+        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), true);
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
+        );
+        $selectRequest = $reader->select($indexId, HSInterface::EQUAL, array(42));
+
+        $expectedResult = array(
+            array(
+                'key' => '42',
+                'date' => '2010-10-29',
+                'float' => '3.14159',
+                'varchar' => 'variable length',
+                'text' => "some\r\nbig\r\ntext",
+                'set' => 'a,c',
+                'union' => 'b',
+                'null' => null
+            )
+        );
+
+        $this->checkAssertionLastResponseData($reader, 'first test method with debug ', $expectedResult);
+        /** @var ResponseAbstract $response */
+        $response = $selectRequest->getResponse();
+        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
+        $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
+        $this->assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
+    }
+
     public function testSelectExistedValue()
     {
         $reader = $this->getReader();
@@ -37,7 +72,6 @@ class GetResponseTest extends TestCommon
 
         $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
         $this->assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
-        $this->assertTrue($reader->getTimeQueries() > 0, "Time queries time spent is wrong.");
     }
 
     public function testSelectWithZeroValue()

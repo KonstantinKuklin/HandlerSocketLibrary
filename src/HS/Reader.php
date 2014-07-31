@@ -7,6 +7,9 @@ use HS\Requests\AuthRequest;
 use HS\Requests\OpenIndexRequest;
 use HS\Requests\SelectRequest;
 use PHP_Timer;
+use Stream\Exceptions\ReadStreamException;
+use Stream\ReceiveMethod\StreamGetContentsMethod;
+use Stream\ReceiveMethod\StreamGetLineMethod;
 use Stream\Stream;
 
 /**
@@ -29,7 +32,7 @@ class Reader implements ReaderInterface
     /** @var array */
     private $indexList = array();
 
-    /** @var array */
+    /** @var RequestInterface[] */
     private $requestQueue = array();
 
     /** @var array */
@@ -41,16 +44,28 @@ class Reader implements ReaderInterface
     /** @var null|string */
     private $authKey = null;
 
+    /** @var bool */
+    private $debug = false;
+
     /**
-     * @param string $url
-     * @param int    $port
-     * @param string $authKey
+     * @param string  $url
+     * @param int     $port
+     * @param string  $authKey
+     * @param boolean $debug
      */
-    public function __construct($url, $port, $authKey = null)
+    public function __construct($url, $port, $authKey = null, $debug = false)
     {
+        if ($debug) {
+            $this->debug = true;
+        }
+
+        $this->authKey = $authKey;
         $this->driver = new Driver();
         $this->stream = new Stream($url, Stream::PROTOCOL_TCP, $port, $this->driver);
-        $this->authKey = $authKey;
+        $this->stream->open();
+        $this->stream->setBlockingOff();
+        $this->stream->setReadTimeOut(0, (float)500000);
+        $this->stream->setReceiveMethod(new StreamGetLineMethod(1024, Driver::EOL));
 
         // if auth set then try to auth
         if ($this->authKey !== null) {
@@ -187,27 +202,59 @@ class Reader implements ReaderInterface
         return $selectRequest;
     }
 
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
     /**
      * @return array
      * @throws \Stream\Exceptions\StreamException
      */
     public function getResponses()
     {
-        PHP_Timer::start();
-        if (!$this->isRequestQueueEmpty()) {
+        $responsesList = array();
+
+        if ($this->isRequestQueueEmpty()) {
+            // return empty array if no requests in queue
+            return array();
+        }
+
+        // if debug mode enabled
+        if (!$this->isDebug()) {
             $this->sendRequests();
         }
 
-        $responsesList = array();
-        foreach ($this->requestQueue as &$request) {
-            /** @var $request RequestInterface */
-            $response = $this->getStream()->getContentsByStreamGetLine(1024, Driver::EOL);
-            $request->setResponseData($response);
-            $responseObject = $request->getResponse();
-            $responsesList[] = $responseObject;
+        foreach ($this->requestQueue as $request) {
+            // if debug mode enabled
+            if ($this->isDebug()) {
+                // enable time counting
+                PHP_Timer::start();
+                $this->sendRequest($request);
+            }
+            $this->getStream()->isReadyForReading();
+            try {
+                $response = $this->getStream()->getContents();
+                $request->setResponseData($response);
+                /** @var ResponseAbstract $responseObject */
+                $responseObject = $request->getResponse();
+
+                // if debug mode enabled
+                if ($this->isDebug()) {
+                    $currentRequestTime = PHP_Timer::stop();
+
+                    // add info of spent time for this request
+                    $responseObject->setTime($currentRequestTime);
+                    $this->addTimeQueries($currentRequestTime);
+                }
+                $responsesList[] = $responseObject;
+                // add time to general time counter
+            } catch (ReadStreamException $e) {
+
+            }
         }
+
         $this->requestQueue = array();
-        $this->addTimeQueries(PHP_Timer::stop());
 
         return $responsesList;
     }
@@ -258,9 +305,24 @@ class Reader implements ReaderInterface
     protected function sendRequests()
     {
         foreach ($this->requestQueue as $request) {
-            /** @var $request RequestInterface */
-            $this->getStream()->sendContents($request->getRequestParameters());
+            $this->sendRequest($request);
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return bool
+     * @throws \Stream\Exceptions\NotStringStreamException
+     * @throws \Stream\Exceptions\StreamException
+     */
+    protected function sendRequest(RequestInterface $request)
+    {
+        if ($this->getStream()->sendContents($request->getRequestParameters()) > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

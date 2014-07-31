@@ -16,6 +16,14 @@ class SelectRequest extends RequestAbstract
     private $offset = null;
     private $indexColumns = null;
 
+    /**
+     * @param int    $indexId
+     * @param string $comparisonOperation
+     * @param array  $keys
+     * @param int    $limit
+     * @param int    $offset
+     * @param array  $indexColumns
+     */
     public function __construct($indexId, $comparisonOperation, $keys, $limit = 0, $offset = 0, $indexColumns)
     {
         $this->indexId = $indexId;
