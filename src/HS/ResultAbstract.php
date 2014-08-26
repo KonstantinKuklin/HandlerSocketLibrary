@@ -8,10 +8,11 @@ namespace HS;
 use HS\Errors\AuthenticationError;
 use HS\Errors\CommandNotFoundError;
 use HS\Errors\OpenTableError;
+use HS\Query\OpenIndexQuery;
 
-abstract class ResponseAbstract implements ResponseInterface
+abstract class ResultAbstract implements ResultInterface
 {
-    protected $request = null;
+    protected $Query = null;
 
     /** @var null|integer */
     protected $code = null;
@@ -25,13 +26,17 @@ abstract class ResponseAbstract implements ResponseInterface
     /** @var double */
     protected $time = 0;
 
+    private $openIndexQuery = null;
+
     /**
-     * @param RequestInterface $request
-     * @param array            $data
+     * @param QueryInterface      $Query
+     * @param array               $data
+     * @param null|OpenIndexQuery $openIndexQuery
      */
-    public function __construct(RequestInterface $request, &$data)
+    public function __construct(QueryInterface $Query, &$data, $openIndexQuery = null)
     {
-        $this->request = $request;
+        $this->openIndexQuery = $openIndexQuery;
+        $this->Query = $Query;
         $code = array_shift($data);
         $this->setCode($code);
 
@@ -66,6 +71,10 @@ abstract class ResponseAbstract implements ResponseInterface
      */
     public function isSuccessfully()
     {
+        if ($this->openIndexQuery !== null && !$this->openIndexQuery->getResult()->isSuccessfully()) {
+            return false;
+        }
+
         if ($this->code === 0) {
             return true;
         }
@@ -74,11 +83,11 @@ abstract class ResponseAbstract implements ResponseInterface
     }
 
     /**
-     * @return RequestAbstract
+     * @return QueryAbstract
      */
-    public function getRequest()
+    public function getQuery()
     {
-        return $this->request;
+        return $this->Query;
     }
 
     /**
@@ -128,7 +137,8 @@ abstract class ResponseAbstract implements ResponseInterface
     /**
      * @return float
      */
-    public function getTime(){
+    public function getTime()
+    {
         return $this->time;
     }
 } 

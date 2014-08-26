@@ -2,13 +2,13 @@
 
 namespace HS;
 
+use HS\Builder\AbstractBuilder;
 use HS\Exceptions\WrongParameterException;
-use HS\Requests\AuthRequest;
-use HS\Requests\OpenIndexRequest;
-use HS\Requests\SelectRequest;
+use HS\Query\AuthQuery;
+use HS\Query\OpenIndexQuery;
+use HS\Query\SelectQuery;
 use PHP_Timer;
 use Stream\Exceptions\ReadStreamException;
-use Stream\ReceiveMethod\StreamGetContentsMethod;
 use Stream\ReceiveMethod\StreamGetLineMethod;
 use Stream\Stream;
 
@@ -27,13 +27,13 @@ class Reader implements ReaderInterface
     private $stream = null;
 
     /** @var int */
-    private $currentIndexIterator = 1;
+    private $currentIndexIterator = 0;
 
     /** @var array */
     private $indexList = array();
 
-    /** @var RequestInterface[] */
-    private $requestQueue = array();
+    /** @var QueryInterface[] */
+    private $queryListNotSent = array();
 
     /** @var array */
     private $keysList = array();
@@ -44,10 +44,10 @@ class Reader implements ReaderInterface
     /** @var null|string */
     private $authKey = null;
 
-    /** @var bool */
+    /** @var boolean */
     private $debug = false;
 
-    public $debugResponseList = array();
+    public $debugResultList = array();
 
     /**
      * @param string  $url
@@ -76,10 +76,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param string $authKey
-     *
-     * @throws WrongParameterException
-     * @return AuthRequest
+     * {@inheritdoc}
      */
     public function authenticate($authKey)
     {
@@ -92,58 +89,28 @@ class Reader implements ReaderInterface
                 )
             );
         }
-        $authRequest = new AuthRequest(trim($authKey));
-        $this->addRequestToQueue($authRequest);
-        $this->incrementCountQuery();
+        $authQuery = new AuthQuery(trim($authKey));
+        $this->addQuery($authQuery);
 
-        return $authRequest;
+        return $authQuery;
     }
 
     /**
-     * Opening index
-     *
-     * The 'open_index' request has the following syntax.
-     *
-     * P <indexId> <dbName> <tableName> <indexName> <columns> [<fcolumns>]
-     *
-     * Once an 'open_index' request is issued, the HandlerSocket plugin opens the
-     * specified index and keep it open until the client connection is closed. Each
-     * open index is identified by <indexId>. If <indexId> is already open, the old
-     * open index is closed. You can open the same combination of <dbName>
-     * <tableName> <indexName> multiple times, possibly with different <columns>.
-     *
-     * For efficiency, keep <indexId> small as far as possible.
-     *
-     * @param int    $indexId
-     *               Is a number in decimal.
-     * @param string $dbName
-     * @param string $tableName
-     * @param string $indexName
-     *               To open the primary key, use PRIMARY as $indexName.
-     * @param array  $columns
-     *               Is a array of column names.
-     *
-     * @return OpenIndexRequest
+     * {@inheritdoc}
      */
     public function openIndex($indexId, $dbName, $tableName, $indexName, $columns)
     {
-        $indexRequest = new OpenIndexRequest($indexId, $dbName, $tableName, $indexName, $columns);
-        $this->addRequestToQueue($indexRequest);
+        $indexQuery = new OpenIndexQuery($indexId, $dbName, $tableName, $indexName, $columns);
+        $this->addQuery($indexQuery);
         $this->setKeysToIndexId($indexId, $columns);
-        $this->incrementCountQuery();
 
-        return $indexRequest;
+        return $indexQuery;
     }
 
     /**
-     * @param string $dbName
-     * @param string $tableName
-     * @param string $indexName
-     * @param array  $columns
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public function getIndexId($dbName, $tableName, $indexName, $columns)
+    public function getIndexId($dbName, $tableName, $indexName, $columns, $returnOnlyId = true)
     {
         $columnsToSearch = $columns;
         if (is_array($columns)) {
@@ -155,41 +122,24 @@ class Reader implements ReaderInterface
         $indexMapValue = $dbName . $tableName . $indexName . $columnsToSearch;
         if (!$indexId = $this->getIndexIdFromArray($indexMapValue)) {
             $indexId = $this->getCurrentIterator();
-            $this->openIndex($indexId, $dbName, $tableName, $indexName, $columns);
+            $openIndexQuery = $this->openIndex($indexId, $dbName, $tableName, $indexName, $columns);
             $this->addIndexIdToArray($indexMapValue, $indexId);
+
+            // return OpenIndexQuery if we can
+            if (!$returnOnlyId) {
+                return $openIndexQuery;
+            }
         }
 
         return $indexId;
     }
 
     /**
-     * Getting data
-     *
-     * The 'find' request has the following syntax:
-     *
-     *      <indexId> <comparisonOperation> <keysCount> <key1> ... <keyN> [LIM]
-     *
-     * LIM is optional sequence of the following parameters:
-     *
-     *      <limit> <offset>
-     *
-     *
-     * @param int    $indexId
-     *               Is a number. This number must be an <indexId> specified by a
-     *               'open_index' request executed previously on the same connection.
-     * @param string $comparisonOperation
-     *               Specifies the comparison operation to use. The current version of
-     *               HandlerSocket supports '=', '>', '>=', '<', and '<='.
-     * @param array  $keys
-     *               Specify the index column values to fetch.
-     * @param int    $limit
-     * @param int    $offset
-     *
-     * @return SelectRequest
+     * {@inheritdoc}
      */
-    public function select($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 0)
+    public function selectByIndex($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 0)
     {
-        $selectRequest = new SelectRequest(
+        $selectQuery = new SelectQuery(
             $indexId,
             $comparisonOperation,
             $keys,
@@ -198,80 +148,168 @@ class Reader implements ReaderInterface
             $this->getKeysByIndexId($indexId)
         );
 
-        $this->addRequestToQueue($selectRequest);
-        $this->incrementCountQuery();
+        $this->addQuery($selectQuery);
 
-        return $selectRequest;
+        return $selectQuery;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function selectInByIndex($indexId, $in, $offset = 0, $limit = 0)
+    {
+        $selectQuery = new SelectQuery(
+            $indexId,
+            HSInterface::EQUAL,
+            array(1), // may be skipped TODO check
+            $offset,
+            $limit,
+            $this->getKeysByIndexId($indexId),
+            $in
+        );
+
+        $this->addQuery($selectQuery);
+
+        return $selectQuery;
+    }
+
+    /**
+     * @param array  $columns
+     * @param string $dbName
+     * @param string $tableName
+     * @param string $indexName
+     * @param string $comparisonOperation
+     * @param array  $keys
+     * @param int    $offset
+     * @param int    $limit
+     *
+     * @return SelectQuery
+     */
+    public function select(
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        return new SelectQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $offset,
+            $limit,
+            $this->getKeysByIndexId($indexId),
+            array(),
+            $openIndexQuery
+        );
+    }
+
+    /**
+     * @param array  $columns
+     * @param string $dbName
+     * @param string $tableName
+     * @param string $indexName
+     * @param array  $in
+     * @param int    $offset
+     * @param int    $limit
+     *
+     * @return SelectQuery
+     */
+    public function selectIn(
+        $columns, $dbName, $tableName, $indexName, $in, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        return new  SelectQuery(
+            $indexId,
+            HSInterface::EQUAL,
+            array(1), // can be skipped TODO check
+            $offset,
+            $limit,
+            $this->getKeysByIndexId($indexId),
+            $in,
+            $openIndexQuery
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isDebug()
     {
         return $this->debug;
     }
 
     /**
-     * @return array
-     * @throws \Stream\Exceptions\StreamException
+     * {@inheritdoc}
      */
-    public function getResponses()
+    public function getResults()
     {
-        $responsesList = array();
+        $ResultsList = array();
 
-        if ($this->isRequestQueueEmpty()) {
-            // return empty array if no requests in queue
+        if ($this->isQueryQueueEmpty()) {
+            // return empty array if no Queries in queue
             return array();
         }
 
         // if debug mode enabled
         if (!$this->isDebug()) {
-            $this->sendRequests();
+            $this->sendQueries();
         }
 
-        foreach ($this->requestQueue as $request) {
+        foreach ($this->queryListNotSent as $Query) {
             // if debug mode enabled
             if ($this->isDebug()) {
                 // enable time counting
                 PHP_Timer::start();
-                $this->sendRequest($request);
+                $this->sendQuery($Query);
             }
             $this->getStream()->isReadyForReading();
             try {
-                $response = $this->getStream()->getContents();
-                $request->setResponseData($response);
-                /** @var ResponseAbstract $responseObject */
-                $responseObject = $request->getResponse();
+                $Result = $this->getStream()->getContents();
+                $Query->setResultData($Result);
+                /** @var ResultAbstract $ResultObject */
+                $ResultObject = $Query->getResult();
 
                 // if debug mode enabled
                 if ($this->isDebug()) {
-                    $currentRequestTime = PHP_Timer::stop();
+                    $currentQueryTime = PHP_Timer::stop();
 
-                    // add info of spent time for this request
-                    $responseObject->setTime($currentRequestTime);
-                    $this->addTimeQueries($currentRequestTime);
-                    $this->debugResponseList[] = $responseObject;
+                    // add info of spent time for this Query
+                    $ResultObject->setTime($currentQueryTime);
+                    $this->addTimeQueries($currentQueryTime);
+                    $this->debugResultList[] = $ResultObject;
                 }
-                $responsesList[] = $responseObject;
+                $ResultsList[] = $ResultObject;
                 // add time to general time counter
             } catch (ReadStreamException $e) {
 
             }
         }
 
-        $this->requestQueue = array();
+        $this->queryListNotSent = array();
 
-        return $responsesList;
+        return $ResultsList;
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
-    public function getCountRequestsInQueue()
+    public function getCountQueriesInQueue()
     {
-        return count($this->requestQueue);
+        return count($this->queryListNotSent);
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getCountQueries()
     {
@@ -279,7 +317,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @return double
+     * {@inheritdoc}
      */
     public function getTimeQueries()
     {
@@ -287,7 +325,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getUrlConnection()
     {
@@ -295,41 +333,66 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * {@inheritdoc}
      */
-    protected function addRequestToQueue($request)
+    public function addQuery($query)
     {
-        $this->requestQueue[] = $request;
+        if ($query instanceof QueryInterface) {
+            $this->queryListNotSent[] = $query;
+        } elseif ($query instanceof AbstractBuilder) {
+            $openIndexQuery = $this->getIndexId(
+                $query->getDataBase(),
+                $query->getTable(),
+                $query->getIndex(),
+                $query->getColumns(),
+                false
+            );
+
+            // if returned int
+            if (is_int($openIndexQuery)) {
+                $queryForAdd = $query->getQuery($openIndexQuery);
+            } else {
+                $queryForAdd = $query->getQuery($openIndexQuery->getIndexId(), $openIndexQuery);
+            }
+            $this->addQuery($queryForAdd);
+
+            return $queryForAdd;
+        } else {
+            throw new \Exception("Query must be instance of QueryInterface or QueryBuilderInterface");
+        }
+    }
+
+    /**
+     * @throws \Stream\Exceptions\StreamException
+     */
+    public function sendQueries()
+    {
+        foreach ($this->queryListNotSent as $Query) {
+            $this->sendQuery($Query);
+        }
     }
 
     /**
      * @return boolean
      */
-    protected function isRequestQueueEmpty()
+    protected function isQueryQueueEmpty()
     {
-        return empty($this->requestQueue);
+        return empty($this->queryListNotSent);
     }
 
     /**
-     * @throws \Stream\Exceptions\StreamException
-     */
-    protected function sendRequests()
-    {
-        foreach ($this->requestQueue as $request) {
-            $this->sendRequest($request);
-        }
-    }
-
-    /**
-     * @param RequestInterface $request
+     * @param QueryInterface $Query
      *
      * @return bool
      * @throws \Stream\Exceptions\NotStringStreamException
      * @throws \Stream\Exceptions\StreamException
      */
-    protected function sendRequest(RequestInterface $request)
+    protected function sendQuery(QueryInterface $Query)
     {
-        if ($this->getStream()->sendContents($request->getRequestParameters()) > 0) {
+        if ($this->getStream()->sendContents($Query->getQueryParameters()) > 0) {
+            // increment count of queries
+            $this->countQueries++;
+
             return true;
         }
 
@@ -353,14 +416,6 @@ class Reader implements ReaderInterface
     protected function getKeysByIndexId($indexId)
     {
         return $this->keysList[$indexId];
-    }
-
-    /**
-     * @return void
-     */
-    protected function incrementCountQuery()
-    {
-        $this->countQueries++;
     }
 
     /**
@@ -415,4 +470,4 @@ class Reader implements ReaderInterface
     {
         return $this->stream;
     }
-} 
+}

@@ -6,27 +6,27 @@
 namespace HS;
 
 
-interface RequestInterface
+interface QueryInterface
 {
     /**
-     * @return ResponseInterface
+     * @return ResultInterface
      */
-    public function getResponse();
+    public function getResult();
 
     /**
      * @return array
      */
-    public function getRequestParameters();
+    public function getQueryParameters();
 
     /**
      * @return string
      */
-    public function getRequestString();
+    public function getQueryString();
 
     /**
      * @param array $data
      *
      * @return void
      */
-    public function setResponseData($data);
+    public function setResultData($data);
 } 

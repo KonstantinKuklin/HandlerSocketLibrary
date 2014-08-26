@@ -3,11 +3,11 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS\Requests;
+namespace HS\Query;
 
-use HS\RequestAbstract;
+use HS\QueryAbstract;
 
-abstract class ModifyRequestAbstract extends RequestAbstract
+abstract class ModifyQueryAbstract extends QueryAbstract
 {
 
     protected $indexId = null;
@@ -16,27 +16,30 @@ abstract class ModifyRequestAbstract extends RequestAbstract
     protected $limit = null;
     protected $offset = null;
     protected $values = null;
+    protected $openIndexQuery = null;
 
     /**
-     * @param int    $indexId
-     * @param string $comparisonOperation
-     * @param array  $keys
-     * @param int    $offset
-     * @param int    $limit
+     * @param int                 $indexId
+     * @param string              $comparisonOperation
+     * @param array               $keys
+     * @param int                 $offset
+     * @param int                 $limit
+     * @param null|OpenIndexQuery $openIndexQuery
      */
-    public function __construct($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 1)
+    public function __construct($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 1, $openIndexQuery = null)
     {
         $this->indexId = $indexId;
         $this->comparisonOperation = $comparisonOperation;
         $this->keys = $keys;
         $this->limit = $limit;
         $this->offset = $offset;
+        $this->openIndexQuery = $openIndexQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getCommonRequestParameters()
+    public function getCommonQueryParameters()
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
         return array_merge(
@@ -58,9 +61,9 @@ abstract class ModifyRequestAbstract extends RequestAbstract
      *
      * @return array
      */
-    public function getRequestParametersWithMod($mod)
+    public function getQueryParametersWithMod($mod)
     {
-        $parametersList = $this->getCommonRequestParameters();
+        $parametersList = $this->getCommonQueryParameters();
         $parametersList[] = $mod;
 
         return array_merge($parametersList, $this->values);

@@ -3,12 +3,12 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS\Requests;
+namespace HS\Query;
 
-use HS\RequestAbstract;
-use HS\Responses\AuthResponse;
+use HS\QueryAbstract;
+use HS\Result\AuthResult;
 
-class AuthRequest extends RequestAbstract
+class AuthQuery extends QueryAbstract
 {
     private $authKey = null;
 
@@ -23,7 +23,7 @@ class AuthRequest extends RequestAbstract
     /**
      * {@inheritdoc}
      */
-    public function getRequestParameters()
+    public function getQueryParameters()
     {
         return array(
             'A',
@@ -35,9 +35,9 @@ class AuthRequest extends RequestAbstract
     /**
      * {@inheritdoc}
      */
-    public function setResponseData($data)
+    public function setResultData($data)
     {
-        $this->response = new AuthResponse($this, $data);
+        $this->Result = new AuthResult($this, $data);
     }
 
 } 

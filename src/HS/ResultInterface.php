@@ -5,7 +5,7 @@
 
 namespace HS;
 
-interface ResponseInterface
+interface ResultInterface
 {
     /**
      * @return bool
@@ -13,9 +13,9 @@ interface ResponseInterface
     public function isSuccessfully();
 
     /**
-     * @return RequestAbstract
+     * @return QueryAbstract
      */
-    public function getRequest();
+    public function getQuery();
 
     /**
      * @return Error|null

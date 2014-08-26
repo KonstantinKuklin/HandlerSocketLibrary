@@ -7,35 +7,35 @@ namespace HS;
 
 use HS\Exceptions\WrongParameterException;
 
-abstract class RequestAbstract implements RequestInterface
+abstract class QueryAbstract implements QueryInterface
 {
-    protected $response = null;
+    protected $Result = null;
 
     /**
      * {@inheritdoc}
      */
-    public function getResponse()
+    public function getResult()
     {
-        return $this->response;
+        return $this->Result;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getRequestString()
+    public function getQueryString()
     {
-        return Driver::prepareSendDataStatic($this->getRequestParameters());
+        return Driver::prepareSendDataStatic($this->getQueryParameters());
     }
 
     /**
      * {@inheritdoc}
      */
-    abstract public function getRequestParameters();
+    abstract public function getQueryParameters();
 
     /**
      * {@inheritdoc}
      */
-    abstract public function setResponseData($data);
+    abstract public function setResultData($data);
 
     /**
      * @param int $indexId

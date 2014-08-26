@@ -5,14 +5,9 @@
 
 namespace HS;
 
+use HS\Query\InsertQuery;
 
-use HS\Requests\DecrementRequest;
-use HS\Requests\DeleteRequest;
-use HS\Requests\IncrementRequest;
-use HS\Requests\InsertRequest;
-use HS\Requests\UpdateRequest;
-
-class Writer extends Reader implements WriterInterface
+class Writer extends Reader implements WriterHSInterface
 {
     const COMMAND_UPDATE = 'U';
     const COMMAND_DELETE = 'D';
@@ -22,9 +17,10 @@ class Writer extends Reader implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function update($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function updateByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
     {
-        $updateRequest = new UpdateRequest(
+        $updateQuery = $this->modifyByIndexQuery(
+            'Update',
             $indexId,
             $comparisonOperation,
             $keys,
@@ -33,57 +29,34 @@ class Writer extends Reader implements WriterInterface
             $limit
         );
 
-        $this->addRequestToQueue($updateRequest);
-        $this->incrementCountQuery();
-
-        return $updateRequest;
+        return $updateQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($indexId, $comparisonOperation, $keys, $limit = 1, $offset = 0)
+    public function deleteByIndex($indexId, $comparisonOperation, $keys, $limit = 1, $offset = 0)
     {
-        $updateRequest = new DeleteRequest(
+        $deleteQuery = $this->modifyByIndexQuery(
+            'Delete',
             $indexId,
             $comparisonOperation,
             $keys,
+            null,
             $offset,
             $limit
         );
 
-        $this->addRequestToQueue($updateRequest);
-        $this->incrementCountQuery();
-
-        return $updateRequest;
+        return $deleteQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function increment($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function incrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
     {
-        $updateRequest = new IncrementRequest(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $values,
-            $offset,
-            $limit
-        );
-
-        $this->addRequestToQueue($updateRequest);
-        $this->incrementCountQuery();
-
-        return $updateRequest;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function decrement($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
-    {
-        $updateRequest = new DecrementRequest(
+        $incrementQuery = $this->modifyByIndexQuery(
+            'Increment',
             $indexId,
             $comparisonOperation,
             $keys,
@@ -92,25 +65,79 @@ class Writer extends Reader implements WriterInterface
             $limit
         );
 
-        $this->addRequestToQueue($updateRequest);
-        $this->incrementCountQuery();
-
-        return $updateRequest;
+        return $incrementQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insert($indexId, $values)
+    public function decrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
     {
-        $updateRequest = new InsertRequest(
+        $decrementQuery = $this->modifyByIndexQuery(
+            'Decrement',
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $values,
+            $offset,
+            $limit
+        );
+
+        return $decrementQuery;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insertByIndex($indexId, $values)
+    {
+        $updateQuery = new InsertQuery(
             $indexId,
             $values
         );
 
-        $this->addRequestToQueue($updateRequest);
-        $this->incrementCountQuery();
+        $this->addQuery($updateQuery);
 
-        return $updateRequest;
+        return $updateQuery;
+    }
+
+    /**
+     * @param string     $queryClassName
+     * @param int        $indexId
+     * @param string     $comparisonOperation
+     * @param array      $keys
+     * @param array|null $values
+     * @param int        $limit
+     * @param int        $offset
+     *
+     * @return null|QueryInterface
+     */
+    private function modifyByIndexQuery(
+        $queryClassName, $indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0
+    ) {
+        $className = $queryClassName . 'Query';
+        $modifyQuery = null;
+        if ($queryClassName === 'Delete') {
+            $modifyQuery = new $className(
+                $indexId,
+                $comparisonOperation,
+                $keys,
+                $offset,
+                $limit
+            );
+        } else {
+            $modifyQuery = new $className(
+                $indexId,
+                $comparisonOperation,
+                $keys,
+                $values,
+                $offset,
+                $limit
+            );
+        }
+
+        $this->addQuery($modifyQuery);
+
+        return $modifyQuery;
     }
 }

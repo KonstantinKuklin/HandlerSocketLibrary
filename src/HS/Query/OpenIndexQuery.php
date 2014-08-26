@@ -1,14 +1,14 @@
 <?php
 
-namespace HS\Requests;
+namespace HS\Query;
 
-use HS\RequestAbstract;
-use HS\Responses\OpenIndexResponse;
+use HS\QueryAbstract;
+use HS\Result\OpenIndexResult;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class OpenIndexRequest extends RequestAbstract
+class OpenIndexQuery extends QueryAbstract
 {
     private $indexId = null;
     private $dbName = null;
@@ -19,11 +19,11 @@ class OpenIndexRequest extends RequestAbstract
     /**
      * Opening index
      *
-     * The 'open_index' request has the following syntax.
+     * The 'open_index' Query has the following syntax.
      *
      * P <indexId> <dbName> <tableName> <indexName> <columns> [<fcolumns>]
      *
-     * Once an 'open_index' request is issued, the HandlerSocket plugin opens the
+     * Once an 'open_index' Query is issued, the HandlerSocket plugin opens the
      * specified index and keep it open until the client connection is closed. Each
      * open index is identified by <indexId>. If <indexId> is already open, the old
      * open index is closed. You can open the same combination of <dbName>
@@ -40,7 +40,7 @@ class OpenIndexRequest extends RequestAbstract
      * @param array  $columns
      *               Is a array of column names.
      *
-     * @return OpenIndexRequest
+     * @return OpenIndexQuery
      */
     public function __construct($indexId, $dbName, $tableName, $indexName, $columns)
     {
@@ -56,7 +56,7 @@ class OpenIndexRequest extends RequestAbstract
     /**
      * {@inheritdoc}
      */
-    public function getRequestParameters()
+    public function getQueryParameters()
     {
         return array(
             'P',
@@ -71,9 +71,17 @@ class OpenIndexRequest extends RequestAbstract
     /**
      * {@inheritdoc}
      */
-    public function setResponseData($data)
+    public function setResultData($data)
     {
-        $this->response = new OpenIndexResponse($this, $data);
+        $this->Result = new OpenIndexResult($this, $data);
+    }
+
+    /**
+     * @return int
+     */
+    public function getIndexId()
+    {
+        return $this->indexId;
     }
 
     /**

@@ -2,31 +2,33 @@
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-namespace HS\Requests;
+namespace HS\Query;
 
-use HS\RequestAbstract;
-use HS\Responses\InsertResponse;
+use HS\QueryAbstract;
+use HS\Result\InsertResult;
 
-class InsertRequest extends RequestAbstract
+class InsertQuery extends QueryAbstract
 {
-
     private $indexId = null;
     private $values = null;
+    private $openIndexQuery = null;
 
     /**
      * @param int   $indexId
      * @param array $values
+     * @param null  $openIndexQuery
      */
-    public function __construct($indexId, $values)
+    public function __construct($indexId, $values, $openIndexQuery = null)
     {
         $this->indexId = $indexId;
         $this->values = $values;
+        $this->openIndexQuery = $openIndexQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getRequestParameters()
+    public function getQueryParameters()
     {
         return array_merge(
             array(
@@ -41,8 +43,8 @@ class InsertRequest extends RequestAbstract
     /**
      * {@inheritdoc}
      */
-    public function setResponseData($data)
+    public function setResultData($data)
     {
-        $this->response = new InsertResponse($this, $data);
+        $this->Result = new InsertResult($this, $data, $this->openIndexQuery);
     }
 }
