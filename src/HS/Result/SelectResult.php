@@ -5,6 +5,7 @@
 
 namespace HS\Result;
 
+use HS\Query\OpenIndexQuery;
 use HS\QueryAbstract;
 use HS\Query\SelectQuery;
 use HS\ResultAbstract;
@@ -12,11 +13,11 @@ use HS\ResultAbstract;
 class SelectResult extends ResultAbstract
 {
     /**
-     * @param QueryAbstract $Query
-     * @param array         $data
-     * @param array         $keys
-     * @param int           $returnType
-     * @param null          $openIndexQuery
+     * @param QueryAbstract       $Query
+     * @param array               $data
+     * @param array               $keys
+     * @param int                 $returnType
+     * @param null|OpenIndexQuery $openIndexQuery
      */
     public function __construct($Query, $data, $keys, $returnType, $openIndexQuery = null)
     {

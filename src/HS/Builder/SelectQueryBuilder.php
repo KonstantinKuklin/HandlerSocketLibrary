@@ -31,6 +31,8 @@ class SelectQueryBuilder extends AbstractBuilder
             $this->where,
             $this->limit,
             $this->offset,
+            $this->constructArray,
+            array(),
             $openIndexQuery
         );
     }

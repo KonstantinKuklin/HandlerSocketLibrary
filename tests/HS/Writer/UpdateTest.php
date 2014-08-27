@@ -17,12 +17,12 @@ class UpdateTest extends TestCommon
             'PRIMARY',
             array('key', 'text')
         );
-        $updateRequest = $writer->update($indexId, '=', array(2), array(2, 'new'));
+        $updateRequest = $writer->updateByIndex($indexId, '=', array(2), array(2, 'new'));
 
-        $selectRequest = $writer->select($indexId, '=', array(2));
-        $writer->getResponses();
+        $selectRequest = $writer->selectByIndex($indexId, '=', array(2));
+        $writer->getResults();
 
-        $data = $selectRequest->getResponse()->getData();
+        $data = $selectRequest->getResult()->getData();
 
         $this->assertEquals('new', $data[0]['text']);
     }

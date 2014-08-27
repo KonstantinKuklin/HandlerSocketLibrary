@@ -31,7 +31,7 @@ class ConstructorTest extends TestCommon
         $portGood = 9998;
 
         try {
-            $reader = new Reader($this->getHost(), $portGood);
+            new Reader($this->getHost(), $portGood);
         } catch (\Exception $e) {
             $this->fail(
                 sprintf(
@@ -50,8 +50,8 @@ class ConstructorTest extends TestCommon
         $pass = 'testpass';
 
         $reader = new Reader($this->getHost(), $portGood, $pass);
-        $this->assertEquals(1, $reader->getCountRequestsInQueue(), "Auth request not added on init hs reader.");
-        $reader->getResponses();
+        $this->assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
+        $reader->getResults();
     }
 
     public function testAuthRequestNotAdded()
@@ -59,7 +59,7 @@ class ConstructorTest extends TestCommon
         $portGood = 9999;
 
         $reader = new Reader($this->getHost(), $portGood);
-        $this->assertEquals(0, $reader->getCountRequestsInQueue(), "Auth request added on init hs reader.");
-        $reader->getResponses();
+        $this->assertEquals(0, $reader->getCountQueriesInQueue(), "Auth request added on init hs reader.");
+        $reader->getResults();
     }
 } 

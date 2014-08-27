@@ -115,7 +115,7 @@ class Writer extends Reader implements WriterHSInterface
     private function modifyByIndexQuery(
         $queryClassName, $indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0
     ) {
-        $className = $queryClassName . 'Query';
+        $className = 'HS\Query\\'.$queryClassName . 'Query';
         $modifyQuery = null;
         if ($queryClassName === 'Delete') {
             $modifyQuery = new $className(

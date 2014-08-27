@@ -7,7 +7,7 @@ namespace HS\Tests\HSReader;
 
 use HS\HSInterface;
 use HS\Reader;
-use HS\ResponseAbstract;
+use HS\ResultAbstract;
 use HS\Tests\TestCommon;
 
 class GetResponseTest extends TestCommon
@@ -22,7 +22,7 @@ class GetResponseTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->select($indexId, HSInterface::EQUAL, array(42));
+        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
 
         $expectedResult = array(
             array(
@@ -38,8 +38,8 @@ class GetResponseTest extends TestCommon
         );
 
         $this->checkAssertionLastResponseData($reader, 'first test method with debug ', $expectedResult);
-        /** @var ResponseAbstract $response */
-        $response = $selectRequest->getResponse();
+        /** @var ResultAbstract $response */
+        $response = $selectRequest->getResult();
         $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
         $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
         $this->assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
@@ -55,7 +55,7 @@ class GetResponseTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->select($indexId, HSInterface::EQUAL, array(42));
+        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
 
         $expectedResult = array(
             array(
@@ -78,7 +78,7 @@ class GetResponseTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('float'));
-        $hsReader->select($id, HSInterface::EQUAL, array(100));
+        $hsReader->selectByIndex($id, HSInterface::EQUAL, array(100));
 
         $expectedValue = array(array('float' => 0));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);
@@ -88,7 +88,7 @@ class GetResponseTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('text'));
-        $hsReader->select($id, HSInterface::EQUAL, array(10001));
+        $hsReader->selectByIndex($id, HSInterface::EQUAL, array(10001));
 
         $expectedValue = array(array("text" => "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);;

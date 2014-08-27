@@ -6,7 +6,9 @@
 namespace HS\Tests;
 
 
+use HS\QueryInterface;
 use HS\Reader;
+use HS\ResultInterface;
 use HS\Writer;
 use HS\ResponseInterface;
 
@@ -116,19 +118,19 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     protected function checkAssertionLastResponseData(
         $socket, $assertMessage, $expectedData
     ) {
-        $responseList = $socket->getResponses();
-        if (empty($responseList)) {
+        $resultList = $socket->getResults();
+        if (empty($resultList)) {
             $this->fail("Fail because response list is empty.");
         }
 
-        $lastResponse = array_pop($responseList);
-        if (!($lastResponse instanceof ResponseInterface)) {
-            $this->fail("Fail because response is not implemented ResponseInterface.");
+        $lastResult = array_pop($resultList);
+        if (!($lastResult instanceof ResultInterface)) {
+            $this->fail("Fail because result is not implemented ResultInterface.");
 
         }
 
         // equal actual and expected
-        $this->assertEquals($expectedData, $lastResponse->getData(), $assertMessage);
+        $this->assertEquals($expectedData, $lastResult->getData(), $assertMessage);
     }
 
     /**
@@ -138,8 +140,8 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      */
     protected function checkCountRequestSent($socket, $assertMessage, $expectedCount)
     {
-        $responseList = $socket->getResponses();
-        $this->assertEquals($expectedCount, count($responseList), $assertMessage);
+        $resultList = $socket->getResults();
+        $this->assertEquals($expectedCount, count($resultList), $assertMessage);
     }
 
     /**
@@ -149,16 +151,16 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      */
     protected function checkError($socket, $assertMessage, $expectedError)
     {
-        $responseList = $socket->getResponses();
-        if (empty($responseList)) {
+        $resultList = $socket->getResults();
+        if (empty($resultList)) {
             $this->fail("Fail because response list is empty.");
         }
 
-        $lastResponse = array_pop($responseList);
-        if ($lastResponse->isSuccessfully()) {
+        $lastResult = array_pop($resultList);
+        if ($lastResult->isSuccessfully()) {
             $this->fail("Fail because response is successfully finished.");
         }
-        $errorObject = $lastResponse->getError();
+        $errorObject = $lastResult->getError();
         $errorClass = get_class($errorObject);
 
         $this->assertEquals($expectedError, $errorClass, $assertMessage);

@@ -30,10 +30,9 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(0, $this->getDatabase(), $this->getTableName(), '', array('text'));
         } catch (WrongParameterException $e) {
-            return;
+            $this->fail("Fall zero set as indexId.");
         }
 
-        $this->fail("Not fall 0 set as indexId.");
     }
 
     public function testNegativeIndexId()
@@ -211,9 +210,9 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResponses();
+        $reader->getResults();
         $this->assertFalse(
-            $openIndex->getResponse()->isSuccessfully(),
+            $openIndex->getResult()->isSuccessfully(),
             "Successfully openIndex on not existed database."
         );
 
@@ -229,10 +228,10 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResponses();
+        $reader->getResults();
         $this->assertEquals(
             'HS\Errors\OpenTableError',
-            get_class($openIndex->getResponse()->getError()),
+            get_class($openIndex->getResult()->getError()),
             "Error object os not instance of OpenTableError"
         );
 
@@ -250,7 +249,7 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResponses();
-        $this->assertTrue($openIndexSecond->getResponse()->isSuccessfully(), "Fall reopen index");
+        $reader->getResults();
+        $this->assertTrue($openIndexSecond->getResult()->isSuccessfully(), "Fall reopen index");
     }
 } 

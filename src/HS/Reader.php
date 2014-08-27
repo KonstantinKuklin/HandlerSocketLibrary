@@ -228,6 +228,7 @@ class Reader implements ReaderInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
+        /** @var int $indexId */
         return new  SelectQuery(
             $indexId,
             HSInterface::EQUAL,
@@ -350,8 +351,10 @@ class Reader implements ReaderInterface
 
             // if returned int
             if (is_int($openIndexQuery)) {
+                /** @var int $openIndexQuery */
                 $queryForAdd = $query->getQuery($openIndexQuery);
             } else {
+                /** @var OpenIndexQuery $openIndexQuery */
                 $queryForAdd = $query->getQuery($openIndexQuery->getIndexId(), $openIndexQuery);
             }
             $this->addQuery($queryForAdd);
@@ -364,12 +367,29 @@ class Reader implements ReaderInterface
 
     /**
      * @throws \Stream\Exceptions\StreamException
+     * @return void
      */
     public function sendQueries()
     {
         foreach ($this->queryListNotSent as $Query) {
             $this->sendQuery($Query);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function reOpen()
+    {
+        if ($this->getStream() !== null) {
+            $this->getStream()->close();
+            $this->stream = null;
+        }
+
+        $this->currentIndexIterator = 0;
+        $this->queryListNotSent = array();
+        $this->indexList = array();
+        $this->keysList = array();
     }
 
     /**
@@ -383,7 +403,7 @@ class Reader implements ReaderInterface
     /**
      * @param QueryInterface $Query
      *
-     * @return bool
+     * @return boolean
      * @throws \Stream\Exceptions\NotStringStreamException
      * @throws \Stream\Exceptions\StreamException
      */

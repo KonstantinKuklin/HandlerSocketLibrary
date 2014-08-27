@@ -44,4 +44,10 @@ interface ReaderInterface extends ReaderHSInterface
      * @throws \Stream\Exceptions\StreamException
      */
     public function sendQueries();
+
+    /**
+     * @throws \Stream\Exceptions\StreamException
+     * @return void
+     */
+    public function reOpen();
 }

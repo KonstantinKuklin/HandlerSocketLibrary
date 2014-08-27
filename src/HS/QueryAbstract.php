@@ -46,7 +46,7 @@ abstract class QueryAbstract implements QueryInterface
     protected function validateIndexId($indexId)
     {
         if (!$this->validateInt($indexId)) {
-            $this->getWrongParameterException("Wrong indexId value, must be integer > 0.", $indexId);
+            $this->getWrongParameterException("Wrong indexId value, must be integer >= 0.", $indexId);
         }
 
         return $indexId;
@@ -135,7 +135,7 @@ abstract class QueryAbstract implements QueryInterface
      */
     protected function validateInt($data)
     {
-        if (is_int($data) && $data > 0) {
+        if (is_int($data) && $data >= 0) {
             return true;
         }
 
