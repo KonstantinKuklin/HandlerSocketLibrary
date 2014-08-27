@@ -42,6 +42,7 @@ abstract class ModifyQueryAbstract extends QueryAbstract
     public function getCommonQueryParameters()
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
+
         return array_merge(
             array(
                 $this->indexId,
@@ -50,8 +51,8 @@ abstract class ModifyQueryAbstract extends QueryAbstract
             ),
             $this->keys,
             array(
-                $this->limit,
                 $this->offset,
+                $this->limit
             )
         );
     }

@@ -5,8 +5,6 @@
 
 namespace HS\Result;
 
-use HS\ResultAbstract;
-
-class UpdateResult extends ResultAbstract
+class UpdateResult extends ModifyResultAbstract
 {
 }

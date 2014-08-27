@@ -3,6 +3,7 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+use HS\Result\UpdateResult;
 use \HS\Tests\TestCommon;
 
 class UpdateTest extends TestCommon
@@ -19,10 +20,17 @@ class UpdateTest extends TestCommon
         );
         $updateRequest = $writer->updateByIndex($indexId, '=', array(2), array(2, 'new'));
 
-        $selectRequest = $writer->selectByIndex($indexId, '=', array(2));
+        $selectQuery = $writer->selectByIndex($indexId, '=', array(2));
         $writer->getResults();
 
-        $data = $selectRequest->getResult()->getData();
+        /** @var UpdateResult $updateResult */
+        $updateResult = $updateRequest->getResult();
+        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
+
+        $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateQuery didn't modified rows.");
+
+        $data = $selectQuery->getResult()->getData();
 
         $this->assertEquals('new', $data[0]['text']);
     }

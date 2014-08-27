@@ -5,8 +5,6 @@
 
 namespace HS\Result;
 
-use HS\ResultAbstract;
-
-class DeleteResult extends ResultAbstract
+class DeleteResult extends ModifyResultAbstract
 {
 }

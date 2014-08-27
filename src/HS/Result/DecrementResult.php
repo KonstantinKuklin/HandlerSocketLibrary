@@ -5,8 +5,6 @@
 
 namespace HS\Result;
 
-use HS\ResultAbstract;
-
-class DecrementResult extends ResultAbstract
+class DecrementResult extends ModifyResultAbstract
 {
 }
