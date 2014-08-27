@@ -6,11 +6,12 @@
 namespace HS\Tests\HSReader;
 
 use HS\HSInterface;
+use HS\Query\SelectQuery;
 use HS\Reader;
 use HS\ResultAbstract;
 use HS\Tests\TestCommon;
 
-class GetResponseTest extends TestCommon
+class GetResultTest extends TestCommon
 {
     public function testSelectExistedValueWithDebug()
     {
@@ -67,6 +68,36 @@ class GetResponseTest extends TestCommon
                 'set' => 'a,c',
                 'union' => 'b',
                 'null' => null
+            )
+        );
+
+        $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
+        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
+    }
+
+    public function testSelectExistedValueAsVector()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
+        );
+        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
+        $selectRequest->setReturnType(SelectQuery::VECTOR);
+
+        $expectedResult = array(
+            array(
+                '42',
+                '2010-10-29',
+                '3.14159',
+                'variable length',
+                "some\r\nbig\r\ntext",
+                'a,c',
+                null,
+                'b'
             )
         );
 

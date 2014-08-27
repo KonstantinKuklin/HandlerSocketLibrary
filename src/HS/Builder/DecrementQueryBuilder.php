@@ -10,7 +10,7 @@ use HS\Query\UpdateQuery;
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class DecrementQueryBuilder extends AbstractBuilder
+class DecrementQueryBuilder extends QueryBuilderAbstract
 {
     /**
      * {@inheritdoc}

@@ -3,6 +3,7 @@
 namespace HS;
 
 use HS\Builder\AbstractBuilder;
+use HS\Builder\QueryBuilderAbstract;
 use HS\Exceptions\WrongParameterException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
@@ -229,6 +230,7 @@ class Reader implements ReaderInterface
         }
 
         /** @var int $indexId */
+
         return new  SelectQuery(
             $indexId,
             HSInterface::EQUAL,
@@ -266,19 +268,19 @@ class Reader implements ReaderInterface
             $this->sendQueries();
         }
 
-        foreach ($this->queryListNotSent as $Query) {
+        foreach ($this->queryListNotSent as $query) {
             // if debug mode enabled
             if ($this->isDebug()) {
                 // enable time counting
                 PHP_Timer::start();
-                $this->sendQuery($Query);
+                $this->sendQuery($query);
             }
             $this->getStream()->isReadyForReading();
             try {
-                $Result = $this->getStream()->getContents();
-                $Query->setResultData($Result);
+                $result = $this->getStream()->getContents();
+                $query->setResultData($result);
                 /** @var ResultAbstract $ResultObject */
-                $ResultObject = $Query->getResult();
+                $ResultObject = $query->getResult();
 
                 // if debug mode enabled
                 if ($this->isDebug()) {
@@ -292,7 +294,7 @@ class Reader implements ReaderInterface
                 $ResultsList[] = $ResultObject;
                 // add time to general time counter
             } catch (ReadStreamException $e) {
-
+                // TODO check
             }
         }
 
@@ -340,7 +342,7 @@ class Reader implements ReaderInterface
     {
         if ($query instanceof QueryInterface) {
             $this->queryListNotSent[] = $query;
-        } elseif ($query instanceof AbstractBuilder) {
+        } elseif ($query instanceof QueryBuilderAbstract) {
             $openIndexQuery = $this->getIndexId(
                 $query->getDataBase(),
                 $query->getTable(),
@@ -371,8 +373,8 @@ class Reader implements ReaderInterface
      */
     public function sendQueries()
     {
-        foreach ($this->queryListNotSent as $Query) {
-            $this->sendQuery($Query);
+        foreach ($this->queryListNotSent as $query) {
+            $this->sendQuery($query);
         }
     }
 
@@ -401,15 +403,15 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param QueryInterface $Query
+     * @param QueryInterface $query
      *
      * @return boolean
      * @throws \Stream\Exceptions\NotStringStreamException
      * @throws \Stream\Exceptions\StreamException
      */
-    protected function sendQuery(QueryInterface $Query)
+    protected function sendQuery(QueryInterface $query)
     {
-        if ($this->getStream()->sendContents($Query->getQueryParameters()) > 0) {
+        if ($this->getStream()->sendContents($query->getQueryParameters()) > 0) {
             // increment count of queries
             $this->countQueries++;
 

@@ -63,9 +63,10 @@ class SelectQuery extends QueryAbstract
 //            || $type === self::OBJECT
         ) {
             $this->returnType = $type;
-        }
 
-        throw new \Exception("Got unknown type ");
+        } else {
+            throw new \Exception("Got unknown type ");
+        }
     }
 
     /**

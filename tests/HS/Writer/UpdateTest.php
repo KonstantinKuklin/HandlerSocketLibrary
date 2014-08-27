@@ -4,11 +4,11 @@
  */
 
 use HS\Result\UpdateResult;
-use \HS\Tests\TestCommon;
+use HS\Tests\TestCommon;
 
 class UpdateTest extends TestCommon
 {
-    public function testSingleUpdate()
+    public function testSingleUpdateByIndexId()
     {
         $writer = $this->getWriter();
 
@@ -18,13 +18,42 @@ class UpdateTest extends TestCommon
             'PRIMARY',
             array('key', 'text')
         );
-        $updateRequest = $writer->updateByIndex($indexId, '=', array(2), array(2, 'new'));
+        $updateQuery = $writer->updateByIndex($indexId, '=', array(2), array(2, 'new'));
 
         $selectQuery = $writer->selectByIndex($indexId, '=', array(2));
         $writer->getResults();
 
         /** @var UpdateResult $updateResult */
-        $updateResult = $updateRequest->getResult();
+        $updateResult = $updateQuery->getResult();
+        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
+        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
+
+        $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateByIndexQuery didn't modified rows.");
+
+        $data = $selectQuery->getResult()->getData();
+
+        $this->assertEquals('new', $data[0]['text']);
+    }
+
+    public function testSingleUpdate()
+    {
+        $writer = $this->getWriter();
+
+        $updateQuery = $writer->update(
+            array('key', 'text'),
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            '=',
+            array(2),
+            array(2, 'new2')
+        );
+
+        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), '=', array(2));
+        $writer->getResults();
+
+        /** @var UpdateResult $updateResult */
+        $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
         $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
 
@@ -32,6 +61,6 @@ class UpdateTest extends TestCommon
 
         $data = $selectQuery->getResult()->getData();
 
-        $this->assertEquals('new', $data[0]['text']);
+        $this->assertEquals('new2', $data[0]['text']);
     }
 } 

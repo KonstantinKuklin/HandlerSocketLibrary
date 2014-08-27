@@ -7,7 +7,7 @@ use HS\QueryInterface;
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-abstract class AbstractBuilder
+abstract class QueryBuilderAbstract implements QueryBuilderInterface
 {
 
     protected $db = null;
@@ -40,50 +40,53 @@ abstract class AbstractBuilder
         $this->constructArray = $columns;
     }
 
-    public function FromDataBase($db)
+    public function fromDataBase($db)
     {
         $this->db = $db;
 
         return $this;
     }
 
-    public function FromTable($table)
+    public function fromTable($table)
     {
         $this->table = $table;
 
         return $this;
     }
 
-    public function FromIndex($db)
+    public function fromIndex($db)
     {
         $this->db = $db;
 
         return $this;
     }
 
-    public function Limit($limit)
+    public function limit($limit)
     {
         $this->$limit = $limit;
 
         return $this;
     }
 
-    public function Offset($offset)
+    public function offset($offset)
     {
         $this->$offset = $offset;
 
         return $this;
     }
 
-    public function Where($where)
+    public function where($where)
     {
+        if (is_array($where) || is_object($where)) {
+            throw new \Exception("Where can't be array or object.");
+        }
         $this->where = array();
         $this->where[] = $where;
 
         return $this;
     }
 
-    public function AndWhere($where)
+    public function andWhere($where)
     {
         $this->where[] = $where;
 
@@ -108,5 +111,7 @@ abstract class AbstractBuilder
     public function setComparisonOperation($operation)
     {
         $this->comparisonOperation = $operation;
+
+        return $this;
     }
 } 

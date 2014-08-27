@@ -7,7 +7,7 @@ use HS\Query\DeleteQuery;
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class DeleteQueryBuilder extends AbstractBuilder
+class DeleteQueryBuilder extends QueryBuilderAbstract
 {
     /**
      * {@inheritdoc}

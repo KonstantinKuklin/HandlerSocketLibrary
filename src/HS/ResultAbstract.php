@@ -12,7 +12,8 @@ use HS\Query\OpenIndexQuery;
 
 abstract class ResultAbstract implements ResultInterface
 {
-    protected $Query = null;
+    /** @var QueryInterface|null */
+    protected $query = null;
 
     /** @var null|integer */
     protected $code = null;
@@ -29,14 +30,14 @@ abstract class ResultAbstract implements ResultInterface
     private $openIndexQuery = null;
 
     /**
-     * @param QueryInterface      $Query
+     * @param QueryInterface      $query
      * @param array               $data
      * @param null|OpenIndexQuery $openIndexQuery
      */
-    public function __construct(QueryInterface $Query, &$data, $openIndexQuery = null)
+    public function __construct(QueryInterface $query, &$data, $openIndexQuery = null)
     {
         $this->openIndexQuery = $openIndexQuery;
-        $this->Query = $Query;
+        $this->query = $query;
         $code = array_shift($data);
         $this->setCode($code);
 
@@ -87,7 +88,7 @@ abstract class ResultAbstract implements ResultInterface
      */
     public function getQuery()
     {
-        return $this->Query;
+        return $this->query;
     }
 
     /**

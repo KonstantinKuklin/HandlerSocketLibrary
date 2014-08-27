@@ -39,7 +39,7 @@ class IncrementQuery extends ModifyQueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new IncrementResult($this, $data, $$this->openIndexQuery);
+        $this->Result = new IncrementResult($this, $data, $this->openIndexQuery);
     }
 
 } 

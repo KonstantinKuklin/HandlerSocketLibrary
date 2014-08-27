@@ -5,7 +5,12 @@
 
 namespace HS;
 
+use HS\Query\DecrementQuery;
+use HS\Query\DeleteQuery;
+use HS\Query\IncrementQuery;
 use HS\Query\InsertQuery;
+use HS\Query\OpenIndexQuery;
+use HS\Query\UpdateQuery;
 
 class Writer extends Reader implements WriterHSInterface
 {
@@ -13,6 +18,31 @@ class Writer extends Reader implements WriterHSInterface
     const COMMAND_DELETE = 'D';
     const COMMAND_INCREMENT = '+';
     const COMMAND_DECREMENT = '-';
+
+    public function update(
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        $query = new UpdateQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $values,
+            $offset,
+            $limit,
+            $openIndexQuery
+        );
+
+        $this->addQuery($query);
+
+        return $query;
+    }
 
     /**
      * {@inheritdoc}
@@ -30,6 +60,29 @@ class Writer extends Reader implements WriterHSInterface
         );
 
         return $updateQuery;
+    }
+
+    public function delete(
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        $query = new DeleteQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $offset,
+            $limit,
+            $openIndexQuery
+        );
+        $this->addQuery($query);
+
+        return $query;
     }
 
     /**
@@ -50,6 +103,30 @@ class Writer extends Reader implements WriterHSInterface
         return $deleteQuery;
     }
 
+    public function increment(
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        $query = new IncrementQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $values,
+            $offset,
+            $limit,
+            $openIndexQuery
+        );
+        $this->addQuery($query);
+
+        return $query;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -68,6 +145,31 @@ class Writer extends Reader implements WriterHSInterface
         return $incrementQuery;
     }
 
+
+    public function decrement(
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        $query = new DecrementQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $values,
+            $offset,
+            $limit,
+            $openIndexQuery
+        );
+        $this->addQuery($query);
+
+        return $query;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -84,6 +186,26 @@ class Writer extends Reader implements WriterHSInterface
         );
 
         return $decrementQuery;
+    }
+
+    public function insert(
+        $columns, $dbName, $tableName, $indexName, $values
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $openIndexQuery = null;
+        if ($indexId instanceof OpenIndexQuery) {
+            $openIndexQuery = $indexId;
+            $indexId = $openIndexQuery->getIndexId();
+        }
+
+        $query = new InsertQuery(
+            $indexId,
+            $values,
+            $openIndexQuery
+        );
+        $this->addQuery($query);
+
+        return $query;
     }
 
     /**
@@ -115,7 +237,7 @@ class Writer extends Reader implements WriterHSInterface
     private function modifyByIndexQuery(
         $queryClassName, $indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0
     ) {
-        $className = 'HS\Query\\'.$queryClassName . 'Query';
+        $className = 'HS\Query\\' . $queryClassName . 'Query';
         $modifyQuery = null;
         if ($queryClassName === 'Delete') {
             $modifyQuery = new $className(

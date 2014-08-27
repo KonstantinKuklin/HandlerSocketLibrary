@@ -4,6 +4,8 @@
  */
 namespace HS;
 
+use HS\Builder\QueryBuilderInterface;
+
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
@@ -50,4 +52,12 @@ interface ReaderInterface extends ReaderHSInterface
      * @return void
      */
     public function reOpen();
+
+    /**
+     * @param QueryBuilderInterface|QueryInterface $query
+     *
+     * @return QueryInterface|void
+     * @throws \Exception
+     */
+    public function addQuery($query);
 }

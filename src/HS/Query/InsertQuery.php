@@ -47,4 +47,12 @@ class InsertQuery extends QueryAbstract
     {
         $this->Result = new InsertResult($this, $data, $this->openIndexQuery);
     }
+
+    /**
+     * @return int
+     */
+    public function getIndexId()
+    {
+        return $this->indexId;
+    }
 }

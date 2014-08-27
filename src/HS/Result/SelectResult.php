@@ -13,15 +13,15 @@ use HS\ResultAbstract;
 class SelectResult extends ResultAbstract
 {
     /**
-     * @param QueryAbstract       $Query
+     * @param QueryAbstract       $query
      * @param array               $data
      * @param array               $keys
      * @param int                 $returnType
      * @param null|OpenIndexQuery $openIndexQuery
      */
-    public function __construct($Query, $data, $keys, $returnType, $openIndexQuery = null)
+    public function __construct($query, $data, $keys, $returnType, $openIndexQuery = null)
     {
-        parent::__construct($Query, $data, $openIndexQuery);
+        parent::__construct($query, $data, $openIndexQuery);
         if ($this->isSuccessfully()) {
             // second parameter is number of count columns
             $columnCount = array_shift($data);

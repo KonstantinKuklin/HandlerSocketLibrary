@@ -66,8 +66,11 @@ abstract class ModifyQueryAbstract extends QueryAbstract
     {
         $parametersList = $this->getCommonQueryParameters();
         $parametersList[] = $mod;
+        if (is_array($this->values)) {
+            return array_merge($parametersList, $this->values);
+        }
 
-        return array_merge($parametersList, $this->values);
+        return $parametersList;
     }
 
     /**
@@ -76,5 +79,13 @@ abstract class ModifyQueryAbstract extends QueryAbstract
     public function setValues($values)
     {
         $this->values = $values;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIndexId()
+    {
+        return $this->indexId;
     }
 } 

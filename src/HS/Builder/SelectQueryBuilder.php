@@ -7,10 +7,9 @@ use HS\Query\SelectQuery;
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class SelectQueryBuilder extends AbstractBuilder
+class SelectQueryBuilder extends QueryBuilderAbstract
 {
     private $returnType = SelectQuery::ASSOC;
-    private $comparisonOperation = HSInterface::EQUAL;
 
     /**
      * {@inheritdoc}

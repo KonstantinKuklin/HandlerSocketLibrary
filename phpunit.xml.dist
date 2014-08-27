@@ -18,6 +18,7 @@
             <directory suffix="Test.php">./tests/HS</directory>
             <directory suffix="Test.php">./tests/HS/Reader</directory>
             <directory suffix="Test.php">./tests/HS/Writer</directory>
+            <directory suffix="Test.php">./tests/HS/Builder</directory>
         </testsuite>
     </testsuites>
 
