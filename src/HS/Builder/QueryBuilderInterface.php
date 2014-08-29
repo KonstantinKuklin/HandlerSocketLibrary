@@ -4,6 +4,7 @@
  */
 namespace HS\Builder;
 
+use HS\HSInterface;
 use HS\QueryInterface;
 
 
@@ -35,9 +36,9 @@ interface QueryBuilderInterface
 
     public function offset($offset);
 
-    public function where($where);
+    public function where($comparison, array $list);
 
-    public function andWhere($where);
+    public function andWhere($key, $comparison, $value, $type = HSInterface::FILTER_TYPE_SKIP);
 
     public function getDataBase();
 
@@ -45,5 +46,7 @@ interface QueryBuilderInterface
 
     public function getIndex();
 
-    public function setComparisonOperation($operation);
+    public function isValid();
+
+    public function getFilterColumns();
 }

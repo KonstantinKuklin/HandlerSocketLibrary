@@ -124,4 +124,22 @@ class GetResultTest extends TestCommon
         $expectedValue = array(array("text" => "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);;
     }
+
+    public function testSelectInExistedValue()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
+        );
+        $selectQuery = $reader->selectInByIndex($indexId, array(42, 100));
+
+        $this->getReader()->addQuery($selectQuery);
+        $this->getReader()->getResults();
+
+        $this->assertFalse($selectQuery->getResult()->isSuccessfully(), 'Bug with IN.');
+    }
 } 

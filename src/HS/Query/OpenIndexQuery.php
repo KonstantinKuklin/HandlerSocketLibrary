@@ -15,6 +15,7 @@ class OpenIndexQuery extends QueryAbstract
     private $tableName = null;
     private $indexName = null;
     private $columns = null;
+    private $fColumns = null;
 
     /**
      * Opening index
@@ -40,9 +41,11 @@ class OpenIndexQuery extends QueryAbstract
      * @param array  $columns
      *               Is a array of column names.
      *
+     * @param array  $fColumns
+     *
      * @return OpenIndexQuery
      */
-    public function __construct($indexId, $dbName, $tableName, $indexName, $columns)
+    public function __construct($indexId, $dbName, $tableName, $indexName, array $columns, array $fColumns = array())
     {
         $this->indexId = $this->validateIndexId($indexId);
         $this->dbName = $this->validateDbName($dbName);
@@ -51,6 +54,7 @@ class OpenIndexQuery extends QueryAbstract
         // if no index use PRIMARY
         $this->indexName = $this->validateIndexName(empty($indexName) ? 'PRIMARY' : $indexName);
         $this->columns = $this->validateColumns($columns);
+        $this->fColumns = $fColumns;
     }
 
     /**
@@ -64,7 +68,8 @@ class OpenIndexQuery extends QueryAbstract
             $this->dbName,
             $this->tableName,
             $this->indexName,
-            implode(',', $this->columns)
+            implode(',', $this->columns),
+            implode(',', $this->fColumns)
         );
     }
 

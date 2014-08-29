@@ -19,7 +19,7 @@ class SelectQuery extends QueryAbstract
     private $limit = null;
     private $offset = null;
     private $indexColumns = null;
-    private $in = null;
+    private $in = array();
 
     // assoc array default value of return data
     private $returnType = self::ASSOC;
@@ -31,14 +31,14 @@ class SelectQuery extends QueryAbstract
      * @param int                 $indexId
      * @param string              $comparisonOperation
      * @param array               $keys
-     * @param int                 $limit
-     * @param int                 $offset
+     * @param int|null            $limit
+     * @param int|null            $offset
      * @param array               $indexColumns
      * @param array               $in
      * @param null|OpenIndexQuery $openIndexQuery
      */
     public function __construct(
-        $indexId, $comparisonOperation, $keys, $limit = 0, $offset = 0, $indexColumns, $in = array(),
+        $indexId, $comparisonOperation, $keys, $limit = null, $offset = null, $indexColumns, array $in = array(),
         $openIndexQuery = null
     ) {
         $this->indexId = $indexId;
@@ -47,7 +47,19 @@ class SelectQuery extends QueryAbstract
         $this->limit = $limit;
         $this->offset = $offset;
         $this->indexColumns = $indexColumns;
-        $this->in = $in;
+
+        // if old style of in
+        if (!isset($in['icol']) && count($in) > 0) {
+            $invlen = count($in);
+            $this->in = array(
+                'icol' => 1,
+                'ivlen' => $invlen,
+                'iv' => $in
+            );
+        } else {
+            $this->in = $in;
+        }
+
         $this->openIndexQuery = $openIndexQuery;
     }
 
@@ -75,11 +87,18 @@ class SelectQuery extends QueryAbstract
     public function getQueryParameters()
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...]
-        $invlen = count($this->in);
+
+        $lim = array();
+        if ($this->limit !== null) {
+            $lim[] = $this->limit;
+        }
+        if ($this->offset !== null) {
+            $lim[] = $this->offset;
+        }
+
         $inMerge = array();
-        if ($invlen) {
-            $inMerge = array('@', '0');
-            $inMerge = array_merge($inMerge, $this->in);
+        if (count($this->in) > 0) {
+            $inMerge = array_merge(array('@', $this->in['icol'], $this->in['ivlen']), $this->in['iv']);
         }
 
         return array_merge(
@@ -89,10 +108,7 @@ class SelectQuery extends QueryAbstract
                 count($this->keys)
             ),
             $this->keys,
-            array(
-                $this->limit,
-                $this->offset,
-            ),
+            $lim,
             $inMerge
         );
     }

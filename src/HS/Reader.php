@@ -4,6 +4,7 @@ namespace HS;
 
 use HS\Builder\AbstractBuilder;
 use HS\Builder\QueryBuilderAbstract;
+use HS\Builder\QueryBuilderInterface;
 use HS\Exceptions\WrongParameterException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
@@ -99,9 +100,9 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function openIndex($indexId, $dbName, $tableName, $indexName, $columns)
+    public function openIndex($indexId, $dbName, $tableName, $indexName, array $columns, array $fColumns = array())
     {
-        $indexQuery = new OpenIndexQuery($indexId, $dbName, $tableName, $indexName, $columns);
+        $indexQuery = new OpenIndexQuery($indexId, $dbName, $tableName, $indexName, $columns, $fColumns);
         $this->addQuery($indexQuery);
         $this->setKeysToIndexId($indexId, $columns);
 
@@ -111,8 +112,9 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function getIndexId($dbName, $tableName, $indexName, $columns, $returnOnlyId = true)
-    {
+    public function getIndexId(
+        $dbName, $tableName, $indexName, array $columns, $returnOnlyId = true, array $fColumns = array()
+    ) {
         $columnsToSearch = $columns;
         if (is_array($columns)) {
             $columnsToSearch = implode('', $columnsToSearch);
@@ -138,7 +140,7 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function selectByIndex($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 0)
+    public function selectByIndex($indexId, $comparisonOperation, $keys, $offset = null, $limit = null)
     {
         $selectQuery = new SelectQuery(
             $indexId,
@@ -157,7 +159,7 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function selectInByIndex($indexId, $in, $offset = 0, $limit = 0)
+    public function selectInByIndex($indexId, $in, $offset = null, $limit = null)
     {
         $selectQuery = new SelectQuery(
             $indexId,
@@ -187,7 +189,7 @@ class Reader implements ReaderInterface
      * @return SelectQuery
      */
     public function select(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -220,7 +222,7 @@ class Reader implements ReaderInterface
      * @return SelectQuery
      */
     public function selectIn(
-        $columns, $dbName, $tableName, $indexName, $in, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $in, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -338,33 +340,36 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function addQuery($query)
+    public function addQueryBuilder(QueryBuilderInterface $queryBuilder)
     {
-        if ($query instanceof QueryInterface) {
-            $this->queryListNotSent[] = $query;
-        } elseif ($query instanceof QueryBuilderAbstract) {
-            $openIndexQuery = $this->getIndexId(
-                $query->getDataBase(),
-                $query->getTable(),
-                $query->getIndex(),
-                $query->getColumns(),
-                false
-            );
+        $openIndexQuery = $this->getIndexId(
+            $queryBuilder->getDataBase(),
+            $queryBuilder->getTable(),
+            $queryBuilder->getIndex(),
+            $queryBuilder->getColumns(),
+            false,
+            $queryBuilder->getFilterColumns()
+        );
 
-            // if returned int
-            if (is_int($openIndexQuery)) {
-                /** @var int $openIndexQuery */
-                $queryForAdd = $query->getQuery($openIndexQuery);
-            } else {
-                /** @var OpenIndexQuery $openIndexQuery */
-                $queryForAdd = $query->getQuery($openIndexQuery->getIndexId(), $openIndexQuery);
-            }
-            $this->addQuery($queryForAdd);
-
-            return $queryForAdd;
+        // if returned int
+        if (is_int($openIndexQuery)) {
+            /** @var int $openIndexQuery */
+            $queryForAdd = $queryBuilder->getQuery($openIndexQuery);
         } else {
-            throw new \Exception("Query must be instance of QueryInterface or QueryBuilderInterface");
+            /** @var OpenIndexQuery $openIndexQuery */
+            $queryForAdd = $queryBuilder->getQuery($openIndexQuery->getIndexId(), $openIndexQuery);
         }
+        $this->addQuery($queryForAdd);
+
+        return $queryForAdd;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addQuery(QueryInterface $query)
+    {
+        $this->queryListNotSent[] = $query;
     }
 
     /**

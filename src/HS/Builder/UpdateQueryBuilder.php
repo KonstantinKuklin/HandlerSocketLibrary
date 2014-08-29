@@ -10,12 +10,31 @@ use HS\Query\UpdateQuery;
  */
 class UpdateQueryBuilder extends QueryBuilderAbstract
 {
+    private $extraColumns = array();
+
     /**
      * {@inheritdoc}
      */
     public function getColumns()
     {
-        return array_keys($this->constructArray);
+        $columns= array_keys($this->constructArray);
+
+    }
+
+    public function where($comparison, array $list)
+    {
+        parent::where($comparison, $list);
+
+        // check is ordered list of keys
+        for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
+            $key = $this->constructArray[$i];
+            if (!isset($list[$key])) {
+                throw new \Exception("The key`s must be set with out skip on select( key1, key2). Where(key2,key1)");
+            }
+            $this->whereValues[] = $list[$key];
+        }
+
+        return $this;
     }
 
     /**
@@ -25,8 +44,8 @@ class UpdateQueryBuilder extends QueryBuilderAbstract
     {
         return new UpdateQuery(
             $indexId,
-            $this->comparisonOperation,
-            $this->where,
+            $this->whereComparison,
+            $this->whereValues,
             array_values($this->constructArray),
             $this->limit,
             $this->offset,

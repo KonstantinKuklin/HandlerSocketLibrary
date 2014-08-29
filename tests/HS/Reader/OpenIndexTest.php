@@ -145,7 +145,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', "columns");
-        } catch (WrongParameterException $e) {
+        } catch (\Exception $e) {
             return;
         }
 
@@ -157,7 +157,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', null);
-        } catch (WrongParameterException $e) {
+        } catch (\Exception $e) {
             return;
         }
 
@@ -169,7 +169,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array());
-        } catch (WrongParameterException $e) {
+        } catch (\Exception $e) {
             return;
         }
 

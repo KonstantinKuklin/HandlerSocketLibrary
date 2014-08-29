@@ -47,9 +47,11 @@ interface ReaderHSInterface
      * @param array  $columns
      *               Is a array of column names.
      *
+     * @param array  $fColumns
+     *
      * @return OpenIndexQuery
      */
-    public function openIndex($indexId, $dbName, $tableName, $indexName, $columns);
+    public function openIndex($indexId, $dbName, $tableName, $indexName, array $columns, array $fColumns = array());
 
     /**
      * @param string $dbName
@@ -59,9 +61,13 @@ interface ReaderHSInterface
      *
      * @param bool   $returnOnlyId
      *
+     * @param array  $fColumns
+     *
      * @return int|OpenIndexQuery
      */
-    public function getIndexId($dbName, $tableName, $indexName, $columns, $returnOnlyId = true);
+    public function getIndexId(
+        $dbName, $tableName, $indexName, array $columns, $returnOnlyId = true, array $fColumns = array()
+    );
 
     /**
      * Getting data

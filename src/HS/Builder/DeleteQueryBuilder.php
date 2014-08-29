@@ -9,6 +9,11 @@ use HS\Query\DeleteQuery;
  */
 class DeleteQueryBuilder extends QueryBuilderAbstract
 {
+
+    public function __construct(){
+
+    }
+
     /**
      * {@inheritdoc}
      */

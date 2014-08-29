@@ -54,10 +54,17 @@ interface ReaderInterface extends ReaderHSInterface
     public function reOpen();
 
     /**
-     * @param QueryBuilderInterface|QueryInterface $query
+     * @param QueryBuilderInterface $queryBuilder
      *
-     * @return QueryInterface|void
+     * @return QueryInterface
+     */
+    public function addQueryBuilder(QueryBuilderInterface $queryBuilder);
+
+    /**
+     * @param QueryInterface $query
+     *
+     * @return void
      * @throws \Exception
      */
-    public function addQuery($query);
+    public function addQuery(QueryInterface $query);
 }

@@ -26,14 +26,30 @@ class SelectQueryBuilder extends QueryBuilderAbstract
     {
         return new SelectQuery(
             $indexId,
-            $this->comparisonOperation,
-            $this->where,
+            $this->whereComparison,
+            $this->whereValues,
             $this->limit,
             $this->offset,
             $this->constructArray,
-            array(),
+            $this->in,
             $openIndexQuery
         );
+    }
+
+    public function where($comparison, array $list)
+    {
+        parent::where($comparison, $list);
+
+        // check is ordered list of keys
+        for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
+            $key = $this->constructArray[$i];
+            if (!isset($list[$key])) {
+                throw new \Exception("The key`s must be set with out skip on select( key1, key2). Where(key2,key1)");
+            }
+            $this->whereValues[] = $list[$key];
+        }
+
+        return $this;
     }
 
     public function ReturnAsVector()

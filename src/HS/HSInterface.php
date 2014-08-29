@@ -14,4 +14,7 @@ interface HSInterface
     const MORE_AND = '>=';
     const LESS = '<';
     const LESS_AND = '<=';
-} 
+
+    const FILTER_TYPE_SKIP = 'F';
+    const FILTER_TYPE_STOP = 'W';
+}

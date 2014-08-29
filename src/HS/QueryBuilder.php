@@ -20,7 +20,7 @@ class QueryBuilder
      *
      * @return SelectQueryBuilder
      */
-    public static function select($columns)
+    public static function select(array $columns)
     {
         return new SelectQueryBuilder($columns);
     }
@@ -31,9 +31,9 @@ class QueryBuilder
      *
      * @return SelectQueryBuilder
      */
-    public static function delete($columns)
+    public static function delete()
     {
-        return new DeleteQueryBuilder($columns);
+        return new DeleteQueryBuilder();
     }
 
     /**
@@ -42,7 +42,7 @@ class QueryBuilder
      *
      * @return UpdateQueryBuilder
      */
-    public static function update($columns)
+    public static function update(array $columns)
     {
         return new UpdateQueryBuilder($columns);
     }
@@ -53,30 +53,8 @@ class QueryBuilder
      *
      * @return InsertQueryBuilder
      */
-    public static function insert($columns)
+    public static function insert(array $columns)
     {
         return new InsertQueryBuilder($columns);
-    }
-
-    /**
-     * @param $columns
-     *          ('id' => 1, 'text' => 'example')
-     *
-     * @return IncrementQueryBuilder
-     */
-    public static function increment($columns)
-    {
-        return new IncrementQueryBuilder($columns);
-    }
-
-    /**
-     * @param $columns
-     *          ('id' => 1, 'text' => 'example')
-     *
-     * @return DecrementQueryBuilder
-     */
-    public static function decrement($columns)
-    {
-        return new DecrementQueryBuilder($columns);
     }
 } 

@@ -9,18 +9,19 @@ use HS\QueryInterface;
  */
 abstract class QueryBuilderAbstract implements QueryBuilderInterface
 {
-
     protected $db = null;
     protected $table = null;
     protected $index = 'PRIMARY';
 
-    protected $limit = 0;
-    protected $offset = 0;
+    protected $limit = null;
+    protected $offset = null;
 
     protected $constructArray = array();
-    protected $where = array();
+    protected $whereComparison = HSInterface::EQUAL;
+    protected $whereValues = array();
+    protected $filter = array();
 
-    protected $comparisonOperation = HSInterface::EQUAL;
+    protected $in = array();
 
     /**
      * @param      $indexId
@@ -75,20 +76,44 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
         return $this;
     }
 
-    public function where($where)
+    public function where($comparison, array $list)
     {
-        if (is_array($where) || is_object($where)) {
-            throw new \Exception("Where can't be array or object.");
-        }
-        $this->where = array();
-        $this->where[] = $where;
+        $this->filter = array();
+        $this->whereValues = array();
+        $this->whereComparison = $comparison;
+        $this->in = array();
 
         return $this;
     }
 
-    public function andWhere($where)
+    public function whereIn($key, array $values)
     {
-        $this->where[] = $where;
+        $this->whereValues = array(1); // TODO check
+
+        if (false === $index = array_search($key, $this->constructArray)) {
+            throw new \Exception("Can't find key in columns list.");
+        }
+        $this->in = array(
+            'icol' => $index,
+            'ivlen' => count($values),
+            'iv' => $values
+        );
+
+        return $this;
+    }
+
+    public function andWhere($key, $comparison, $value, $type = HSInterface::FILTER_TYPE_SKIP)
+    {
+        if (false !== array_search($key, $this->constructArray)) {
+            throw new \Exception("AndWhere used only with non selected columns.");
+        }
+
+        $this->filter[] = array(
+            'key' => $key,
+            'comparison' => $comparison,
+            'value' => $value,
+            'type' => $type
+        );
 
         return $this;
     }
@@ -108,10 +133,18 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
         return $this->index;
     }
 
-    public function setComparisonOperation($operation)
+    public function getFilterColumns()
     {
-        $this->comparisonOperation = $operation;
+        $fcolumns = array();
+        foreach ($this->filter as $filter) {
+            $fcolumns[] = $filter['key'];
+        }
 
-        return $this;
+        return $fcolumns;
+    }
+
+    public function isValid()
+    {
+        //TODO
     }
 } 
