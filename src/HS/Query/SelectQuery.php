@@ -118,6 +118,6 @@ class SelectQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new SelectResult($this, $data, $this->indexColumns, $this->returnType, $this->openIndexQuery);
+        $this->result = new SelectResult($this, $data, $this->indexColumns, $this->returnType, $this->openIndexQuery);
     }
 }

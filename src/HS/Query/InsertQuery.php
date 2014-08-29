@@ -45,7 +45,7 @@ class InsertQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new InsertResult($this, $data, $this->openIndexQuery);
+        $this->result = new InsertResult($this, $data, $this->openIndexQuery);
     }
 
     /**

@@ -9,14 +9,14 @@ use HS\Exceptions\WrongParameterException;
 
 abstract class QueryAbstract implements QueryInterface
 {
-    protected $Result = null;
+    protected $result = null;
 
     /**
      * {@inheritdoc}
      */
     public function getResult()
     {
-        return $this->Result;
+        return $this->result;
     }
 
     /**

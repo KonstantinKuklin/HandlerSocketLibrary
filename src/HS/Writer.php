@@ -14,11 +14,6 @@ use HS\Query\UpdateQuery;
 
 class Writer extends Reader implements WriterHSInterface
 {
-    const COMMAND_UPDATE = 'U';
-    const COMMAND_DELETE = 'D';
-    const COMMAND_INCREMENT = '+';
-    const COMMAND_DECREMENT = '-';
-
     public function update(
         $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
     ) {
@@ -33,10 +28,10 @@ class Writer extends Reader implements WriterHSInterface
             $indexId,
             $comparisonOperation,
             $keys,
-            $values,
             $offset,
             $limit,
-            $openIndexQuery
+            $openIndexQuery,
+            $values
         );
 
         $this->addQuery($query);
@@ -117,10 +112,10 @@ class Writer extends Reader implements WriterHSInterface
             $indexId,
             $comparisonOperation,
             $keys,
-            $values,
             $offset,
             $limit,
-            $openIndexQuery
+            $openIndexQuery,
+            $values
         );
         $this->addQuery($query);
 
@@ -160,10 +155,10 @@ class Writer extends Reader implements WriterHSInterface
             $indexId,
             $comparisonOperation,
             $keys,
-            $values,
             $offset,
             $limit,
-            $openIndexQuery
+            $openIndexQuery,
+            $values
         );
         $this->addQuery($query);
 
@@ -252,9 +247,10 @@ class Writer extends Reader implements WriterHSInterface
                 $indexId,
                 $comparisonOperation,
                 $keys,
-                $values,
                 $offset,
-                $limit
+                $limit,
+                null,
+                $values
             );
         }
 

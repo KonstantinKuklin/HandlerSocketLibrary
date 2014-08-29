@@ -33,6 +33,6 @@ class TextQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new TextResult($this, $data);
+        $this->result = new TextResult($this, $data);
     }
 } 

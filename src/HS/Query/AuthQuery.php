@@ -37,7 +37,7 @@ class AuthQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new AuthResult($this, $data);
+        $this->result = new AuthResult($this, $data);
     }
 
 } 

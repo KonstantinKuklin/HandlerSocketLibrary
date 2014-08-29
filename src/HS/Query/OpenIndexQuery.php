@@ -78,7 +78,7 @@ class OpenIndexQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->Result = new OpenIndexResult($this, $data);
+        $this->result = new OpenIndexResult($this, $data);
     }
 
     /**

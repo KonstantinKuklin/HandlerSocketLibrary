@@ -12,6 +12,11 @@ use HS\Query\UpdateQuery;
 
 interface WriterHSInterface extends ReaderInterface
 {
+    const COMMAND_UPDATE = 'U';
+    const COMMAND_DELETE = 'D';
+    const COMMAND_INCREMENT = '+';
+    const COMMAND_DECREMENT = '-';
+
     /**
      * @param int    $indexId
      * @param string $comparisonOperation
