@@ -2,15 +2,14 @@
 
 namespace HS;
 
-use HS\Builder\AbstractBuilder;
-use HS\Builder\QueryBuilderAbstract;
 use HS\Builder\QueryBuilderInterface;
 use HS\Exceptions\WrongParameterException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
 use HS\Query\SelectQuery;
 use PHP_Timer;
-use Stream\Exceptions\ReadStreamException;
+use Stream\Connection;
+use Stream\Exception\ReadStreamException;
 use Stream\ReceiveMethod\StreamGetLineMethod;
 use Stream\Stream;
 
@@ -65,7 +64,7 @@ class Reader implements ReaderInterface
 
         $this->authKey = $authKey;
         $this->driver = new Driver();
-        $this->stream = new Stream($url, Stream::PROTOCOL_TCP, $port, $this->driver);
+        $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port, $this->driver);
         $this->stream->open();
         $this->stream->setBlockingOff();
         $this->stream->setReadTimeOut(0, (float)500000);
@@ -334,7 +333,7 @@ class Reader implements ReaderInterface
      */
     public function getUrlConnection()
     {
-        return $this->getStream()->getUrlConnection();
+        return $this->getStream()->getConnection()->getUrlConnection();
     }
 
     /**
@@ -373,7 +372,7 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @throws \Stream\Exceptions\StreamException
+     * @throws \Stream\Exception\StreamException
      * @return void
      */
     public function sendQueries()
@@ -411,8 +410,8 @@ class Reader implements ReaderInterface
      * @param QueryInterface $query
      *
      * @return boolean
-     * @throws \Stream\Exceptions\NotStringStreamException
-     * @throws \Stream\Exceptions\StreamException
+     * @throws \Stream\Exception\NotStringStreamException
+     * @throws \Stream\Exception\StreamException
      */
     protected function sendQuery(QueryInterface $query)
     {

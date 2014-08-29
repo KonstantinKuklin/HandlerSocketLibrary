@@ -19,7 +19,7 @@ class AuthenticateTest extends TestCommon
         try {
             $reader->authenticate(90);
         } catch (WrongParameterException $e) {
-            return;
+            return true;
         }
 
         $this->fail("Not fail authentication request with wrong auth key, sent int.");
@@ -32,7 +32,7 @@ class AuthenticateTest extends TestCommon
         try {
             $reader->authenticate(Stream::STR_EMPTY);
         } catch (WrongParameterException $e) {
-            return;
+            return true;
         }
 
         $this->fail("Not fail authentication request with wrong auth key, sent empty string.");
@@ -48,6 +48,6 @@ class AuthenticateTest extends TestCommon
             $this->fail(sprintf("Fail authentication request with valid parameter, sent string:%s.", $authKey));
         }
 
-        return;
+        return true;
     }
 }

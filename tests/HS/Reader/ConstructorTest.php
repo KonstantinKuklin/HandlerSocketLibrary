@@ -5,10 +5,9 @@
 
 namespace HS\Tests\HSReader;
 
-
 use HS\Reader;
 use HS\Tests\TestCommon;
-use Stream\Exceptions\PortValidateStreamException;
+use Stream\Exception\PortValidateStreamException;
 
 class ConstructorTest extends TestCommon
 {
