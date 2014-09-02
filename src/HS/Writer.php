@@ -15,7 +15,7 @@ use HS\Query\UpdateQuery;
 class Writer extends Reader implements WriterHSInterface
 {
     public function update(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -42,7 +42,7 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function updateByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function updateByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
     {
         $updateQuery = $this->modifyByIndexQuery(
             'Update',
@@ -58,7 +58,7 @@ class Writer extends Reader implements WriterHSInterface
     }
 
     public function delete(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -83,7 +83,7 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteByIndex($indexId, $comparisonOperation, $keys, $limit = 1, $offset = 0)
+    public function deleteByIndex($indexId, $comparisonOperation, $keys, $limit = null, $offset = null)
     {
         $deleteQuery = $this->modifyByIndexQuery(
             'Delete',
@@ -99,7 +99,7 @@ class Writer extends Reader implements WriterHSInterface
     }
 
     public function increment(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -125,7 +125,7 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function incrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function incrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
     {
         $incrementQuery = $this->modifyByIndexQuery(
             'Increment',
@@ -142,7 +142,7 @@ class Writer extends Reader implements WriterHSInterface
 
 
     public function decrement(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = 0, $limit = 0
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -168,7 +168,7 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function decrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0)
+    public function decrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
     {
         $decrementQuery = $this->modifyByIndexQuery(
             'Decrement',
@@ -224,13 +224,13 @@ class Writer extends Reader implements WriterHSInterface
      * @param string     $comparisonOperation
      * @param array      $keys
      * @param array|null $values
-     * @param int        $limit
      * @param int        $offset
+     * @param int        $limit
      *
      * @return null|QueryInterface
      */
     private function modifyByIndexQuery(
-        $queryClassName, $indexId, $comparisonOperation, $keys, $values, $limit = 1, $offset = 0
+        $queryClassName, $indexId, $comparisonOperation, $keys, $values, $offset = null, $limit = null
     ) {
         $className = 'HS\Query\\' . $queryClassName . 'Query';
         $modifyQuery = null;

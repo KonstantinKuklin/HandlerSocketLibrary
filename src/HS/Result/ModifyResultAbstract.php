@@ -5,7 +5,6 @@
 
 namespace HS\Result;
 
-
 use HS\ResultAbstract;
 use HS\ResultInterface;
 

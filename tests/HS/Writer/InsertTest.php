@@ -16,11 +16,11 @@ class InsertTest extends TestCommon
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            array('key', 'date', 'float', 'varchar', 'text', 'set', 'union', 'null')
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'union')
         );
         $insertQuery = $writer->insertByIndex(
             $indexId,
-            array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1', null)
+            array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1')
         );
 
         $selectQuery = $writer->selectByIndex($indexId, '=', array(467));
@@ -41,23 +41,36 @@ class InsertTest extends TestCommon
         $writer = $this->getWriter();
 
         $insertQuery = $writer->insert(
-            array('key', 'date', 'float', 'varchar', 'text', 'set', 'union', 'null'),
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'union'),
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1', null)
+            array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1')
         );
 
         $selectQuery = $writer->selectByIndex($insertQuery->getIndexId(), '=', array(468));
         $writer->getResults();
 
-        /** @var InsertResult $InsertResult */
-        $InsertResult = $insertQuery->getResult();
-        $this->assertTrue($InsertResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        /** @var InsertResult $insertResult */
+        $insertResult = $insertQuery->getResult();
+        $this->assertTrue($insertResult->isSuccessfully(), "Fall updateQuery return bad status.");
         $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
 
         $data = $selectQuery->getResult()->getData();
 
-        $this->assertEquals('text468', $data[0]['text']);
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '468',
+                    'date' => '0000-00-01',
+                    'float' => '1.02',
+                    'varchar' => 'char',
+                    'text' => 'text468',
+                    'union' => 'a',
+                    'set' => 'a'
+                )
+            ),
+            $data
+        );
     }
 }

@@ -10,8 +10,14 @@ use HS\Query\DeleteQuery;
 class DeleteQueryBuilder extends QueryBuilderAbstract
 {
 
-    public function __construct(){
+    public function __construct()
+    {
+    }
 
+    public function where($comparison, array $list)
+    {
+        $this->constructArray = $list;
+        $this->whereComparison = $comparison;
     }
 
     /**
@@ -19,7 +25,7 @@ class DeleteQueryBuilder extends QueryBuilderAbstract
      */
     public function getColumns()
     {
-        return $this->constructArray;
+        return array_keys($this->constructArray);
     }
 
     /**
@@ -29,8 +35,8 @@ class DeleteQueryBuilder extends QueryBuilderAbstract
     {
         return new DeleteQuery(
             $indexId,
-            $this->comparisonOperation,
-            $this->where,
+            $this->whereComparison,
+            array_values($this->constructArray),
             $this->limit,
             $this->offset,
             $openIndexQuery

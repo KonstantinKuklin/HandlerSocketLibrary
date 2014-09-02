@@ -23,13 +23,14 @@ abstract class ModifyQueryAbstract extends QueryAbstract
      * @param int                 $indexId
      * @param string              $comparisonOperation
      * @param array               $keys
-     * @param int                 $offset
-     * @param int                 $limit
+     * @param int|null            $offset
+     * @param int|null            $limit
      * @param null|OpenIndexQuery $openIndexQuery
      * @param array               $values
      */
     public function __construct(
-        $indexId, $comparisonOperation, $keys, $offset = 0, $limit = 1, $openIndexQuery = null, array $values = array()
+        $indexId, $comparisonOperation, $keys, $offset = null, $limit = null, $openIndexQuery = null,
+        array $values = array()
     ) {
         $this->indexId = $indexId;
         $this->comparisonOperation = $comparisonOperation;
@@ -58,6 +59,13 @@ abstract class ModifyQueryAbstract extends QueryAbstract
             $mod = WriterHSInterface::COMMAND_INCREMENT;
         }
 
+        if ($this->limit === null) {
+            $this->limit = 1;
+        }
+        if ($this->offset === null) {
+            $this->offset = 0;
+        }
+
         return array_merge(
             array(
                 $this->indexId,
@@ -66,8 +74,8 @@ abstract class ModifyQueryAbstract extends QueryAbstract
             ),
             $this->keys,
             array(
-                $this->offset,
                 $this->limit,
+                $this->offset,
                 $mod
             ),
             $this->values

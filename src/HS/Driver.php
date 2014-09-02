@@ -15,7 +15,7 @@ class Driver implements StreamDriverInterface
 
     private static $encodeMap = array(
         // NULL is expressed as a single NUL(0x00).
-        null => self::NULL,
+        null => "\x00",
         // A character in the range [0x00 - 0x0f] is prefixed by 0x01 and shifted by 0x40
         "\x00" => "\x01\x40",
         "\x01" => "\x01\x41",
@@ -62,9 +62,9 @@ class Driver implements StreamDriverInterface
      */
     public static function prepareSendDataStatic($data)
     {
-        $decodedData = array_map('self::decodeData', $data);
+        $encodedData = array_map('self::encodeData', $data);
 
-        return implode(self::DELIMITER, $decodedData) . self::EOL;
+        return implode(self::DELIMITER, $encodedData) . self::EOL;
     }
 
     /**
@@ -112,6 +112,10 @@ class Driver implements StreamDriverInterface
      */
     public static function encodeData($data)
     {
-        return strtr($data, self::$encodeMap);
+        if (false === $newStr = strtr($data, self::$encodeMap)) {
+            return $data;
+        } else {
+            return $newStr;
+        }
     }
 }

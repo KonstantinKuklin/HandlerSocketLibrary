@@ -5,6 +5,7 @@
 namespace HS;
 
 use HS\Builder\QueryBuilderInterface;
+use HS\Query\ModifyQueryAbstract;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -18,7 +19,7 @@ interface ReaderInterface extends ReaderHSInterface
 
     /**
      * @return ResultInterface[]
-     * @throws \Stream\Exceptions\StreamException
+     * @throws \Stream\Exception\StreamException
      */
     public function getResults();
 
@@ -43,12 +44,12 @@ interface ReaderInterface extends ReaderHSInterface
     public function getUrlConnection();
 
     /**
-     * @throws \Stream\Exceptions\StreamException
+     * @throws \Stream\Exception\StreamException
      */
     public function sendQueries();
 
     /**
-     * @throws \Stream\Exceptions\StreamException
+     * @throws \Stream\Exception\StreamException
      * @return void
      */
     public function reOpen();
@@ -56,7 +57,7 @@ interface ReaderInterface extends ReaderHSInterface
     /**
      * @param QueryBuilderInterface $queryBuilder
      *
-     * @return QueryInterface
+     * @return QueryInterface|ModifyQueryAbstract
      */
     public function addQueryBuilder(QueryBuilderInterface $queryBuilder);
 

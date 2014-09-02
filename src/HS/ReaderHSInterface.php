@@ -94,5 +94,5 @@ interface ReaderHSInterface
      *
      * @return SelectQuery
      */
-    public function selectByIndex($indexId, $comparisonOperation, $keys, $offset = 0, $limit = 0);
+    public function selectByIndex($indexId, $comparisonOperation, array $keys, $offset = 0, $limit = 0);
 }

@@ -139,7 +139,7 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function selectByIndex($indexId, $comparisonOperation, $keys, $offset = null, $limit = null)
+    public function selectByIndex($indexId, $comparisonOperation, array $keys, $offset = null, $limit = null)
     {
         $selectQuery = new SelectQuery(
             $indexId,
@@ -460,7 +460,7 @@ class Reader implements ReaderInterface
     private function getCurrentIterator($increment = true)
     {
         if ($increment) {
-            return $this->currentIndexIterator++;
+            $this->currentIndexIterator++;
         }
 
         return $this->currentIndexIterator;

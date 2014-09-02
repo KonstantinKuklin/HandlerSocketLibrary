@@ -30,7 +30,7 @@ interface QueryBuilderInterface
 
     public function fromTable($table);
 
-    public function fromIndex($db);
+    public function fromIndex($index);
 
     public function limit($limit);
 

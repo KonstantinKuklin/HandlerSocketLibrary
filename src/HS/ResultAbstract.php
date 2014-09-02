@@ -6,6 +6,7 @@
 namespace HS;
 
 use HS\Errors\AuthenticationError;
+use HS\Errors\AutoIncrementSetError;
 use HS\Errors\CommandNotFoundError;
 use HS\Errors\OpenTableError;
 use HS\Query\OpenIndexQuery;
@@ -56,6 +57,9 @@ abstract class ResultAbstract implements ResultInterface
                     break;
                 case 'open_table':
                     $this->error = new OpenTableError($error);
+                    break;
+                case '121':
+                    $this->error = new AutoIncrementSetError($error);
                     break;
                 default:
                     $this->error = new Error($error);

@@ -14,14 +14,6 @@ class SelectQueryBuilder extends QueryBuilderAbstract
     /**
      * {@inheritdoc}
      */
-    public function getColumns()
-    {
-        return $this->constructArray;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getQuery($indexId, $openIndexQuery = null)
     {
         return new SelectQuery(
@@ -39,16 +31,6 @@ class SelectQueryBuilder extends QueryBuilderAbstract
     public function where($comparison, array $list)
     {
         parent::where($comparison, $list);
-
-        // check is ordered list of keys
-        for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
-            $key = $this->constructArray[$i];
-            if (!isset($list[$key])) {
-                throw new \Exception("The key`s must be set with out skip on select( key1, key2). Where(key2,key1)");
-            }
-            $this->whereValues[] = $list[$key];
-        }
-
         return $this;
     }
 

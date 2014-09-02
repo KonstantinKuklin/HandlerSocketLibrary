@@ -1,10 +1,7 @@
 <?php
 namespace HS\Builder;
 
-use HS\HSInterface;
-use HS\Query\DeleteQuery;
 use HS\Query\InsertQuery;
-use HS\Query\UpdateQuery;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -17,6 +14,10 @@ class InsertQueryBuilder extends QueryBuilderAbstract
     public function getColumns()
     {
         return array_keys($this->constructArray);
+    }
+
+    public function where($comparison, array $list){
+
     }
 
     /**

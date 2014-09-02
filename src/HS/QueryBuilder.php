@@ -26,10 +26,7 @@ class QueryBuilder
     }
 
     /**
-     * @param $columns
-     *        "1,45,78"
-     *
-     * @return SelectQueryBuilder
+     * @return DeleteQueryBuilder
      */
     public static function delete()
     {

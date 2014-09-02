@@ -32,9 +32,12 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
     abstract public function getQuery($indexId, $openIndexQuery = null);
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    abstract public function getColumns();
+    public function getColumns()
+    {
+        return $this->constructArray;
+    }
 
     public function __construct($columns)
     {
@@ -55,9 +58,9 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
         return $this;
     }
 
-    public function fromIndex($db)
+    public function fromIndex($index)
     {
-        $this->db = $db;
+        $this->index = $index;
 
         return $this;
     }
@@ -82,6 +85,15 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
         $this->whereValues = array();
         $this->whereComparison = $comparison;
         $this->in = array();
+
+        // check is ordered list of keys
+        for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
+            $key = $this->constructArray[$i];
+            if (!isset($list[$key])) {
+                throw new \Exception("The key`s must be set with out skip on select( key1, key2). Where(key2,key1)");
+            }
+            $this->whereValues[] = $list[$key];
+        }
 
         return $this;
     }
