@@ -43,11 +43,10 @@ abstract class ModifyQueryAbstract extends QueryAbstract
     }
 
     /**
-     * {@inheritdoc}
+     * @return null|string
      */
-    public function getQueryParameters()
+    public function getModificator()
     {
-        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
         $mod = null;
         if ($this->calledClass == 'HS\Query\DeleteQuery') {
             $mod = WriterHSInterface::COMMAND_DELETE;
@@ -59,12 +58,31 @@ abstract class ModifyQueryAbstract extends QueryAbstract
             $mod = WriterHSInterface::COMMAND_INCREMENT;
         }
 
-        if ($this->limit === null) {
-            $this->limit = 1;
-        }
-        if ($this->offset === null) {
-            $this->offset = 0;
-        }
+        return $mod;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit()
+    {
+        return ($this->limit === null) ? 1 : $this->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset()
+    {
+        return ($this->offset === null) ? 0 : $this->offset;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getQueryParameters()
+    {
+        // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...] MOD
 
         return array_merge(
             array(
@@ -74,9 +92,9 @@ abstract class ModifyQueryAbstract extends QueryAbstract
             ),
             $this->keys,
             array(
-                $this->limit,
-                $this->offset,
-                $mod
+                $this->getLimit(),
+                $this->getOffset(),
+                $this->getModificator()
             ),
             $this->values
         );
