@@ -3,11 +3,13 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+namespace HS\Tests\Writer;
+
 use HS\Component\Comparison;
 use HS\Result\DeleteResult;
 use HS\Tests\TestCommon;
 
-class DeleteTest extends TestCommon
+class DeleteQueryTest extends TestCommon
 {
     public function testSingleDeleteByIndexId()
     {

@@ -3,10 +3,12 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+namespace HS\Tests\Writer;
+
 use HS\Result\IncrementResult;
 use HS\Tests\TestCommon;
 
-class IncrementTest extends TestCommon
+class IncrementQueryTest extends TestCommon
 {
     public function testSingleIncrementByIndexId()
     {

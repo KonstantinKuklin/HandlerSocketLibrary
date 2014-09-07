@@ -11,6 +11,7 @@ use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
 use HS\Query\QueryInterface;
 use HS\Query\SelectQuery;
+use HS\Query\TextQuery;
 use PHP_Timer;
 use Stream\Connection;
 use Stream\Exception\ReadStreamException;
@@ -98,6 +99,20 @@ class Reader implements ReaderInterface
         $this->addQuery($authQuery);
 
         return $authQuery;
+    }
+
+    /**
+     * @param string $queryText
+     * @param string $queryClass
+     *
+     * @return TextQuery
+     */
+    public function text($queryText, $queryClass)
+    {
+        $textQuery = new TextQuery(array('text' => $queryText), $queryClass);
+        $this->addQuery($textQuery);
+
+        return $textQuery;
     }
 
     /**

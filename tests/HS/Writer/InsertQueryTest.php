@@ -3,11 +3,13 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+namespace HS\Tests\Writer;
+
 use HS\Component\Comparison;
 use HS\Result\InsertResult;
 use HS\Tests\TestCommon;
 
-class InsertTest extends TestCommon
+class InsertQueryTest extends TestCommon
 {
     public function testInsertByIndexId()
     {

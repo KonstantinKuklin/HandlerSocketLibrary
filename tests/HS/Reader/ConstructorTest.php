@@ -3,7 +3,7 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS\Tests\HSReader;
+namespace HS\Tests\Reader;
 
 use HS\Reader;
 use HS\Tests\TestCommon;

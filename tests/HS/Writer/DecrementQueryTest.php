@@ -3,10 +3,12 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+namespace HS\Tests\Writer;
+
 use HS\Result\DecrementResult;
 use HS\Tests\TestCommon;
 
-class DecrementTest extends TestCommon
+class DecrementQueryTest extends TestCommon
 {
     public function testSingleDecrementByIndexId()
     {

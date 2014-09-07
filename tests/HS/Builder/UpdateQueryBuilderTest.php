@@ -2,6 +2,7 @@
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
+
 namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;

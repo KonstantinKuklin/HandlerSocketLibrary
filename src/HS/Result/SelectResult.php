@@ -26,12 +26,8 @@ class SelectResult extends ResultAbstract
             $columnCount = array_shift($data);
             $dataChunked = array_chunk($data, $columnCount);
 
-//            print_r($keys);
-//            print_r($dataChunked);
-//            echo "------------" . PHP_EOL;
-
             // modify row to assoc array
-            if ($returnType === SelectQuery::ASSOC) {
+            if ($returnType === SelectQuery::ASSOC && !empty($keys)) {
                 foreach ($dataChunked as &$row) {
                     $row = array_combine($keys, $row);
                 }

@@ -3,11 +3,13 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+namespace HS\Tests\Writer;
+
 use HS\Component\Comparison;
 use HS\Result\UpdateResult;
 use HS\Tests\TestCommon;
 
-class UpdateTest extends TestCommon
+class UpdateQueryTest extends TestCommon
 {
     public function testSingleUpdateByIndexId()
     {

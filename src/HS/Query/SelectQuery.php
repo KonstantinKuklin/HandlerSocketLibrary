@@ -123,10 +123,7 @@ class SelectQuery extends QueryAbstract
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...]
 
-//        var_dump($this->getKeyList());
-//        var_dump($this->getIn());
-//        var_dump($this->getFilterList());
-        $a= array_merge(
+        return array_merge(
             array(
                 $this->getIndexId(),
                 $this->getComparison(),
@@ -140,8 +137,5 @@ class SelectQuery extends QueryAbstract
             $this->getIn(),
             $this->getFilterList()
         );
-
-//        print_r($a);
-        return $a;
     }
 }
