@@ -7,4 +7,8 @@ namespace HS\Query;
 
 class DeleteQuery extends ModifyQueryAbstract
 {
+    public function getModificator()
+    {
+        return 'D';
+    }
 }

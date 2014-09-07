@@ -5,9 +5,6 @@
 
 namespace HS\Result;
 
-use HS\ResultAbstract;
-use HS\ResultInterface;
-
 class ModifyResultAbstract extends ResultAbstract implements ResultInterface
 {
 

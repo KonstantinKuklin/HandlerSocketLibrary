@@ -4,7 +4,7 @@
  */
 namespace HS\Tests\Builder;
 
-use HS\HSInterface;
+use HS\Component\Comparison;
 use HS\QueryBuilder;
 use HS\Tests\TestCommon;
 
@@ -22,16 +22,16 @@ class InsertQueryBuilderTest extends TestCommon
             'union' => 'a',
             // TODO fix bug with 'null' => null
         );
-        $insertQueryBuilder = QueryBuilder::insert($forInsert);
-        $insertQueryBuilder->fromDataBase($this->getDatabase())->fromTable(
+        $insertQueryBuilder = QueryBuilder::insert();
+        $insertQueryBuilder->toDatabase($this->getDatabase())->toTable(
             $this->getTableName()
-        );
+        )->addRow($forInsert);
 
         $insertQuery = $this->getWriter()->addQueryBuilder($insertQueryBuilder);
 
-        $selectQuery = $this->getWriter()->selectByIndex($insertQuery->getIndexId(), HSInterface::EQUAL, array('123'));
+        $selectQuery = $this->getWriter()->selectByIndex($insertQuery->getIndexId(), Comparison::EQUAL, array('123'));
 
-        $this->getWriter()->getResults();
+        $this->getWriter()->getResultList();
 
         $insertResult = $insertQuery->getResult();
         $this->assertTrue($insertResult->isSuccessfully(), 'Fall insertQuery is not successfully done.');

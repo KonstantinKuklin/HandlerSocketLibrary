@@ -5,21 +5,8 @@
 
 namespace HS\Query;
 
-use HS\QueryAbstract;
-use HS\Result\AuthResult;
-
 class AuthQuery extends QueryAbstract
 {
-    private $authKey = null;
-
-    /**
-     * @param string $authKey
-     */
-    public function __construct($authKey)
-    {
-        $this->authKey = $authKey;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -28,16 +15,7 @@ class AuthQuery extends QueryAbstract
         return array(
             'A',
             '1', // <atyp>
-            $this->authKey // <akey>
+            $this->getParameter('authKey') // <akey>
         );
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setResultData($data)
-    {
-        $this->result = new AuthResult($this, $data);
-    }
-
-} 
+}

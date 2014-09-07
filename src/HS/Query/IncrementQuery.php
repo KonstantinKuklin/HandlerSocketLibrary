@@ -5,6 +5,10 @@
 
 namespace HS\Query;
 
-class IncrementQuery extends ModifyQueryAbstract
+class IncrementQuery extends ModifyStepQueryAbstract
 {
-} 
+    public function getModificator()
+    {
+        return '+';
+    }
+}

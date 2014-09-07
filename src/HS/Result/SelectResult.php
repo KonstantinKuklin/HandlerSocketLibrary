@@ -6,9 +6,8 @@
 namespace HS\Result;
 
 use HS\Query\OpenIndexQuery;
-use HS\QueryAbstract;
+use HS\Query\QueryAbstract;
 use HS\Query\SelectQuery;
-use HS\ResultAbstract;
 
 class SelectResult extends ResultAbstract
 {
@@ -26,6 +25,10 @@ class SelectResult extends ResultAbstract
             // second parameter is number of count columns
             $columnCount = array_shift($data);
             $dataChunked = array_chunk($data, $columnCount);
+
+//            print_r($keys);
+//            print_r($dataChunked);
+//            echo "------------" . PHP_EOL;
 
             // modify row to assoc array
             if ($returnType === SelectQuery::ASSOC) {

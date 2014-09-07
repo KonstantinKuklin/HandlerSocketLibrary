@@ -3,8 +3,8 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS\Exceptions;
+namespace HS\Exception;
 
-class HSException extends \Exception
+class WrongParameterException extends Exception
 {
 } 

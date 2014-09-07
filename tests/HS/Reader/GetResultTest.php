@@ -5,10 +5,10 @@
 
 namespace HS\Tests\HSReader;
 
-use HS\HSInterface;
+use HS\Component\Comparison;
+use HS\Component\Filter;
 use HS\Query\SelectQuery;
 use HS\Reader;
-use HS\ResultAbstract;
 use HS\Tests\TestCommon;
 
 class GetResultTest extends TestCommon
@@ -23,7 +23,7 @@ class GetResultTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
+        $selectRequest = $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
 
         $expectedResult = array(
             array(
@@ -39,7 +39,7 @@ class GetResultTest extends TestCommon
         );
 
         $this->checkAssertionLastResponseData($reader, 'first test method with debug ', $expectedResult);
-        /** @var ResultAbstract $response */
+        /** @var \HS\Result\ResultAbstract $response */
         $response = $selectRequest->getResult();
         $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
         $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
@@ -56,7 +56,7 @@ class GetResultTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
+        $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
 
         $expectedResult = array(
             array(
@@ -85,7 +85,7 @@ class GetResultTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $selectRequest = $reader->selectByIndex($indexId, HSInterface::EQUAL, array(42));
+        $selectRequest = $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
         $selectRequest->setReturnType(SelectQuery::VECTOR);
 
         $expectedResult = array(
@@ -109,7 +109,7 @@ class GetResultTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('float'));
-        $hsReader->selectByIndex($id, HSInterface::EQUAL, array(100));
+        $hsReader->selectByIndex($id, Comparison::EQUAL, array(100));
 
         $expectedValue = array(array('float' => 0));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);
@@ -119,7 +119,7 @@ class GetResultTest extends TestCommon
     {
         $hsReader = $this->getReader();
         $id = $hsReader->getIndexId($this->getDatabase(), $this->getTableName(), 'PRIMARY', array('text'));
-        $hsReader->selectByIndex($id, HSInterface::EQUAL, array(10001));
+        $hsReader->selectByIndex($id, Comparison::EQUAL, array(10001));
 
         $expectedValue = array(array("text" => "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"));
         $this->checkAssertionLastResponseData($hsReader, "test", $expectedValue);;
@@ -138,8 +138,147 @@ class GetResultTest extends TestCommon
         $selectQuery = $reader->selectInByIndex($indexId, array(42, 100));
 
         $this->getReader()->addQuery($selectQuery);
-        $this->getReader()->getResults();
+        $this->getReader()->getResultList();
 
-        $this->assertFalse($selectQuery->getResult()->isSuccessfully(), 'Bug with IN.');
+        $selectResult = $selectQuery->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '42',
+                    'date' => '2010-10-29',
+                    'float' => '3.14159',
+                    'varchar' => 'variable length',
+                    'text' => "some\r\nbig\r\ntext",
+                    'set' => 'a,c',
+                    'union' => 'b',
+                    'null' => null
+                ),
+                array(
+                    'key' => '100',
+                    'date' => '0000-00-00',
+                    'float' => '0',
+                    'varchar' => '',
+                    'text' => '',
+                    'set' => '',
+                    'union' => '',
+                    'null' => null
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectIn query returned invalid data."
+        );
+    }
+
+    public function testSelectExistedValueWithFilter()
+    {
+        $reader = $this->getReader();
+
+        $selectQuery = $reader->select(
+            array('key', 'text'),
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            Comparison::MORE,
+            array('1'),
+            0,
+            99,
+            array('num'),
+            array(new Filter(Comparison::EQUAL, 0, '3'))
+        );
+
+        $this->getReader()->addQuery($selectQuery);
+        $this->getReader()->getResultList();
+
+        $selectResult = $selectQuery->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail select query with filter returned error code.');
+        $this->assertEquals(
+            array(
+                array("key" => '101', "text" => 'text101'),
+                array("key" => '102', "text" => 'text102'),
+                array("key" => '103', "text" => 'text103'),
+            ),
+            $selectResult->getData(),
+            "Fall select query with filter returned invalid data."
+        );
+    }
+
+    public function testSelectInExistedValueWithFilter()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'text'),
+            true,
+            array('num')
+        );
+        $selectQuery = $reader->selectInByIndex(
+            $indexId,
+            array(42, 100),
+            0,
+            99,
+            array(new Filter(Comparison::EQUAL, 0, 1))
+        );
+
+        $this->getReader()->addQuery($selectQuery);
+        $this->getReader()->getResultList();
+
+        $selectResult = $selectQuery->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query with filter returned error code.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '100',
+                    'text' => ''
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectIn query with filter returned invalid data."
+        );
+    }
+
+    public function testSelectByIndexExistedValueWithFilter()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'text'),
+            true,
+            array('num')
+        );
+        $selectQuery = $reader->selectByIndex(
+            $indexId,
+            Comparison::MORE,
+            array(1),
+            0,
+            99,
+            array(new Filter(Comparison::EQUAL, 0, 1))
+        );
+
+        $this->getReader()->addQuery($selectQuery);
+        $this->getReader()->getResultList();
+
+        $selectResult = $selectQuery->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query with filter returned error code.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '100',
+                    'text' => ''
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectByIndex query with filter returned invalid data."
+        );
     }
 } 

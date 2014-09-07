@@ -3,13 +3,16 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS;
+namespace HS\Result;
 
+use HS\Error;
 use HS\Errors\AuthenticationError;
 use HS\Errors\AutoIncrementSetError;
 use HS\Errors\CommandNotFoundError;
 use HS\Errors\OpenTableError;
 use HS\Query\OpenIndexQuery;
+use HS\Query\QueryAbstract;
+use HS\Query\QueryInterface;
 
 abstract class ResultAbstract implements ResultInterface
 {

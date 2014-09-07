@@ -5,7 +5,7 @@
 
 namespace HS\Tests\HSReader;
 
-use HS\Exceptions\WrongParameterException;
+use HS\Exception\WrongParameterException;
 use HS\Tests\TestCommon;
 use Stream\Stream;
 

@@ -5,14 +5,12 @@
 
 namespace HS\Tests;
 
-
-use HS\QueryInterface;
 use HS\Reader;
-use HS\ResultInterface;
+use HS\Result\ResultInterface;
 use HS\Writer;
-use HS\ResponseInterface;
+use PHPUnit_Framework_TestCase;
 
-class TestCommon extends \PHPUnit_Framework_TestCase
+class TestCommon extends PHPUnit_Framework_TestCase
 {
 
     const HOST = '127.0.0.1';
@@ -118,7 +116,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     protected function checkAssertionLastResponseData(
         $socket, $assertMessage, $expectedData
     ) {
-        $resultList = $socket->getResults();
+        $resultList = $socket->getResultList();
         if (empty($resultList)) {
             $this->fail("Fail because response list is empty.");
         }
@@ -140,7 +138,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      */
     protected function checkCountRequestSent($socket, $assertMessage, $expectedCount)
     {
-        $resultList = $socket->getResults();
+        $resultList = $socket->getResultList();
         $this->assertEquals($expectedCount, count($resultList), $assertMessage);
     }
 
@@ -151,7 +149,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
      */
     protected function checkError($socket, $assertMessage, $expectedError)
     {
-        $resultList = $socket->getResults();
+        $resultList = $socket->getResultList();
         if (empty($resultList)) {
             $this->fail("Fail because response list is empty.");
         }

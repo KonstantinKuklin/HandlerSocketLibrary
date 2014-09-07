@@ -4,7 +4,7 @@
  */
 namespace HS\Tests\Builder;
 
-use HS\HSInterface;
+use HS\Component\Comparison;
 use HS\QueryBuilder;
 use HS\Tests\TestCommon;
 
@@ -17,15 +17,15 @@ class UpdateQueryBuilderTest extends TestCommon
                 'key' => 2,
                 'varchar' => 'test update query'
             )
-        );
-        $updateQueryBuilder->fromDataBase($this->getDatabase())->fromTable(
-            $this->getTableName()
-        )->where(HSInterface::EQUAL, array('key' => 2));
+        )
+            ->fromDataBase($this->getDatabase())
+            ->fromTable($this->getTableName())
+            ->where(Comparison::EQUAL, array('key' => 2));
 
         $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($updateQuery->getIndexId(), HSInterface::EQUAL, array('2'));
+        $selectQuery = $this->getWriter()->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array('2'));
 
-        $this->getWriter()->getResults();
+        $this->getWriter()->getResultList();
 
         $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');

@@ -44,29 +44,29 @@ interface ReaderHSInterface
      * @param string $tableName
      * @param string $indexName
      *               To open the primary key, use PRIMARY as $indexName.
-     * @param array  $columns
+     * @param array  $columnList
      *               Is a array of column names.
      *
-     * @param array  $fColumns
+     * @param array  $filterColumnList
      *
      * @return OpenIndexQuery
      */
-    public function openIndex($indexId, $dbName, $tableName, $indexName, array $columns, array $fColumns = array());
+    public function openIndex($indexId, $dbName, $tableName, $indexName, array $columnList, array $filterColumnList = array());
 
     /**
      * @param string $dbName
      * @param string $tableName
      * @param string $indexName
-     * @param array  $columns
+     * @param array  $columnList
      *
      * @param bool   $returnOnlyId
      *
-     * @param array  $fColumns
+     * @param array  $filterColumnList
      *
      * @return int|OpenIndexQuery
      */
     public function getIndexId(
-        $dbName, $tableName, $indexName, array $columns, $returnOnlyId = true, array $fColumns = array()
+        $dbName, $tableName, $indexName, array $columnList, $returnOnlyId = true, array $filterColumnList = array()
     );
 
     /**

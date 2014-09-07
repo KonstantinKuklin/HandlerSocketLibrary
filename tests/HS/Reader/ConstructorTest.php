@@ -50,7 +50,7 @@ class ConstructorTest extends TestCommon
 
         $reader = new Reader($this->getHost(), $portGood, $pass);
         $this->assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
-        $reader->getResults();
+        $reader->getResultList();
     }
 
     public function testAuthRequestNotAdded()
@@ -59,6 +59,6 @@ class ConstructorTest extends TestCommon
 
         $reader = new Reader($this->getHost(), $portGood);
         $this->assertEquals(0, $reader->getCountQueriesInQueue(), "Auth request added on init hs reader.");
-        $reader->getResults();
+        $reader->getResultList();
     }
 } 

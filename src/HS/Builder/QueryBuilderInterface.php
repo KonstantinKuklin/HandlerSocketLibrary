@@ -4,9 +4,7 @@
  */
 namespace HS\Builder;
 
-use HS\HSInterface;
-use HS\QueryInterface;
-
+use HS\Query\QueryInterface;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -14,7 +12,7 @@ use HS\QueryInterface;
 interface QueryBuilderInterface
 {
     /**
-     * @param      $indexId
+     * @param int  $indexId
      * @param null $openIndexQuery
      *
      * @return QueryInterface
@@ -22,31 +20,52 @@ interface QueryBuilderInterface
     public function getQuery($indexId, $openIndexQuery = null);
 
     /**
-     * @return array
+     * @param int $limit
+     *
+     * @return QueryBuilderInterface
      */
-    public function getColumns();
-
-    public function fromDataBase($db);
-
-    public function fromTable($table);
-
-    public function fromIndex($index);
-
     public function limit($limit);
 
+    /**
+     * @param int $offset
+     *
+     * @return QueryBuilderInterface
+     */
     public function offset($offset);
 
-    public function where($comparison, array $list);
-
-    public function andWhere($key, $comparison, $value, $type = HSInterface::FILTER_TYPE_SKIP);
-
-    public function getDataBase();
-
-    public function getTable();
-
-    public function getIndex();
-
+    /**
+     * @return boolean
+     */
     public function isValid();
 
-    public function getFilterColumns();
+    /**
+     * @return string|null
+     */
+    public function getDatabase();
+
+    /**
+     * @return string|null
+     */
+    public function getTable();
+
+    /**
+     * @return string|null
+     */
+    public function getIndex();
+
+    /**
+     * @return array
+     */
+    public function getColumnList();
+
+    /**
+     * @return array
+     */
+    public function getFilterList();
+
+    /**
+     * @return array
+     */
+    public function getFilterColumnList();
+
 }

@@ -4,40 +4,28 @@
  */
 namespace HS\Query;
 
-use HS\QueryAbstract;
 use HS\Result\InsertResult;
 
 class InsertQuery extends QueryAbstract
 {
-    private $indexId = null;
-    private $values = null;
-    private $openIndexQuery = null;
-
-    /**
-     * @param int   $indexId
-     * @param array $values
-     * @param null  $openIndexQuery
-     */
-    public function __construct($indexId, $values, $openIndexQuery = null)
-    {
-        $this->indexId = $indexId;
-        $this->values = $values;
-        $this->openIndexQuery = $openIndexQuery;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function getQueryParameters()
     {
-        return array_merge(
-            array(
-                $this->indexId,
-                '+',
-                count($this->values)
-            ),
-            $this->values
+        $valueList = $this->getParameter('valueList', array());
+
+        $returnList = array(
+            $this->getIndexId(),
+            '+',
+            count($valueList[0])
         );
+
+        foreach ($valueList as $row) {
+            $returnList = array_merge($returnList, $row);
+        }
+
+        return $returnList;
     }
 
     /**
@@ -45,14 +33,9 @@ class InsertQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->result = new InsertResult($this, $data, $this->openIndexQuery);
-    }
-
-    /**
-     * @return int
-     */
-    public function getIndexId()
-    {
-        return $this->indexId;
+        $this->getParameterBag()->setParameter(
+            'resultObject',
+            new InsertResult($this, $data, $this->getParameter('openIndexQuery'))
+        );
     }
 }

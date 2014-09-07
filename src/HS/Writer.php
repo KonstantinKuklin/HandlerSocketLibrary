@@ -25,13 +25,16 @@ class Writer extends Reader implements WriterHSInterface
         }
 
         $query = new UpdateQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $openIndexQuery,
-            $values
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'valueList' => $values,
+                'openIndexQuery' => $openIndexQuery
+            )
         );
 
         $this->addQuery($query);
@@ -42,23 +45,28 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function updateByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
-    {
-        $updateQuery = $this->modifyByIndexQuery(
-            'Update',
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $values,
-            $offset,
-            $limit
+    public function updateByIndex(
+        $indexId, $comparisonOperation, array $keys, array $values, $limit = null, $offset = null
+    ) {
+        $updateQuery = new UpdateQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'valueList' => $values
+            )
         );
+        $this->addQuery($updateQuery);
 
         return $updateQuery;
     }
 
     public function delete(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = null, $limit = null
+        array $columns, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, $offset = null,
+        $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -67,39 +75,46 @@ class Writer extends Reader implements WriterHSInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $query = new DeleteQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $openIndexQuery
+        $deleteQuery = new DeleteQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'openIndexQuery' => $openIndexQuery
+            )
         );
-        $this->addQuery($query);
+        $this->addQuery($deleteQuery);
 
-        return $query;
+        return $deleteQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteByIndex($indexId, $comparisonOperation, $keys, $limit = null, $offset = null)
+    public function deleteByIndex($indexId, $comparisonOperation, array $keys, $limit = null, $offset = null)
     {
-        $deleteQuery = $this->modifyByIndexQuery(
-            'Delete',
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            null,
-            $offset,
-            $limit
+        $deleteQuery = new DeleteQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+            )
         );
+        $this->addQuery($deleteQuery);
 
         return $deleteQuery;
     }
 
     public function increment(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
+        array $columns, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, array $valueList,
+        $offset = null,
+        $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -108,154 +123,136 @@ class Writer extends Reader implements WriterHSInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $query = new IncrementQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $openIndexQuery,
-            $values
+        $incrementQuery = new IncrementQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'openIndexQuery' => $openIndexQuery,
+                'valueList' => $valueList,
+            )
         );
-        $this->addQuery($query);
+        $this->addQuery($incrementQuery);
 
-        return $query;
+        return $incrementQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function incrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
-    {
-        $incrementQuery = $this->modifyByIndexQuery(
-            'Increment',
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $values,
-            $offset,
-            $limit
+    public function incrementByIndex(
+        $indexId, $comparisonOperation, array $keys, array $valueList, $limit = null, $offset = null
+    ) {
+        $incrementQuery = new IncrementQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'valueList' => $valueList,
+            )
         );
+        $this->addQuery($incrementQuery);
 
         return $incrementQuery;
     }
 
 
     public function decrement(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
+        array $columnList, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, array $valueList,
+        $offset = null,
+        $limit = null
     ) {
-        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columnList, false);
         $openIndexQuery = null;
         if ($indexId instanceof OpenIndexQuery) {
             $openIndexQuery = $indexId;
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $query = new DecrementQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $openIndexQuery,
-            $values
+        $decrementQuery = new DecrementQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'openIndexQuery' => $openIndexQuery,
+                'valueList' => $valueList,
+            )
         );
-        $this->addQuery($query);
-
-        return $query;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function decrementByIndex($indexId, $comparisonOperation, $keys, $values, $limit = null, $offset = null)
-    {
-        $decrementQuery = $this->modifyByIndexQuery(
-            'Decrement',
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $values,
-            $offset,
-            $limit
-        );
+        $this->addQuery($decrementQuery);
 
         return $decrementQuery;
     }
 
-    public function insert(
-        $columns, $dbName, $tableName, $indexName, $values
+    /**
+     * {@inheritdoc}
+     */
+    public function decrementByIndex(
+        $indexId, $comparisonOperation, array $keys, array $valueList, $limit = null, $offset = null
     ) {
-        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $decrementQuery = new DecrementQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'valueList' => $valueList,
+            )
+        );
+        $this->addQuery($decrementQuery);
+
+        return $decrementQuery;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insert(
+        array $columnList, $dbName, $tableName, $indexName, array $valueList
+    ) {
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columnList, false);
         $openIndexQuery = null;
         if ($indexId instanceof OpenIndexQuery) {
             $openIndexQuery = $indexId;
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $query = new InsertQuery(
-            $indexId,
-            $values,
-            $openIndexQuery
+        $insertQuery = new InsertQuery(
+            array(
+                'indexId' => $indexId,
+                'valueList' => $valueList,
+                'openIndexQuery' => $openIndexQuery
+            )
         );
-        $this->addQuery($query);
+        $this->addQuery($insertQuery);
 
-        return $query;
+        return $insertQuery;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insertByIndex($indexId, $values)
+    public function insertByIndex($indexId, array $valueList)
     {
         $updateQuery = new InsertQuery(
-            $indexId,
-            $values
+            array(
+                'indexId' => $indexId,
+                'valueList' => $valueList
+            )
         );
 
         $this->addQuery($updateQuery);
 
         return $updateQuery;
-    }
-
-    /**
-     * @param string     $queryClassName
-     * @param int        $indexId
-     * @param string     $comparisonOperation
-     * @param array      $keys
-     * @param array|null $values
-     * @param int        $offset
-     * @param int        $limit
-     *
-     * @return null|QueryInterface
-     */
-    private function modifyByIndexQuery(
-        $queryClassName, $indexId, $comparisonOperation, $keys, $values, $offset = null, $limit = null
-    ) {
-        $className = 'HS\Query\\' . $queryClassName . 'Query';
-        $modifyQuery = null;
-        if ($queryClassName === 'Delete') {
-            $modifyQuery = new $className(
-                $indexId,
-                $comparisonOperation,
-                $keys,
-                $offset,
-                $limit
-            );
-        } else {
-            $modifyQuery = new $className(
-                $indexId,
-                $comparisonOperation,
-                $keys,
-                $offset,
-                $limit,
-                null,
-                $values
-            );
-        }
-
-        $this->addQuery($modifyQuery);
-
-        return $modifyQuery;
     }
 }

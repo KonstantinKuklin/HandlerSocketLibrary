@@ -45,13 +45,32 @@ class QueryBuilder
     }
 
     /**
-     * @param $columns
-     *          ('id' => 1, 'text' => 'example')
-     *
      * @return InsertQueryBuilder
      */
-    public static function insert(array $columns)
+    public static function insert()
     {
-        return new InsertQueryBuilder($columns);
+        return new InsertQueryBuilder();
+    }
+
+    /**
+     * @param $columns
+     *          ('id' => 1, 'num')
+     *
+     * @return IncrementQueryBuilder
+     */
+    public static function increment(array $columns)
+    {
+        return new IncrementQueryBuilder($columns);
+    }
+
+    /**
+     * @param $columns
+     *          ('id' => 1, 'num')
+     *
+     * @return DecrementQueryBuilder
+     */
+    public static function decrement(array $columns)
+    {
+        return new DecrementQueryBuilder($columns);
     }
 } 

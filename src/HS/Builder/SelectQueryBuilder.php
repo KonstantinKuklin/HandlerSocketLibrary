@@ -1,48 +1,38 @@
 <?php
 namespace HS\Builder;
 
-use HS\HSInterface;
 use HS\Query\SelectQuery;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class SelectQueryBuilder extends QueryBuilderAbstract
+class SelectQueryBuilder extends FindQueryBuilderAbstract
 {
-    private $returnType = SelectQuery::ASSOC;
+    /**
+     * @return $this
+     */
+    public function returnAsVector()
+    {
+        $this->getParameterBag()->setParameter('returnType', SelectQuery::VECTOR);
+
+        return $this;
+    }
 
     /**
-     * {@inheritdoc}
+     * @return $this
      */
-    public function getQuery($indexId, $openIndexQuery = null)
+    public function returnAsAssoc()
     {
-        return new SelectQuery(
-            $indexId,
-            $this->whereComparison,
-            $this->whereValues,
-            $this->limit,
-            $this->offset,
-            $this->constructArray,
-            $this->in,
-            $openIndexQuery
-        );
-    }
-
-    public function where($comparison, array $list)
-    {
-        parent::where($comparison, $list);
-        return $this;
-    }
-
-    public function ReturnAsVector()
-    {
-        $this->returnType = SelectQuery::VECTOR;
+        $this->getParameterBag()->setParameter('returnType', SelectQuery::ASSOC);
 
         return $this;
     }
 
-    public function ReturnAsAssoc()
+    /**
+     * @return string
+     */
+    public function getQueryClassPath()
     {
-        $this->returnType = SelectQuery::ASSOC;
+        return 'HS\Query\SelectQuery';
     }
-} 
+}

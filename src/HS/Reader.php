@@ -3,9 +3,13 @@
 namespace HS;
 
 use HS\Builder\QueryBuilderInterface;
-use HS\Exceptions\WrongParameterException;
+use HS\Component\Comparison;
+use HS\Component\Filter;
+use HS\Component\InList;
+use HS\Exception\WrongParameterException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
+use HS\Query\QueryInterface;
 use HS\Query\SelectQuery;
 use PHP_Timer;
 use Stream\Connection;
@@ -90,7 +94,7 @@ class Reader implements ReaderInterface
                 )
             );
         }
-        $authQuery = new AuthQuery(trim($authKey));
+        $authQuery = new AuthQuery(array('authKey' => trim($authKey)));
         $this->addQuery($authQuery);
 
         return $authQuery;
@@ -99,11 +103,21 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function openIndex($indexId, $dbName, $tableName, $indexName, array $columns, array $fColumns = array())
-    {
-        $indexQuery = new OpenIndexQuery($indexId, $dbName, $tableName, $indexName, $columns, $fColumns);
+    public function openIndex(
+        $indexId, $dbName, $tableName, $indexName, array $columnList, array $filterColumnList = array()
+    ) {
+        $indexQuery = new OpenIndexQuery(
+            array(
+                'indexId' => $indexId,
+                'dbName' => $dbName,
+                'tableName' => $tableName,
+                'indexName' => $indexName,
+                'columnList' => $columnList,
+                'filterColumnList' => $filterColumnList
+            )
+        );
         $this->addQuery($indexQuery);
-        $this->setKeysToIndexId($indexId, $columns);
+        $this->setKeysToIndexId($indexId, $columnList);
 
         return $indexQuery;
     }
@@ -112,19 +126,21 @@ class Reader implements ReaderInterface
      * {@inheritdoc}
      */
     public function getIndexId(
-        $dbName, $tableName, $indexName, array $columns, $returnOnlyId = true, array $fColumns = array()
+        $dbName, $tableName, $indexName, array $columnList, $returnOnlyId = true, array $filterColumnList = array()
     ) {
-        $columnsToSearch = $columns;
-        if (is_array($columns)) {
-            $columnsToSearch = implode('', $columnsToSearch);
-        } else {
-            $columnsToSearch = '';
-        }
+        $columnsToSearch = implode('', $columnList) . implode('', $filterColumnList);
 
         $indexMapValue = $dbName . $tableName . $indexName . $columnsToSearch;
         if (!$indexId = $this->getIndexIdFromArray($indexMapValue)) {
             $indexId = $this->getCurrentIterator();
-            $openIndexQuery = $this->openIndex($indexId, $dbName, $tableName, $indexName, $columns);
+            $openIndexQuery = $this->openIndex(
+                $indexId,
+                $dbName,
+                $tableName,
+                $indexName,
+                $columnList,
+                $filterColumnList
+            );
             $this->addIndexIdToArray($indexMapValue, $indexId);
 
             // return OpenIndexQuery if we can
@@ -139,15 +155,19 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function selectByIndex($indexId, $comparisonOperation, array $keys, $offset = null, $limit = null)
-    {
+    public function selectByIndex(
+        $indexId, $comparisonOperation, array $keys, $offset = null, $limit = null, array $filterList = array()
+    ) {
         $selectQuery = new SelectQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $this->getKeysByIndexId($indexId)
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'filterList' => $filterList
+            )
         );
 
         $this->addQuery($selectQuery);
@@ -158,16 +178,23 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function selectInByIndex($indexId, $in, $offset = null, $limit = null)
+    public function selectInByIndex($indexId, $in, $offset = null, $limit = null, array $filterList = array())
     {
+        if ($limit !== null && $limit < count($in)) {
+            throw new WrongParameterException("Limit must be > count of in");
+        }
+
         $selectQuery = new SelectQuery(
-            $indexId,
-            HSInterface::EQUAL,
-            array(1), // may be skipped TODO check
-            $offset,
-            $limit,
-            $this->getKeysByIndexId($indexId),
-            $in
+            array(
+                'indexId' => $indexId,
+                'comparison' => Comparison::EQUAL,
+                'keyList' => array(1),
+                'offset' => $offset,
+                'limit' => ($limit !== null) ? $limit : count($in),
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'inKeyList' => new InList(0, $in),
+                'filterList' => $filterList
+            )
         );
 
         $this->addQuery($selectQuery);
@@ -176,21 +203,24 @@ class Reader implements ReaderInterface
     }
 
     /**
-     * @param array  $columns
-     * @param string $dbName
-     * @param string $tableName
-     * @param string $indexName
-     * @param string $comparisonOperation
-     * @param array  $keys
-     * @param int    $offset
-     * @param int    $limit
+     * @param array    $columns
+     * @param string   $dbName
+     * @param string   $tableName
+     * @param string   $indexName
+     * @param string   $comparisonOperation
+     * @param array    $keys
+     * @param int      $offset
+     * @param int      $limit
+     * @param array    $filterColumnList
+     * @param Filter[] $filterList
      *
      * @return SelectQuery
      */
     public function select(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = null, $limit = null
+        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $offset = null, $limit = null,
+        array $filterColumnList = array(), array $filterList = array()
     ) {
-        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
+        $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false, $filterColumnList);
         $openIndexQuery = null;
         if ($indexId instanceof OpenIndexQuery) {
             $openIndexQuery = $indexId;
@@ -198,14 +228,16 @@ class Reader implements ReaderInterface
         }
 
         return new SelectQuery(
-            $indexId,
-            $comparisonOperation,
-            $keys,
-            $offset,
-            $limit,
-            $this->getKeysByIndexId($indexId),
-            array(),
-            $openIndexQuery
+            array(
+                'indexId' => $indexId,
+                'comparison' => $comparisonOperation,
+                'keyList' => $keys,
+                'offset' => $offset,
+                'limit' => $limit,
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'openIndexQuery' => $openIndexQuery,
+                'filterList' => $filterList,
+            )
         );
     }
 
@@ -218,6 +250,7 @@ class Reader implements ReaderInterface
      * @param int    $offset
      * @param int    $limit
      *
+     * @throws WrongParameterException
      * @return SelectQuery
      */
     public function selectIn(
@@ -232,16 +265,25 @@ class Reader implements ReaderInterface
 
         /** @var int $indexId */
 
-        return new  SelectQuery(
-            $indexId,
-            HSInterface::EQUAL,
-            array(1), // can be skipped TODO check
-            $offset,
-            $limit,
-            $this->getKeysByIndexId($indexId),
-            $in,
-            $openIndexQuery
+        if ($limit !== null && $limit < count($in)) {
+            throw new WrongParameterException("Limit must be > count of in");
+        }
+
+        $selectQuery = new SelectQuery(
+            array(
+                'indexId' => $indexId,
+                'comparison' => Comparison::EQUAL,
+                'keyList' => array(1),
+                'offset' => $offset,
+                'limit' => ($limit !== null) ? $limit : count($in),
+                'columnList' => $this->getKeysByIndexId($indexId),
+                'inKeyList' => new InList(0, $in)
+            )
         );
+
+        $this->addQuery($selectQuery);
+
+        return $selectQuery;
     }
 
     /**
@@ -255,7 +297,7 @@ class Reader implements ReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function getResults()
+    public function getResultList()
     {
         $ResultsList = array();
 
@@ -280,7 +322,7 @@ class Reader implements ReaderInterface
             try {
                 $result = $this->getStream()->getContents();
                 $query->setResultData($result);
-                /** @var ResultAbstract $ResultObject */
+
                 $ResultObject = $query->getResult();
 
                 // if debug mode enabled
@@ -345,9 +387,9 @@ class Reader implements ReaderInterface
             $queryBuilder->getDataBase(),
             $queryBuilder->getTable(),
             $queryBuilder->getIndex(),
-            $queryBuilder->getColumns(),
+            $queryBuilder->getColumnList(),
             false,
-            $queryBuilder->getFilterColumns()
+            $queryBuilder->getFilterColumnList()
         );
 
         // if returned int
@@ -389,7 +431,6 @@ class Reader implements ReaderInterface
     {
         if ($this->getStream() !== null) {
             $this->getStream()->close();
-            $this->stream = null;
         }
 
         $this->currentIndexIterator = 0;

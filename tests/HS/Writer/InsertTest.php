@@ -3,6 +3,7 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+use HS\Component\Comparison;
 use HS\Result\InsertResult;
 use HS\Tests\TestCommon;
 
@@ -20,11 +21,11 @@ class InsertTest extends TestCommon
         );
         $insertQuery = $writer->insertByIndex(
             $indexId,
-            array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1')
+            array(array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1'))
         );
 
-        $selectQuery = $writer->selectByIndex($indexId, '=', array(467));
-        $writer->getResults();
+        $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(467));
+        $writer->getResultList();
 
         /** @var InsertResult $insertResult */
         $insertResult = $insertQuery->getResult();
@@ -45,11 +46,11 @@ class InsertTest extends TestCommon
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1')
+            array(array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1'))
         );
 
-        $selectQuery = $writer->selectByIndex($insertQuery->getIndexId(), '=', array(468));
-        $writer->getResults();
+        $selectQuery = $writer->selectByIndex($insertQuery->getIndexId(), Comparison::EQUAL, array(468));
+        $writer->getResultList();
 
         /** @var InsertResult $insertResult */
         $insertResult = $insertQuery->getResult();

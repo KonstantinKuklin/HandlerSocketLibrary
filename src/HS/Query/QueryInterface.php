@@ -3,13 +3,12 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
-namespace HS;
-
+namespace HS\Query;
 
 interface QueryInterface
 {
     /**
-     * @return ResultInterface
+     * @return \HS\Result\ResultInterface
      */
     public function getResult();
 

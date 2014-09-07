@@ -6,6 +6,7 @@ namespace HS;
 
 use HS\Builder\QueryBuilderInterface;
 use HS\Query\ModifyQueryAbstract;
+use HS\Query\QueryInterface;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -21,7 +22,7 @@ interface ReaderInterface extends ReaderHSInterface
      * @return ResultInterface[]
      * @throws \Stream\Exception\StreamException
      */
-    public function getResults();
+    public function getResultList();
 
     /**
      * @return int

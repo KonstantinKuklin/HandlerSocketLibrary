@@ -1,49 +1,29 @@
 <?php
-namespace HS\Builder;
 
-use HS\HSInterface;
-use HS\Query\DeleteQuery;
-use HS\Query\UpdateQuery;
+namespace HS\Builder;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class UpdateQueryBuilder extends QueryBuilderAbstract
+class UpdateQueryBuilder extends FindQueryBuilderAbstract
 {
     /**
-     * {@inheritdoc}
+     * @param array $updateList
      */
-    public function getColumns()
+    public function __construct(array $updateList)
     {
-        return array_keys($this->constructArray);
+        $columnList = array_keys($updateList);
+        $valueList = array_values($updateList);
+        parent::__construct($columnList);
+        $this->getParameterBag()->setParameter('valueList', $valueList);
+
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function where($comparison, array $list)
+    public function getQueryClassPath()
     {
-        $updateList = $this->constructArray;
-        $this->constructArray = array_keys($updateList);
-        parent::where($comparison, $list);
-        $this->constructArray = $updateList;
-
-        return $this;
+        return 'HS\Query\UpdateQuery';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getQuery($indexId, $openIndexQuery = null)
-    {
-        return new UpdateQuery(
-            $indexId,
-            $this->whereComparison,
-            $this->whereValues,
-            $this->limit,
-            $this->offset,
-            $openIndexQuery,
-            array_values($this->constructArray)
-        );
-    }
-} 
+}

@@ -3,6 +3,7 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+use HS\Component\Comparison;
 use HS\Result\UpdateResult;
 use HS\Tests\TestCommon;
 
@@ -18,10 +19,10 @@ class UpdateTest extends TestCommon
             'PRIMARY',
             array('key', 'text')
         );
-        $updateQuery = $writer->updateByIndex($indexId, '=', array(2), array(2, 'new'));
+        $updateQuery = $writer->updateByIndex($indexId, Comparison::EQUAL, array(2), array(2, 'new'));
 
-        $selectQuery = $writer->selectByIndex($indexId, '=', array(2));
-        $writer->getResults();
+        $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(2));
+        $writer->getResultList();
 
         /** @var UpdateResult $updateResult */
         $updateResult = $updateQuery->getResult();
@@ -44,13 +45,13 @@ class UpdateTest extends TestCommon
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            '=',
+            Comparison::EQUAL,
             array(2),
             array(2, 'new2')
         );
 
-        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), '=', array(2));
-        $writer->getResults();
+        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array(2));
+        $writer->getResultList();
 
         /** @var UpdateResult $updateResult */
         $updateResult = $updateQuery->getResult();

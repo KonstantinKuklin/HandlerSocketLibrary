@@ -4,69 +4,28 @@
  */
 namespace HS\Query;
 
-use HS\QueryAbstract;
-use HS\Result\SelectResult;
+use HS\Component\Comparison;
+use HS\Component\ComparisonInterface;
+use HS\Component\Filter;
+use HS\Component\InList;
+use HS\Exception\WrongParameterException;
 
 class SelectQuery extends QueryAbstract
 {
     const VECTOR = 1;
     const ASSOC = 2;
+
 //    const OBJECT = 3;
 
-    private $indexId = null;
-    private $comparisonOperation = null;
-    private $keys = null;
-    private $limit = null;
-    private $offset = null;
-    private $indexColumns = null;
-    private $in = array();
-
-    // assoc array default value of return data
-    private $returnType = self::ASSOC;
-
-    /** @var null|OpenIndexQuery */
-    private $openIndexQuery = null;
-
-    /**
-     * @param int                 $indexId
-     * @param string              $comparisonOperation
-     * @param array               $keys
-     * @param int|null            $limit
-     * @param int|null            $offset
-     * @param array               $indexColumns
-     * @param array               $in
-     * @param null|OpenIndexQuery $openIndexQuery
-     */
-    public function __construct(
-        $indexId, $comparisonOperation, $keys, $limit = null, $offset = null, $indexColumns, array $in = array(),
-        $openIndexQuery = null
-    ) {
-        $this->indexId = $indexId;
-        $this->comparisonOperation = $comparisonOperation;
-        $this->keys = $keys;
-        $this->limit = $limit;
-        $this->offset = $offset;
-        $this->indexColumns = $indexColumns;
-
-        // if old style of in
-        if (!isset($in['icol']) && count($in) > 0) {
-            $invlen = count($in);
-            $this->in = array(
-                'icol' => 1,
-                'ivlen' => $invlen,
-                'iv' => $in
-            );
-        } else {
-            $this->in = $in;
-        }
-
-        $this->openIndexQuery = $openIndexQuery;
+    public function getReturnType()
+    {
+        return $this->getParameter('returnType', self::VECTOR);
     }
 
     /**
      * @param int $type
      *
-     * @throws \Exception
+     * @throws WrongParameterException
      */
     public function setReturnType($type)
     {
@@ -74,11 +33,87 @@ class SelectQuery extends QueryAbstract
             || $type === self::VECTOR
 //            || $type === self::OBJECT
         ) {
-            $this->returnType = $type;
+            $this->getParameterBag()->setParameter('returnType', $type);
 
         } else {
-            throw new \Exception("Got unknown type ");
+            throw new WrongParameterException("Got unknown return type.");
         }
+    }
+
+    /**
+     * @return ComparisonInterface
+     */
+    public function getComparison()
+    {
+        return $this->getParameter('comparison', Comparison::EQUAL);
+    }
+
+    /**
+     * @return array
+     */
+    public function getKeyList()
+    {
+        return $this->getParameter('keyList', array());
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit()
+    {
+        return $this->getParameter('limit', 1);
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset()
+    {
+        return $this->getParameter('offset', 0);
+    }
+
+    /**
+     * @return array
+     */
+    public function getIn()
+    {
+
+        /** @var InList $inKeyList */
+        $inKeyList = $this->getParameter('inKeyList');
+        if ($inKeyList === null) {
+            return array();
+        }
+
+        $output[] = '@';
+
+        return array_merge(
+            array(
+                '@',
+                $inKeyList->getPosition(),
+                $inKeyList->getCount()
+            ),
+            $inKeyList->getKeyList()
+        );
+
+    }
+
+    public function getFilterList()
+    {
+        /** @var Filter[] $filterList */
+        $filterList = $this->getParameter('filterList');
+        if ($filterList === null) {
+            return array();
+        }
+
+        $output = array();
+        foreach ($filterList as $filter) {
+            $output[] = $filter->getType();
+            $output[] = $filter->getComparison();
+            $output[] = $filter->getPosition();
+            $output[] = $filter->getKey();
+        }
+
+        return $output;
     }
 
     /**
@@ -88,36 +123,25 @@ class SelectQuery extends QueryAbstract
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...]
 
-        $lim = array();
-        if ($this->limit !== null) {
-            $lim[] = $this->limit;
-        }
-        if ($this->offset !== null) {
-            $lim[] = $this->offset;
-        }
-
-        $inMerge = array();
-        if (count($this->in) > 0) {
-            $inMerge = array_merge(array('@', $this->in['icol'], $this->in['ivlen']), $this->in['iv']);
-        }
-
-        return array_merge(
+//        var_dump($this->getKeyList());
+//        var_dump($this->getIn());
+//        var_dump($this->getFilterList());
+        $a= array_merge(
             array(
-                $this->indexId,
-                $this->comparisonOperation,
-                count($this->keys)
+                $this->getIndexId(),
+                $this->getComparison(),
+                count($this->getKeyList()),
             ),
-            $this->keys,
-            $lim,
-            $inMerge
+            $this->getKeyList(),
+            array(
+                $this->getLimit(),
+                $this->getOffset()
+            ),
+            $this->getIn(),
+            $this->getFilterList()
         );
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setResultData($data)
-    {
-        $this->result = new SelectResult($this, $data, $this->indexColumns, $this->returnType, $this->openIndexQuery);
+//        print_r($a);
+        return $a;
     }
 }

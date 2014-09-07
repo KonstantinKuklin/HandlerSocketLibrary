@@ -5,6 +5,10 @@
 
 namespace HS\Query;
 
-class DecrementQuery extends ModifyQueryAbstract
+class DecrementQuery extends ModifyStepQueryAbstract
 {
-} 
+    public function getModificator()
+    {
+        return '-';
+    }
+}

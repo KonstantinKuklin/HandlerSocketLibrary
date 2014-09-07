@@ -1,37 +1,44 @@
 <?php
+
 namespace HS\Builder;
 
-use HS\HSInterface;
-use HS\Query\DeleteQuery;
-use HS\Query\IncrementQuery;
-use HS\Query\UpdateQuery;
+use HS\Exception\WrongParameterException;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class IncrementQueryBuilder extends QueryBuilderAbstract
+class IncrementQueryBuilder extends UpdateQueryBuilder
 {
     /**
-     * {@inheritdoc}
+     * @param array $incrementList
+     *
+     * @throws WrongParameterException
      */
-    public function getColumns()
+    public function __construct(array $incrementList)
     {
-        return array_keys($this->constructArray);
+        $columnList = array();
+        $valueList = array();
+        foreach ($incrementList as $key => $value) {
+            if (is_numeric($value) && !is_numeric($key)) {
+                $columnList[] = $key;
+                $valueList[] = $value;
+            } elseif (!is_numeric($value) && is_numeric($key)) {
+                $columnList[] = $value;
+                $valueList[] = 1;
+            } else {
+                throw new WrongParameterException("Wrong increment parameter.");
+            }
+
+        }
+
+        parent::__construct(array_combine($columnList, $valueList));
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getQuery($indexId, $openIndexQuery = null)
+    public function getQueryClassPath()
     {
-        return new IncrementQuery(
-            $indexId,
-            $this->comparisonOperation,
-            $this->where,
-            array_values($this->constructArray),
-            $this->limit,
-            $this->offset,
-            $openIndexQuery
-        );
+        return 'HS\Query\IncrementQuery';
     }
 } 

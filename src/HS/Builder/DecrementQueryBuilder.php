@@ -1,38 +1,17 @@
 <?php
-namespace HS\Builder;
 
-use HS\HSInterface;
-use HS\Query\DecrementQuery;
-use HS\Query\DeleteQuery;
-use HS\Query\IncrementQuery;
-use HS\Query\UpdateQuery;
+namespace HS\Builder;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
-class DecrementQueryBuilder extends QueryBuilderAbstract
+class DecrementQueryBuilder extends IncrementQueryBuilder
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getColumns()
+    public function getQueryClassPath()
     {
-        return array_keys($this->constructArray);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getQuery($indexId, $openIndexQuery = null)
-    {
-        return new DecrementQuery(
-            $indexId,
-            $this->comparisonOperation,
-            $this->where,
-            array_values($this->constructArray),
-            $this->limit,
-            $this->offset,
-            $openIndexQuery
-        );
+        return 'HS\Query\DecrementQuery';
     }
 } 

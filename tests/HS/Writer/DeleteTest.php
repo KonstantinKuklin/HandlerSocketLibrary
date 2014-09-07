@@ -3,6 +3,7 @@
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 
+use HS\Component\Comparison;
 use HS\Result\DeleteResult;
 use HS\Tests\TestCommon;
 
@@ -18,9 +19,9 @@ class DeleteTest extends TestCommon
             'PRIMARY',
             array('key', 'text')
         );
-        $deleteQuery = $writer->deleteByIndex($indexId, '=', array(3));
-        $selectQuery = $writer->selectByIndex($indexId, '=', array(3));
-        $writer->getResults();
+        $deleteQuery = $writer->deleteByIndex($indexId, Comparison::EQUAL, array(3));
+        $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(3));
+        $writer->getResultList();
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();
@@ -42,12 +43,12 @@ class DeleteTest extends TestCommon
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            '=',
+            Comparison::EQUAL,
             array(1)
         );
 
-        $selectQuery = $writer->selectByIndex($deleteQuery->getIndexId(), '=', array(1));
-        $writer->getResults();
+        $selectQuery = $writer->selectByIndex($deleteQuery->getIndexId(), Comparison::EQUAL, array(1));
+        $writer->getResultList();
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();

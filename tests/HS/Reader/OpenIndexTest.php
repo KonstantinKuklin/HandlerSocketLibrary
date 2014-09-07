@@ -5,7 +5,7 @@
 
 namespace HS\Tests\HSReader;
 
-use HS\Exceptions\WrongParameterException;
+use HS\Exception\WrongParameterException;
 use HS\Tests\TestCommon;
 use Stream\Stream;
 
@@ -30,7 +30,7 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(0, $this->getDatabase(), $this->getTableName(), '', array('text'));
         } catch (WrongParameterException $e) {
-            $this->fail("Fall zero set as indexId.");
+            $this->fail(sprintf("Fall zero set as indexId: %s", $e->getMessage()));
         }
 
     }
@@ -113,7 +113,7 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), null, array('text'));
         } catch (WrongParameterException $e) {
-            $this->fail("Fall null set as indexName.");
+            $this->fail(sprintf("Fall null set as indexName: %s", $e->getMessage()));
         }
     }
 
@@ -210,7 +210,7 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResults();
+        $reader->getResultList();
         $this->assertFalse(
             $openIndex->getResult()->isSuccessfully(),
             "Successfully openIndex on not existed database."
@@ -228,7 +228,7 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResults();
+        $reader->getResultList();
         $this->assertEquals(
             'HS\Errors\OpenTableError',
             get_class($openIndex->getResult()->getError()),
@@ -249,7 +249,7 @@ class OpenIndexTest extends TestCommon
             $this->fail("Fall with valid parameters.");
         }
 
-        $reader->getResults();
+        $reader->getResultList();
         $this->assertTrue($openIndexSecond->getResult()->isSuccessfully(), "Fall reopen index");
     }
 } 
