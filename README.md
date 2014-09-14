@@ -44,13 +44,13 @@ How to connect
 Open connection to the read only socket and to authorize the password 'passwordRead'
 
 ```php
-$ reader = new \HS\Reader('localhost', 9998, 'passwordRead');
+$reader = new \HS\Reader('localhost', 9998, 'passwordRead');
 ```
 
 Open connection to the write socket, no password is specified
 
 ```php
-$ writer = new \HS\Writer('localhost', 9999);
+$writer = new \HS\Writer('localhost', 9999);
 ```
 
 Queries
