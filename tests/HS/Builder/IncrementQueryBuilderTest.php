@@ -14,18 +14,18 @@ class IncrementQueryBuilderTest extends TestCommon
 {
     public function testSingleIncrement()
     {
-        $updateQueryBuilder = QueryBuilder::increment(array('key' => 0, 'num'))
+        $incrementQueryBuilder = QueryBuilder::increment(array('key' => 0, 'num'))
             ->fromDataBase($this->getDatabase())
             ->fromTable($this->getTableName())
             ->where(Comparison::EQUAL, array('key' => 104));
 
-        $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array('104'));
+        $incrementQuery = $this->getWriter()->addQueryBuilder($incrementQueryBuilder);
+        $selectQuery = $this->getWriter()->selectByIndex($incrementQuery->getIndexId(), Comparison::EQUAL, array('104'));
 
         $this->getWriter()->getResultList();
 
-        $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+        $incrementResult = $incrementQuery->getResult();
+        $this->assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
 
 
         $this->assertEquals(

@@ -29,7 +29,6 @@ class InsertQueryTest extends TestCommon
         $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(467));
         $writer->getResultList();
 
-        /** @var InsertResult $insertResult */
         $insertResult = $insertQuery->getResult();
         $this->assertTrue($insertResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
         $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");

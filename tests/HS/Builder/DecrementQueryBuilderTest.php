@@ -14,18 +14,18 @@ class DecrementQueryBuilderTest extends TestCommon
 {
     public function testSingleDecrement()
     {
-        $updateQueryBuilder = QueryBuilder::decrement(array('key' => 0, 'num'))
+        $decrementQueryBuilder = QueryBuilder::decrement(array('key' => 0, 'num'))
             ->fromDataBase($this->getDatabase())
             ->fromTable($this->getTableName())
             ->where(Comparison::EQUAL, array('key' => 105));
 
-        $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array('105'));
+        $decrementQuery = $this->getWriter()->addQueryBuilder($decrementQueryBuilder);
+        $selectQuery = $this->getWriter()->selectByIndex($decrementQuery->getIndexId(), Comparison::EQUAL, array('105'));
 
         $this->getWriter()->getResultList();
 
-        $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+        $updateResult = $decrementQuery->getResult();
+        $this->assertTrue($updateResult->isSuccessfully(), 'Fall decrementQuery is not successfully done.');
 
 
         $this->assertEquals(
@@ -50,7 +50,7 @@ class DecrementQueryBuilderTest extends TestCommon
         } catch (WrongParameterException $e) {
             return true;
         }
-        $this->fail('Not fall incrementBuilder with wrong parameters.');
+        $this->fail('Not fall decrementBuilder with wrong parameters.');
 
     }
 } 
