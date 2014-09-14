@@ -37,19 +37,29 @@
 ------------
 Открываем соединение на сокет только для чления и авторизовываемся с паролем 'passwordRead'
 
+```php
 $reader = new \HS\Reader('localhost', 9998, 'passwordRead');
+```
 
 Открываем соединение на сокет для записи, пароль не указан
+
+```php
 $writer = new \HS\Writer('localhost', 9999);
+```
 
 Запросы
 ------------
-[Select](docs/rus/SELECT.md)
-[Insert](docs/rus/Insert.md)
-[Update](docs/rus/Update.md)
-[Delete](docs/rus/Delete.md)
-[Increment](docs/rus/Increment.md)
-[Decrement](docs/rus/Decrement.md)
+- [Select](docs/rus/Select.md)
+
+- [Insert](docs/rus/Insert.md)
+
+- [Update](docs/rus/Update.md)
+
+- [Delete](docs/rus/Delete.md)
+
+- [Increment](docs/rus/Increment.md)
+
+- [Decrement](docs/rus/Decrement.md)
 
 Производительность
 ------------
@@ -70,4 +80,5 @@ TODO
  - Библиотека покрывает весь функционал HandlerSocket`а за исключением суффиксов "?".
  - Фильтры временно недоступны на командах обновления данных.
  - Некорректная обработка Null.
- - Выполнение единичных запросов
+ - Выполнение единичных запросов.
+ - Покрытие классами всех типов ошибок.

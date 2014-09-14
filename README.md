@@ -43,19 +43,29 @@ How to connect
 ------------
 Open connection to the read only socket and to authorize the password 'passwordRead'
 
+```php
 $ reader = new \HS\Reader('localhost', 9998, 'passwordRead');
+```
 
 Open connection to the write socket, no password is specified
+
+```php
 $ writer = new \HS\Writer('localhost', 9999);
+```
 
 Queries
 ------------
-[Select](docs/eng/SELECT.md)
-[Insert](docs/eng/Insert.md)
-[Update](docs/eng/Update.md)
-[Delete](docs/eng/Delete.md)
-[Increment](docs/eng/Increment.md)
-[Decrement](docs/eng/Decrement.md)
+- [Select](docs/eng/Select.md)
+
+- [Insert](docs/eng/Insert.md)
+
+- [Update](docs/eng/Update.md)
+
+- [Delete](docs/eng/Delete.md)
+
+- [Increment](docs/eng/Increment.md)
+
+- [Decrement](docs/eng/Decrement.md)
 
 Benchmarks
 ------------
@@ -77,3 +87,4 @@ TODO
  - Filters are temporarily unavailable on teams update.
  - The work with NULL is not good.
  - Single query execution.
+ - Cover all possibly errors with error classes.
