@@ -242,7 +242,7 @@ class Reader implements ReaderInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        return new SelectQuery(
+        $selectQuery=  new SelectQuery(
             array(
                 'indexId' => $indexId,
                 'comparison' => $comparisonOperation,
@@ -254,6 +254,9 @@ class Reader implements ReaderInterface
                 'filterList' => $filterList,
             )
         );
+
+        $this->addQuery($selectQuery);
+        return $selectQuery;
     }
 
     /**

@@ -129,6 +129,53 @@ class GetResultTest extends TestCommon
     {
         $reader = $this->getReader();
 
+        $selectQuery = $reader->selectIn(
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union'),
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array(42, 100),
+            0,
+            99
+        );
+
+        $this->getReader()->getResultList();
+
+        $selectResult = $selectQuery->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '42',
+                    'date' => '2010-10-29',
+                    'float' => '3.14159',
+                    'varchar' => 'variable length',
+                    'text' => "some\r\nbig\r\ntext",
+                    'set' => 'a,c',
+                    'union' => 'b',
+                    'null' => null
+                ),
+                array(
+                    'key' => '100',
+                    'date' => '0000-00-00',
+                    'float' => '0',
+                    'varchar' => '',
+                    'text' => '',
+                    'set' => '',
+                    'union' => '',
+                    'null' => null
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectIn query returned invalid data."
+        );
+    }
+
+    public function testSelectInByIndexExistedValue()
+    {
+        $reader = $this->getReader();
+
         $indexId = $reader->getIndexId(
             $this->getDatabase(),
             $this->getTableName(),
@@ -188,7 +235,6 @@ class GetResultTest extends TestCommon
             array(new Filter(Comparison::EQUAL, 0, '3'))
         );
 
-        $this->getReader()->addQuery($selectQuery);
         $this->getReader()->getResultList();
 
         $selectResult = $selectQuery->getResult();
