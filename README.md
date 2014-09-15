@@ -90,3 +90,8 @@ TODO
  - The work with NULL is not good.
  - Single query execution.
  - Cover all possibly errors with error classes.
+
+License
+-------
+
+This library is available under the [MIT license](docs/LICENSE).
