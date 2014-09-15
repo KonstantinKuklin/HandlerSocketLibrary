@@ -21,12 +21,13 @@ $indexId = $reader->getIndexId(
     'PRIMARY',
     array('key', 'text')
 );
+$reader->getResultList();
 ```
 
 If we just need to open the subscript c number 12 (for example), and we don't want to check:
 
 ```php
-$indexIndexQuery = $reader->openIndex(
+$openIndexQuery = $reader->openIndex(
     '12'
     'database',
     'tableName',
@@ -34,7 +35,14 @@ $indexIndexQuery = $reader->openIndex(
     array('key', 'text'),
     array('num')
 );
+$reader->getResultList();
 ```
 
 Here we open the index with identifier 12, columns `key`,` text`, and the column to filter `num`.
 Method returns us to the class OpenIndexQuery.
+
+Another way to execute the query:
+```php
+$insertQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$insertResult = $insertQuery->getResult();
+```

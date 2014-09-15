@@ -27,6 +27,11 @@ $selectQuery = $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
 ```php
 $resultList = $reader->getResultList();
 ```
+Другой способ выполнить запрос:
+```php
+$selectQuery->execute(); // отправлен запрос + получен ответ на этот запрос + все, что было в очереди на отправку
+$selectResult = $selectQuery->getResult();
+```
 Переменная $resultList содержит список всех результатов.
 Так же нужный нам результат можно получить
 ```php

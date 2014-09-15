@@ -40,6 +40,12 @@ $updateQuery = $writer->update(
 );
 ```
 
+Another way to execute the query:
+```php
+$updateQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$updateResult = $updateQuery->getResult();
+```
+
 Update with QueryBuilder
 ------------
 When initializing specify which columns to which data will be replaced.

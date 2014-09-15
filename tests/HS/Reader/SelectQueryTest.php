@@ -327,4 +327,40 @@ class GetResultTest extends TestCommon
             "Fall selectByIndex query with filter returned invalid data."
         );
     }
+
+    public function testSelectByIndexExistedValueExecuted()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'text'),
+            true,
+            array('num')
+        );
+        $selectQuery = $reader->selectByIndex(
+            $indexId,
+            Comparison::MORE,
+            array(1),
+            0,
+            99,
+            array(new Filter(Comparison::EQUAL, 0, 1))
+        );
+
+        $selectResult = $selectQuery->execute()->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query executed by self.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '100',
+                    'text' => ''
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectByIndex query executed by self."
+        );
+    }
 } 

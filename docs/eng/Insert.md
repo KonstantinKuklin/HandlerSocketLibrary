@@ -53,6 +53,12 @@ $insertQuery = $writer->insert(
 );
 ```
 
+Another way to execute the query:
+```php
+$insertQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$insertResult = $insertQuery->getResult();
+```
+
 Insert with QueryBuilder
 ------------
 When adding entries to all arrays of records must contain the same keys.

@@ -34,6 +34,12 @@ To send all queries and get the results you need to do:
 $resultList = $reader->getResultList();
 ```
 
+Another way to execute the query:
+```php
+$selectQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$selectResult = $selectQuery->getResult();
+```
+
 The variable `$resultList` contains a list of all results.
 Just the desired result can be obtained
 

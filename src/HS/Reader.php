@@ -109,7 +109,7 @@ class Reader implements ReaderInterface
      */
     public function text($queryText, $queryClass)
     {
-        $textQuery = new TextQuery(array('text' => $queryText), $queryClass);
+        $textQuery = new TextQuery(array('text' => $queryText, 'socket' => $this), $queryClass);
         $this->addQuery($textQuery);
 
         return $textQuery;
@@ -128,7 +128,8 @@ class Reader implements ReaderInterface
                 'tableName' => $tableName,
                 'indexName' => $indexName,
                 'columnList' => $columnList,
-                'filterColumnList' => $filterColumnList
+                'filterColumnList' => $filterColumnList,
+                'socket' => $this,
             )
         );
         $this->addQuery($indexQuery);
@@ -181,7 +182,8 @@ class Reader implements ReaderInterface
                 'offset' => $offset,
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
-                'filterList' => $filterList
+                'filterList' => $filterList,
+                'socket' => $this,
             )
         );
 
@@ -208,7 +210,8 @@ class Reader implements ReaderInterface
                 'limit' => ($limit !== null) ? $limit : count($in),
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'inKeyList' => new InList(0, $in),
-                'filterList' => $filterList
+                'filterList' => $filterList,
+                'socket' => $this,
             )
         );
 
@@ -242,7 +245,7 @@ class Reader implements ReaderInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $selectQuery=  new SelectQuery(
+        $selectQuery = new SelectQuery(
             array(
                 'indexId' => $indexId,
                 'comparison' => $comparisonOperation,
@@ -252,10 +255,12 @@ class Reader implements ReaderInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'openIndexQuery' => $openIndexQuery,
                 'filterList' => $filterList,
+                'socket' => $this,
             )
         );
 
         $this->addQuery($selectQuery);
+
         return $selectQuery;
     }
 
@@ -295,7 +300,8 @@ class Reader implements ReaderInterface
                 'offset' => $offset,
                 'limit' => ($limit !== null) ? $limit : count($in),
                 'columnList' => $this->getKeysByIndexId($indexId),
-                'inKeyList' => new InList(0, $in)
+                'inKeyList' => new InList(0, $in),
+                'socket' => $this,
             )
         );
 
@@ -317,12 +323,7 @@ class Reader implements ReaderInterface
      */
     public function getResultList()
     {
-        $ResultsList = array();
-
-        if ($this->isQueryQueueEmpty()) {
-            // return empty array if no Queries in queue
-            return array();
-        }
+        $resultsList = array();
 
         // if debug mode enabled
         if (!$this->isDebug()) {
@@ -352,7 +353,7 @@ class Reader implements ReaderInterface
                     $this->addTimeQueries($currentQueryTime);
                     $this->debugResultList[] = $ResultObject;
                 }
-                $ResultsList[] = $ResultObject;
+                $resultsList[] = $ResultObject;
                 // add time to general time counter
             } catch (ReadStreamException $e) {
                 // TODO check
@@ -361,7 +362,7 @@ class Reader implements ReaderInterface
 
         $this->queryListNotSent = array();
 
-        return $ResultsList;
+        return $resultsList;
     }
 
     /**
@@ -496,10 +497,15 @@ class Reader implements ReaderInterface
     /**
      * @param int $indexId
      *
+     * @throws WrongParameterException
      * @return array
      */
     protected function getKeysByIndexId($indexId)
     {
+        if (!array_key_exists($indexId, $this->keysList)) {
+            throw new WrongParameterException(sprintf("Don't find any Index with this indexId:%d.", $indexId));
+        }
+
         return $this->keysList[$indexId];
     }
 

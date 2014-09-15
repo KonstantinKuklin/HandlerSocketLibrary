@@ -19,12 +19,14 @@ $indexId = $reader->getIndexId(
     'PRIMARY',
     array('key', 'text')
 );
+
+$reader->getResultList();
 ```
 
 Если нам нужно просто открыть индекс c номер 12(например), и мы ничего не хотим проверять:
 
 ```php
-$indexIndexQuery = $reader->openIndex(
+$openIndexQuery = $reader->openIndex(
     '12'
     'database',
     'tableName',
@@ -32,7 +34,15 @@ $indexIndexQuery = $reader->openIndex(
     array('key', 'text'),
     array('num')
 );
+
+$reader->getResultList();
 ```
 
 Здесь мы открываем индекс c номером 12, колонками `key`, `text`, а так же колонкой для фильтров `num`.
 Метод вернет нам класс OpenIndexQuery.
+
+Другой способ выполнить запрос:
+```php
+$openIndexQuery->execute(); // отправлен запрос + получен ответ на этот запрос + все, что было в очереди на отправку
+$openIndexResult = $openIndexQuery->getResult();
+```

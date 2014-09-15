@@ -31,6 +31,12 @@ if($decrementQuery->getResult()->isSuccessfully()){
 }
 ```
 
+Another way to execute the query:
+```php
+$decrementQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$decrementResult = $decrementQuery->getResult();
+```
+
 Decrement with the opening index
 ------------
 This command will check whether there is a required index if it is not, first open and then perform Decrement.

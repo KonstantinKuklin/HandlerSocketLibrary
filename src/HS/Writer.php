@@ -33,7 +33,8 @@ class Writer extends Reader implements WriterHSInterface
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $values,
-                'openIndexQuery' => $openIndexQuery
+                'openIndexQuery' => $openIndexQuery,
+                'socket' => $this,
             )
         );
 
@@ -56,7 +57,8 @@ class Writer extends Reader implements WriterHSInterface
                 'offset' => $offset,
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
-                'valueList' => $values
+                'valueList' => $values,
+                'socket' => $this,
             )
         );
         $this->addQuery($updateQuery);
@@ -83,7 +85,8 @@ class Writer extends Reader implements WriterHSInterface
                 'offset' => $offset,
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
-                'openIndexQuery' => $openIndexQuery
+                'openIndexQuery' => $openIndexQuery,
+                'socket' => $this,
             )
         );
         $this->addQuery($deleteQuery);
@@ -104,6 +107,7 @@ class Writer extends Reader implements WriterHSInterface
                 'offset' => $offset,
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
+                'socket' => $this,
             )
         );
         $this->addQuery($deleteQuery);
@@ -133,6 +137,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'openIndexQuery' => $openIndexQuery,
                 'valueList' => $valueList,
+                'socket' => $this,
             )
         );
         $this->addQuery($incrementQuery);
@@ -155,6 +160,7 @@ class Writer extends Reader implements WriterHSInterface
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $valueList,
+                'socket' => $this,
             )
         );
         $this->addQuery($incrementQuery);
@@ -185,6 +191,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'openIndexQuery' => $openIndexQuery,
                 'valueList' => $valueList,
+                'socket' => $this,
             )
         );
         $this->addQuery($decrementQuery);
@@ -207,6 +214,7 @@ class Writer extends Reader implements WriterHSInterface
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $valueList,
+                'socket' => $this,
             )
         );
         $this->addQuery($decrementQuery);
@@ -231,7 +239,8 @@ class Writer extends Reader implements WriterHSInterface
             array(
                 'indexId' => $indexId,
                 'valueList' => $valueList,
-                'openIndexQuery' => $openIndexQuery
+                'openIndexQuery' => $openIndexQuery,
+                'socket' => $this,
             )
         );
         $this->addQuery($insertQuery);
@@ -247,7 +256,8 @@ class Writer extends Reader implements WriterHSInterface
         $updateQuery = new InsertQuery(
             array(
                 'indexId' => $indexId,
-                'valueList' => $valueList
+                'valueList' => $valueList,
+                'socket' => $this,
             )
         );
 

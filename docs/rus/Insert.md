@@ -31,6 +31,12 @@ if($insertQuery->getResult()->isSuccessfully()){
 }
 ```
 
+Другой способ выполнить запрос:
+```php
+$insertQuery->execute(); // отправлен запрос + получен ответ на этот запрос + все, что было в очереди на отправку
+$insertResult = $insertQuery->getResult();
+```
+
 Insert с открытием индекса
 ------------
 Вставка данных происходит в `'key', 'date', 'float', 'varchar', 'text', 'set', 'union'`.

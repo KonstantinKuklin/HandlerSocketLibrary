@@ -28,6 +28,12 @@ if($incrementQuery->getResult()->isSuccessfully()){
 }
 ```
 
+Другой способ выполнить запрос:
+```php
+$incrementQuery->execute(); // отправлен запрос + получен ответ на этот запрос + все, что было в очереди на отправку
+$incrementResult = $incrementQuery->getResult();
+```
+
 Increment с открытием индекса
 ------------
 Данная команда проверит есть ли нужный индекс, если его нет, то сначала откроет, а затем выполнит Increment.

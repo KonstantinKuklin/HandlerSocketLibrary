@@ -31,6 +31,12 @@ if($incrementQuery->getResult()->isSuccessfully()){
 }
 ```
 
+Another way to execute the query:
+```php
+$incrementQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$incrementResult = $incrementQuery->getResult();
+```
+
 Increment with the opening index
 ------------
 This command will check whether there is a required index if it is not, first open and then perform Increment.

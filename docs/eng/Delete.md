@@ -48,6 +48,12 @@ $deleteQuery = $writer->delete(
 $writer->getResultList();
 ```
 
+Another way to execute the query:
+```php
+$deleteQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
+$deleteResult = $deleteQuery->getResult();
+```
+
 Delete using QueryBuilder
 ------------
 When initializing specify which columns and how much will be raised. If you specify a value with out number,
