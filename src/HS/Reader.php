@@ -6,6 +6,7 @@ use HS\Builder\QueryBuilderInterface;
 use HS\Component\Comparison;
 use HS\Component\Filter;
 use HS\Component\InList;
+use HS\Exception\Exception;
 use HS\Exception\WrongParameterException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
@@ -74,11 +75,7 @@ class Reader implements ReaderInterface
         $this->stream->setBlockingOff();
         $this->stream->setReadTimeOut(0, (float)500000);
         $this->stream->setReceiveMethod(new StreamGetLineMethod(1024, Driver::EOL));
-
-        // if auth set then try to auth
-        if ($this->authKey !== null) {
-            $this->authenticate($this->authKey);
-        }
+        $this->authenticateWithConstructor();
     }
 
     /**
@@ -95,7 +92,7 @@ class Reader implements ReaderInterface
                 )
             );
         }
-        $authQuery = new AuthQuery(array('authKey' => trim($authKey)));
+        $authQuery = new AuthQuery(array('authKey' => trim($authKey), 'socket' => $this));
         $this->addQuery($authQuery);
 
         return $authQuery;
@@ -448,14 +445,16 @@ class Reader implements ReaderInterface
      */
     public function reOpen()
     {
-        if ($this->getStream() !== null) {
-            $this->getStream()->close();
-        }
-
         $this->currentIndexIterator = 0;
         $this->queryListNotSent = array();
         $this->indexList = array();
         $this->keysList = array();
+
+        if ($this->getStream() === null) {
+            throw new Exception("Stream not found to reopen.");
+        }
+        $this->getStream()->close();
+        $this->authenticateWithConstructor();
     }
 
     /**
@@ -552,6 +551,17 @@ class Reader implements ReaderInterface
     private function addIndexIdToArray($indexMapValue, $indexId)
     {
         $this->indexList[$indexMapValue] = $indexId;
+    }
+
+    /**
+     * @throws WrongParameterException
+     */
+    private function authenticateWithConstructor()
+    {
+        // if auth set then try to auth
+        if ($this->authKey !== null) {
+            $this->authenticate($this->authKey);
+        }
     }
 
     /**

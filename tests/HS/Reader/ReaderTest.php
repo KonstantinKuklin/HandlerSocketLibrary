@@ -63,7 +63,7 @@ class ReaderTest extends TestCommon
             array('num')
         );
 
-        $this->assertEquals(1, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
+        $this->assertEquals(2, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
 
         $selectQuery = $reader->selectByIndex(
             $indexId,
@@ -74,11 +74,11 @@ class ReaderTest extends TestCommon
             array(new Filter(Comparison::EQUAL, 0, 1))
         );
 
-        $this->assertEquals(2, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
+        $this->assertEquals(3, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
         $data = $selectQuery->execute()->getResult()->getData();
 
         // auth query + open index + select = 3
-        $this->assertEquals(3, $reader->getCountQueries(), 'Wrong count queries.');
+        $this->assertEquals(4, $reader->getCountQueries(), 'Wrong count queries.');
         $this->assertEquals(0, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
 
         $this->assertEquals(
