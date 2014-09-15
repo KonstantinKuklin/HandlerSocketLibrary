@@ -49,6 +49,8 @@ $writer = new \HS\Writer('localhost', 9999);
 
 Запросы
 ------------
+- [Open Index](docs/rus/OpenIndex.md)
+
 - [Select](docs/rus/Select.md)
 
 - [Insert](docs/rus/Insert.md)

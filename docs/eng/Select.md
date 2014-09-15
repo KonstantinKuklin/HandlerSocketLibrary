@@ -1,7 +1,7 @@
 Select from opened index
 ------------
 
-Open a connection to a  read socket, and to authorize with the password `passwordRead`
+Open a connection to the read socket, and authorize with the password `passwordRead`
 ```php
 $reader = new \HS\Reader('localhost', 9998, 'passwordRead');
 ```

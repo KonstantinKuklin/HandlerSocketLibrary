@@ -55,6 +55,8 @@ $writer = new \HS\Writer('localhost', 9999);
 
 Queries
 ------------
+- [Open Index](docs/eng/OpenIndex.md)
+
 - [Select](docs/eng/Select.md)
 
 - [Insert](docs/eng/Insert.md)
