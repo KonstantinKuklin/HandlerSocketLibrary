@@ -7,6 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class CommandNotFoundError extends Error
+class InListSizeError extends Error
 {
+    // Wrong IN values list size
 } 

@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class FilterTypeError extends Error
 {
-    // Something goes wrong or wrong table name
+    // Wrong filter TYPE
 } 

@@ -9,4 +9,5 @@ use HS\Error;
 
 class AuthenticationError extends Error
 {
+    // You need to authenticate before execute commands
 } 

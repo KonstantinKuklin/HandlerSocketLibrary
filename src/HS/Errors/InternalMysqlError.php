@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class InternalMysqlError extends Error
 {
-    // Something goes wrong or wrong table name
+    // if you try to insert data with wrong values, wrong keys
 } 

@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class FilterColumnError extends Error
 {
-    // Something goes wrong or wrong table name
+    // You filter column size < filter offset
 } 

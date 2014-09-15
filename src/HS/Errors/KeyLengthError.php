@@ -7,6 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class AutoIncrementSetError extends Error
+class KeyLengthError extends Error
 {
-} 
+    // Key length > key values or key length <= 0
+}

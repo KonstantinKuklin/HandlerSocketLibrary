@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class LockTableError extends Error
 {
-    // Something goes wrong or wrong table name
+    // You try to open locked table
 } 

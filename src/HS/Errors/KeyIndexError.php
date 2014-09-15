@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class KeyIndexError extends Error
 {
-    // Something goes wrong or wrong table name
+    // Key index > opened columns count
 } 

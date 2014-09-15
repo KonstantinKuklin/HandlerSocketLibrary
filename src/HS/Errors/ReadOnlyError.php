@@ -7,7 +7,7 @@ namespace HS\Errors;
 
 use HS\Error;
 
-class OpenTableError extends Error
+class ReadOnlyError extends Error
 {
-    // Something goes wrong or wrong table name
+    // You try to execute modify command on read only socket
 } 
