@@ -20,6 +20,7 @@ use HS\Errors\KeyLengthError;
 use HS\Errors\LockTableError;
 use HS\Errors\OpenTableError;
 use HS\Errors\ReadOnlyError;
+use HS\Errors\UnknownError;
 use HS\Query\OpenIndexQuery;
 use HS\Query\QueryAbstract;
 use HS\Query\QueryInterface;
@@ -48,7 +49,7 @@ abstract class ResultAbstract implements ResultInterface
      * @param array               $data
      * @param null|OpenIndexQuery $openIndexQuery
      */
-    public function __construct(QueryInterface $query, &$data, $openIndexQuery = null)
+    public function __construct(QueryInterface $query, array &$data, $openIndexQuery = null)
     {
         $this->openIndexQuery = $openIndexQuery;
         $this->query = $query;
@@ -115,7 +116,7 @@ abstract class ResultAbstract implements ResultInterface
                     if (is_numeric($error)) {
                         $this->error = new InternalMysqlError($error);
                     } else {
-                        $this->error = new Error($error);
+                        $this->error = new UnknownError($error);
                     }
                     break;
             }
