@@ -1,3 +1,6 @@
+filter:
+    excluded_paths: ["vendor/*", "tests/*", "docs/*"]
+
 tools:
     external_code_coverage: true
     php_mess_detector: true
