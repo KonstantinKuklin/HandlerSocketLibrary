@@ -1,6 +1,6 @@
 Decrement through the open index
 ------------
-Decrement command is modifying the database and can only be done through writing socket.
+Decrement command is modifying database and can only be done through writing socket.
 
 Open an index with columns `'key'`.
 
@@ -16,13 +16,13 @@ $indexId = $writer->getIndexId(
 $deleteQuery = $writer->deleteByIndex($indexId, \HS\Component\Comparison::EQUAL, array(3));
 ```
 
-If you are fully confident in the your query, you can simply send it to server, and thus save time and memory.
+If you are fully confident in your query, you can simply send it to server, thus save time and memory.
 
 ```php
 $writer->sendQueries();
 ```
 
-If you want to check that the command completed successfully
+If you want to check that the command completed successfully.
 
 ```php
 $writer->getResultList();
@@ -33,7 +33,7 @@ if($deleteQuery->getResult()->isSuccessfully()){
 
 Delete with the opening index
 ------------
-This command will check whether there is a required index if it is not, first open and then perform Delete.
+This command will check whether there's a required index if it isn't, first open and then perform Delete.
 
 ```php
 $deleteQuery = $writer->delete(
@@ -48,7 +48,7 @@ $deleteQuery = $writer->delete(
 $writer->getResultList();
 ```
 
-Another way to execute the query:
+Another way to execute the query.
 ```php
 $deleteQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $deleteResult = $deleteQuery->getResult();
@@ -56,10 +56,11 @@ $deleteResult = $deleteQuery->getResult();
 
 Delete using QueryBuilder
 ------------
-When initializing specify which columns and how much will be raised. If you specify a value with out number,
-it will be increased by 1.
+When initializing specify which columns and how much will be raised.
 
-where conditions indicate through screening.
+If you specify a value with out number,it'll be increased by 1.
+
+'Where' conditions indicate through screening.
 
 ```php
 $deleteQueryBuilder = QueryBuilder::delete();

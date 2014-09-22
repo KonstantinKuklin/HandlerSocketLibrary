@@ -1,6 +1,6 @@
 Insert to opened index
 ------------
-Insert command is modifying the database and can only be done through writing socket.
+Insert command is modifying database and can only be done through writing socket.
 
 Open an index with columns `'key', 'date', 'float', 'varchar', 'text', 'set', 'union'`.
 
@@ -20,13 +20,13 @@ $insertQuery = $writer->insertByIndex(
 );
 ```
 
-If you are fully confident in the your query, you can simply send it to server, and thus save time and memory.
+If you are fully confident in your query, you can simply send it to server, thus save time and memory.
 
 ```php
 $writer->sendQueries();
 ```
 
-If you want to check that the command completed successfully
+If you want to check that the command completed successfully.
 
 ```php
 $writer->getResultList();
@@ -39,7 +39,7 @@ Insert with the opening index
 ------------
 Inserting data occurs in the `'key', 'date', 'float', 'varchar', 'text', 'set', 'union'`.
 
-If there is no corresponding index, it will be opened automatically.
+If there is no corresponding index, it'll be opened automatically.
 
 Will be inserted values ​​`'468', '0000-00-01', '1.02', 'char', 'text468', '1', '1'`.
 
@@ -53,7 +53,7 @@ $insertQuery = $writer->insert(
 );
 ```
 
-Another way to execute the query:
+Another way to execute the query.
 ```php
 $insertQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $insertResult = $insertQuery->getResult();
