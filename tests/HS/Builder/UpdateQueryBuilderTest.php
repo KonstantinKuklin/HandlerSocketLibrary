@@ -43,4 +43,35 @@ class UpdateQueryBuilderTest extends TestCommon
             'Fall returned data not valid.'
         );
     }
+
+    public function testSingleUpdateSuffix()
+    {
+        $updateQueryBuilder = QueryBuilder::update(
+            array(
+                'key' => 2,
+                'varchar' => 'test again update query'
+            )
+        )
+            ->fromDataBase($this->getDatabase())
+            ->fromTable($this->getTableName())
+            ->where(Comparison::EQUAL, array('key' => 2))->withSuffix();
+
+        $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
+        $this->getWriter()->getResultList();
+
+        $updateResult = $updateQuery->getResult();
+        $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+
+
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '2',
+                    'varchar' => 'test update query'
+                )
+            ),
+            $updateQuery->getResult()->getData(),
+            'Fall returned data not valid.'
+        );
+    }
 } 

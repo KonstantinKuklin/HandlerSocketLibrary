@@ -14,7 +14,7 @@ use HS\Validator;
 abstract class QueryAbstract implements QueryInterface
 {
     private $parameterBag = null;
-    protected $queryResultMap = array(
+    static protected $queryResultMap = array(
         'HS\Query\AuthQuery' => 'HS\Result\AuthResult',
         'HS\Query\TextQuery' => 'HS\Result\TextResult',
         'HS\Query\OpenIndexQuery' => 'HS\Result\OpenIndexResult',
@@ -82,7 +82,7 @@ abstract class QueryAbstract implements QueryInterface
     abstract public function getQueryString();
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getIndexId()
     {
@@ -95,13 +95,21 @@ abstract class QueryAbstract implements QueryInterface
     public function setResultData($data)
     {
         $queryClassName = $this->getQueryClassName();
-        if ($queryClassName == 'HS\Query\SelectQuery') {
+        if ($queryClassName === 'HS\Query\SelectQuery' || $this->isSuffix()) {
             $this->setSelectResultObject($data);
 
             return true;
         }
 
-        $this->setResultObject($this->queryResultMap[$queryClassName], $data);
+        $this->setResultObject(self::$queryResultMap[$queryClassName], $data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isSuffix()
+    {
+        return $this->getParameter('suffix', false);
     }
 
     /**

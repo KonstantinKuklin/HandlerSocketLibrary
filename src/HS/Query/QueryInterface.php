@@ -23,4 +23,20 @@ interface QueryInterface
      * @return void
      */
     public function setResultData($data);
+
+    /**
+     * @return int
+     */
+    public function getIndexId();
+
+    /**
+     * @return boolean
+     */
+    public function isSuffix();
+
+    /**
+     * @return $this
+     * @throws \HS\Exception\InvalidArgumentException
+     */
+    public function execute();
 } 

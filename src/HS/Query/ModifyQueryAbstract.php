@@ -12,25 +12,17 @@ abstract class ModifyQueryAbstract extends SelectQuery
     abstract public function getModificator();
 
     /**
-     * @return boolean
-     */
-    public function isSuffics()
-    {
-        return $this->getParameter('suffics', false);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getQueryString()
     {
         $queryString = parent::getQueryString();
-        $modificator = $this->getModificator();
+        $mod = $this->getModificator();
 
-        if ($this->isSuffics()) {
-            $modificator .= '?';
+        if ($this->isSuffix()) {
+            $mod .= '?';
         }
-        $queryString .= Driver::DELIMITER . $modificator . Driver::DELIMITER;
+        $queryString .= Driver::DELIMITER . $mod . Driver::DELIMITER;
 
         return $queryString;
     }

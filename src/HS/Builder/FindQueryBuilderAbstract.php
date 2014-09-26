@@ -175,4 +175,14 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
 
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function withSuffix()
+    {
+        $this->getParameterBag()->setParameter('suffix', true);
+
+        return $this;
+    }
 } 

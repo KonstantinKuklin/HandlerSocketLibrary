@@ -6,6 +6,7 @@
 namespace HS\Tests\Writer;
 
 use HS\Component\Comparison;
+use HS\Result\SelectResult;
 use HS\Result\UpdateResult;
 use HS\Tests\TestCommon;
 
@@ -65,5 +66,37 @@ class UpdateQueryTest extends TestCommon
         $data = $selectQuery->getResult()->getData();
 
         $this->assertEquals('new2', $data[0]['text']);
+    }
+
+    public function testSingleUpdateWithSuffix()
+    {
+        $writer = $this->getWriter();
+
+        $updateQuery = $writer->update(
+            array('key', 'text'),
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            Comparison::EQUAL,
+            array(2),
+            array(2, 'new34'),
+            true
+        );
+
+        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array(2));
+        $writer->getResultList();
+
+        $updateResult = $updateQuery->getResult();
+        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
+
+        $dataUpdateSelectResult = $updateResult->getData();
+        if (!($updateResult instanceof SelectResult)) {
+            $this->fail("Returned not a select result object.");
+        }
+        $data = $selectQuery->getResult()->getData();
+
+        $this->assertEquals('new34', $data[0]['text']);
+        $this->assertEquals('new2', $dataUpdateSelectResult[0]['text']);
     }
 } 

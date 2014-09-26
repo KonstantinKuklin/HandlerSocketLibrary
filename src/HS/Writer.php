@@ -14,8 +14,12 @@ use HS\Query\UpdateQuery;
 
 class Writer extends Reader implements WriterHSInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function update(
-        $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $offset = null, $limit = null
+        array $columns, $dbName, $tableName, $indexName, $comparisonOperation, $keys, $values, $suffix = false,
+        $offset = null, $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -35,6 +39,7 @@ class Writer extends Reader implements WriterHSInterface
                 'valueList' => $values,
                 'openIndexQuery' => $openIndexQuery,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
 
@@ -47,7 +52,7 @@ class Writer extends Reader implements WriterHSInterface
      * {@inheritdoc}
      */
     public function updateByIndex(
-        $indexId, $comparisonOperation, array $keys, array $values, $limit = null, $offset = null
+        $indexId, $comparisonOperation, array $keys, array $values, $suffix = false, $limit = null, $offset = null
     ) {
         $updateQuery = new UpdateQuery(
             array(
@@ -59,6 +64,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $values,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($updateQuery);
@@ -66,8 +72,12 @@ class Writer extends Reader implements WriterHSInterface
         return $updateQuery;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function delete(
-        array $columns, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, $offset = null,
+        array $columns, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, $suffix = false,
+        $offset = null,
         $limit = null
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
@@ -87,6 +97,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'openIndexQuery' => $openIndexQuery,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($deleteQuery);
@@ -97,7 +108,7 @@ class Writer extends Reader implements WriterHSInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteByIndex($indexId, $comparisonOperation, array $keys, $limit = null, $offset = null)
+    public function deleteByIndex($indexId, $comparisonOperation, array $keys, $suffix = false, $offset = 0, $limit = 1)
     {
         $deleteQuery = new DeleteQuery(
             array(
@@ -108,6 +119,7 @@ class Writer extends Reader implements WriterHSInterface
                 'limit' => $limit,
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($deleteQuery);
@@ -115,10 +127,13 @@ class Writer extends Reader implements WriterHSInterface
         return $deleteQuery;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function increment(
         array $columns, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, array $valueList,
-        $offset = null,
-        $limit = null
+        $suffix = false, $offset = 0,
+        $limit = 1
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -138,6 +153,7 @@ class Writer extends Reader implements WriterHSInterface
                 'openIndexQuery' => $openIndexQuery,
                 'valueList' => $valueList,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($incrementQuery);
@@ -149,7 +165,7 @@ class Writer extends Reader implements WriterHSInterface
      * {@inheritdoc}
      */
     public function incrementByIndex(
-        $indexId, $comparisonOperation, array $keys, array $valueList, $limit = null, $offset = null
+        $indexId, $comparisonOperation, array $keys, array $valueList, $suffix = false, $offset = 0, $limit = 1
     ) {
         $incrementQuery = new IncrementQuery(
             array(
@@ -161,6 +177,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $valueList,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($incrementQuery);
@@ -168,11 +185,13 @@ class Writer extends Reader implements WriterHSInterface
         return $incrementQuery;
     }
 
-
+    /**
+     * {@inheritdoc}
+     */
     public function decrement(
         array $columnList, $dbName, $tableName, $indexName, $comparisonOperation, array $keys, array $valueList,
-        $offset = null,
-        $limit = null
+        $suffix = false, $offset = 0,
+        $limit = 1
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columnList, false);
         $openIndexQuery = null;
@@ -192,6 +211,7 @@ class Writer extends Reader implements WriterHSInterface
                 'openIndexQuery' => $openIndexQuery,
                 'valueList' => $valueList,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($decrementQuery);
@@ -203,7 +223,7 @@ class Writer extends Reader implements WriterHSInterface
      * {@inheritdoc}
      */
     public function decrementByIndex(
-        $indexId, $comparisonOperation, array $keys, array $valueList, $limit = null, $offset = null
+        $indexId, $comparisonOperation, array $keys, array $valueList, $suffix = false, $offset = 0, $limit = 1
     ) {
         $decrementQuery = new DecrementQuery(
             array(
@@ -215,6 +235,7 @@ class Writer extends Reader implements WriterHSInterface
                 'columnList' => $this->getKeysByIndexId($indexId),
                 'valueList' => $valueList,
                 'socket' => $this,
+                'suffix' => $suffix,
             )
         );
         $this->addQuery($decrementQuery);
