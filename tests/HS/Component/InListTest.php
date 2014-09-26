@@ -6,9 +6,8 @@
 namespace HS\Tests\Component;
 
 use HS\Component\InList;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use PHPUnit_Framework_TestCase;
-use Symfony\Component\Yaml\Inline;
 
 class InListTest extends PHPUnit_Framework_TestCase
 {
@@ -38,7 +37,7 @@ class InListTest extends PHPUnit_Framework_TestCase
     {
         try {
             new InList('s', array());
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
 

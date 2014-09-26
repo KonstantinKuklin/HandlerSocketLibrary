@@ -5,17 +5,15 @@
 
 namespace HS\Query;
 
+use HS\Driver;
+
 class AuthQuery extends QueryAbstract
 {
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        return array(
-            'A',
-            '1', // <atyp>
-            $this->getParameter('authKey') // <akey>
-        );
+        return sprintf("A" . Driver::DELIMITER . "1" . Driver::DELIMITER, $this->getParameter('authKey'));
     }
 }

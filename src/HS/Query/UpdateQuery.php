@@ -5,6 +5,8 @@
 
 namespace HS\Query;
 
+use HS\Driver;
+
 class UpdateQuery extends ModifyQueryAbstract
 {
     public function getModificator()
@@ -15,12 +17,15 @@ class UpdateQuery extends ModifyQueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        $parameters = parent::getQueryParameters();
+        $queryString = parent::getQueryString();
 
         $valueList = $this->getParameter('valueList', array());
+        if (!empty($valueList)) {
+            $queryString .= Driver::prepareSendDataStatic($valueList);
+        }
 
-        return array_merge($parameters, $valueList);
+        return $queryString;
     }
 }

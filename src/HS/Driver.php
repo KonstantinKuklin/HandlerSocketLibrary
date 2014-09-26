@@ -64,7 +64,7 @@ class Driver implements StreamDriverInterface
     {
         $encodedData = array_map('self::encodeData', $data);
 
-        return implode(self::DELIMITER, $encodedData) . self::EOL;
+        return implode(self::DELIMITER, $encodedData);
     }
 
     /**

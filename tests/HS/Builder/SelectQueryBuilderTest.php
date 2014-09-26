@@ -6,7 +6,7 @@
 namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
 use HS\Tests\TestCommon;
 
@@ -56,7 +56,7 @@ class SelectQueryBuilderTest extends TestCommon
                 ->fromDataBase($this->getDatabase())
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('float' => 42));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
         $this->fail('Fail where not throw exception on wrong key position.');

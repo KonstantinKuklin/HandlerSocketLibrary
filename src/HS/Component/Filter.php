@@ -6,7 +6,7 @@
 namespace HS\Component;
 
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 class Filter
 {
@@ -24,7 +24,7 @@ class Filter
      * @param string                     $key
      * @param string                     $type
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function __construct($comparison, $position, $key, $type = self::FILTER_TYPE_SKIP)
     {
@@ -35,14 +35,14 @@ class Filter
         }
 
         if (!is_numeric($position)) {
-            throw new WrongParameterException("Position must be numeric");
+            throw new InvalidArgumentException("Position must be numeric");
         }
         $this->position = (int)$position;
         $this->key = $key;
         if ($type === self::FILTER_TYPE_SKIP || $type === self::FILTER_TYPE_STOP) {
             $this->type = $type;
         } else {
-            throw new WrongParameterException("Filter type is wrong must be 'F' or 'W'.");
+            throw new InvalidArgumentException("Filter type is wrong must be 'F' or 'W'.");
         }
     }
 

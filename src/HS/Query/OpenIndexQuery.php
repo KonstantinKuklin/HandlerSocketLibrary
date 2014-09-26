@@ -22,10 +22,9 @@ class OpenIndexQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        return array(
-            'P',
+        return sprintf("P\t%d\t%s\t%s\t%s\t%s\t%s",
             $this->getParameter('indexId'),
             $this->getParameter('dbName'),
             $this->getParameter('tableName'),

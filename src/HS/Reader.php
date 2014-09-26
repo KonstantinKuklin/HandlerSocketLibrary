@@ -5,7 +5,7 @@ namespace HS;
 use HS\Component\Comparison;
 use HS\Component\Filter;
 use HS\Component\InList;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
 use HS\Query\SelectQuery;
@@ -22,7 +22,7 @@ class Reader extends CommonClient implements ReaderInterface
     public function authenticate($authKey)
     {
         if (!is_string($authKey) || is_string($authKey) && strlen($authKey) < 1) {
-            throw new WrongParameterException(
+            throw new InvalidArgumentException(
                 sprintf(
                     "Authenticate command require string password value, but got %s with value %s.",
                     gettype($authKey),
@@ -133,7 +133,7 @@ class Reader extends CommonClient implements ReaderInterface
     public function selectInByIndex($indexId, $in, $offset = null, $limit = null, array $filterList = array())
     {
         if ($limit !== null && $limit < count($in)) {
-            throw new WrongParameterException("Limit must be > count of in");
+            throw new InvalidArgumentException("Limit must be > count of in");
         }
 
         $selectQuery = new SelectQuery(
@@ -208,7 +208,7 @@ class Reader extends CommonClient implements ReaderInterface
      * @param int    $offset
      * @param int    $limit
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return SelectQuery
      */
     public function selectIn(
@@ -224,7 +224,7 @@ class Reader extends CommonClient implements ReaderInterface
         /** @var int $indexId */
 
         if ($limit !== null && $limit < count($in)) {
-            throw new WrongParameterException("Limit must be > count of in");
+            throw new InvalidArgumentException("Limit must be > count of in");
         }
 
         $selectQuery = new SelectQuery(

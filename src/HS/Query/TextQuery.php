@@ -20,8 +20,8 @@ class TextQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        return array($this->getParameter('text'));
+        return $this->getParameter('text');
     }
-} 
+}

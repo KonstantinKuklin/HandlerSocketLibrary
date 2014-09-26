@@ -6,7 +6,7 @@ namespace HS;
 
 use HS\Query\SelectQuery;
 use HS\Query\OpenIndexQuery;
-use HS\Exceptions\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\Query\AuthQuery;
 
 
@@ -18,7 +18,7 @@ interface ReaderHSInterface
     /**
      * @param string $authKey
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return AuthQuery
      */
     public function authenticate($authKey);

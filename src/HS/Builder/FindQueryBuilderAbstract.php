@@ -4,7 +4,7 @@ namespace HS\Builder;
 use HS\Component\Comparison;
 use HS\Component\Filter;
 use HS\Component\InList;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -68,7 +68,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      * @param array  $list
      *
      * @return $this
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function where($comparison, array $list)
     {
@@ -79,7 +79,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
         for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
             $key = $columnList[$i];
             if (!isset($list[$key])) {
-                throw new WrongParameterException(
+                throw new InvalidArgumentException(
                     "The key`s must be set with out skip on select( key1, key2). Where(key2,key1)"
                 );
             }
@@ -95,7 +95,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      * @param array  $values
      *
      * @return $this
-     * @throws \Exception
+     * @throws InvalidArgumentException
      */
     public function whereIn($key, array $values)
     {
@@ -104,7 +104,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
         $this->getParameterBag()->setParameter('keyList', array(1));
 
         if (false === $index = array_search($key, $columnList)) {
-            throw new WrongParameterException("Can't find key in columns list.");
+            throw new InvalidArgumentException("Can't find key in columns list.");
         }
         $inList = new InList($index, $values);
         $this->getParameterBag()->setParameter('inKeyList', $inList);

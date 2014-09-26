@@ -5,6 +5,8 @@
 
 namespace HS\Query;
 
+use HS\Driver;
+
 abstract class ModifyQueryAbstract extends SelectQuery
 {
     abstract public function getModificator();
@@ -20,17 +22,16 @@ abstract class ModifyQueryAbstract extends SelectQuery
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        $parameters = parent::getQueryParameters();
+        $queryString = parent::getQueryString();
         $modificator = $this->getModificator();
 
         if ($this->isSuffics()) {
             $modificator .= '?';
         }
+        $queryString .= Driver::DELIMITER . $modificator . Driver::DELIMITER;
 
-        $parameters[] = $modificator;
-
-        return $parameters;
+        return $queryString;
     }
 }

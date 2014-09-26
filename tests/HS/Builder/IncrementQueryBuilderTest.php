@@ -6,7 +6,7 @@
 namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
 use HS\Tests\TestCommon;
 
@@ -47,10 +47,10 @@ class IncrementQueryBuilderTest extends TestCommon
                 ->fromDataBase($this->getDatabase())
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('key' => 104));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
         $this->fail('Not fall incrementBuilder with wrong parameters.');
 
     }
-} 
+}

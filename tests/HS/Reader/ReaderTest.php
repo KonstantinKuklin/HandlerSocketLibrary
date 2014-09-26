@@ -7,7 +7,7 @@ namespace HS\Tests\Reader;
 
 use HS\Component\Comparison;
 use HS\Component\Filter;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\Tests\TestCommon;
 
 class ReaderTest extends TestCommon
@@ -40,7 +40,7 @@ class ReaderTest extends TestCommon
                 99,
                 array(new Filter(Comparison::EQUAL, 0, 1))
             );
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
 

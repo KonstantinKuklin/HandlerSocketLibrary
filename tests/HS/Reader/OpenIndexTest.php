@@ -5,7 +5,8 @@
 
 namespace HS\Tests\Reader;
 
-use HS\Exception\WrongParameterException;
+use HS\Errors\OpenTableError;
+use HS\Exception\InvalidArgumentException;
 use HS\Tests\TestCommon;
 use Stream\Stream;
 
@@ -17,7 +18,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex("1", $this->getDatabase(), $this->getTableName(), '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -29,7 +30,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(0, $this->getDatabase(), $this->getTableName(), '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->fail(sprintf("Fall zero set as indexId: %s", $e->getMessage()));
         }
 
@@ -40,7 +41,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(-99, $this->getDatabase(), $this->getTableName(), '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -52,7 +53,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, Stream::STR_EMPTY, $this->getTableName(), '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -64,7 +65,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, null, $this->getTableName(), '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -76,7 +77,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), Stream::STR_EMPTY, '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -88,7 +89,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), null, '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -100,7 +101,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), 23, '', array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -112,7 +113,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), null, array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->fail(sprintf("Fall null set as indexName: %s", $e->getMessage()));
         }
     }
@@ -122,7 +123,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), Stream::STR_EMPTY, array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->fail("Fall empty string set as indexName.");
         }
 
@@ -133,7 +134,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), 22, array('text'));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -181,7 +182,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text", new OpenIndexTest()));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -193,7 +194,7 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text", array("test")));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
 
@@ -206,15 +207,14 @@ class OpenIndexTest extends TestCommon
         $openIndex = null;
         try {
             $openIndex = $reader->openIndex(1, "randomdatabase", $this->getTableName(), '', array("text"));
-        } catch (WrongParameterException $e) {
+            $reader->getResultList();
+        } catch (InvalidArgumentException $e) {
             $this->fail("Fall with valid parameters.");
+        } catch (OpenTableError $e) {
+            return true;
         }
 
-        $reader->getResultList();
-        $this->assertFalse(
-            $openIndex->getResult()->isSuccessfully(),
-            "Successfully openIndex on not existed database."
-        );
+        $this->fail('Not fall with missed database name.');
 
     }
 
@@ -224,17 +224,18 @@ class OpenIndexTest extends TestCommon
         $openIndex = null;
         try {
             $openIndex = $reader->openIndex(1, "randomdatabase", $this->getTableName(), '', array("text"));
-        } catch (WrongParameterException $e) {
+            $reader->getResultList();
+        } catch (InvalidArgumentException $e) {
             $this->fail("Fall with valid parameters.");
+        } catch (OpenTableError $e) {
+            $this->assertEquals(
+                'HS\Errors\OpenTableError',
+                get_class($e),
+                "Error object os not instance of OpenTableError"
+            );
+            return true;
         }
-
-        $reader->getResultList();
-        $this->assertEquals(
-            'HS\Errors\OpenTableError',
-            get_class($openIndex->getResult()->getError()),
-            "Error object os not instance of OpenTableError"
-        );
-
+        $this->fail("Not fall with missed database.");
     }
 
     public function testReopenIndex()
@@ -245,7 +246,7 @@ class OpenIndexTest extends TestCommon
         try {
             $openIndex = $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text"));
             $openIndexSecond = $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text"));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->fail("Fall with valid parameters.");
         }
 

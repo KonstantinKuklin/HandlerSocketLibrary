@@ -8,14 +8,15 @@ use HS\Component\Comparison;
 use HS\Component\ComparisonInterface;
 use HS\Component\Filter;
 use HS\Component\InList;
-use HS\Exception\WrongParameterException;
+use HS\Driver;
+use HS\Exception\InvalidArgumentException;
 
 class SelectQuery extends QueryAbstract
 {
     const VECTOR = 1;
     const ASSOC = 2;
 
-//    const OBJECT = 3;
+//  const OBJECT = 3; TODO
 
     public function getReturnType()
     {
@@ -25,18 +26,18 @@ class SelectQuery extends QueryAbstract
     /**
      * @param int $type
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function setReturnType($type)
     {
         if ($type === self::ASSOC
             || $type === self::VECTOR
-//            || $type === self::OBJECT
+//          || $type === self::OBJECT TODO
         ) {
             $this->getParameterBag()->setParameter('returnType', $type);
 
         } else {
-            throw new WrongParameterException("Got unknown return type.");
+            throw new InvalidArgumentException("Got unknown return type.");
         }
     }
 
@@ -73,44 +74,50 @@ class SelectQuery extends QueryAbstract
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getIn()
     {
-
         /** @var InList $inKeyList */
         $inKeyList = $this->getParameter('inKeyList');
         if ($inKeyList === null) {
-            return array();
+            return '';
         }
 
-        $output[] = '@';
-
-        return array_merge(
-            array(
-                '@',
-                $inKeyList->getPosition(),
-                $inKeyList->getCount()
-            ),
-            $inKeyList->getKeyList()
+        return sprintf(
+            Driver::DELIMITER . "@" . // in marker
+            Driver::DELIMITER . "%d" . // position
+            Driver::DELIMITER . "%d" . // count
+            Driver::DELIMITER . "%s", // key list
+            $inKeyList->getPosition(),
+            $inKeyList->getCount(),
+            Driver::prepareSendDataStatic($inKeyList->getKeyList())
         );
-
     }
 
+    /**
+     * @return string
+     */
     public function getFilterList()
     {
         /** @var Filter[] $filterList */
         $filterList = $this->getParameter('filterList');
         if ($filterList === null) {
-            return array();
+            return '';
         }
 
-        $output = array();
+        $output = '';
         foreach ($filterList as $filter) {
-            $output[] = $filter->getType();
-            $output[] = $filter->getComparison();
-            $output[] = $filter->getPosition();
-            $output[] = $filter->getKey();
+            $output .= sprintf(
+                Driver::DELIMITER . "%s" . // type
+                Driver::DELIMITER . "%s" . // comparison
+                Driver::DELIMITER . "%d" . // position
+                Driver::DELIMITER . "%s", // key
+                $filter->getType(),
+                $filter->getComparison(),
+                $filter->getPosition(),
+                $filter->getKey()
+            );
         }
 
         return $output;
@@ -119,21 +126,25 @@ class SelectQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
         // <indexid> <op> <vlen> <v1> ... <vn> [LIM] [IN] [FILTER ...]
 
-        return array_merge(
-            array(
-                $this->getIndexId(),
-                $this->getComparison(),
-                count($this->getKeyList()),
-            ),
-            $this->getKeyList(),
-            array(
-                $this->getLimit(),
-                $this->getOffset()
-            ),
+        return sprintf(
+            "%d" . Driver::DELIMITER . // index
+            "%s" . Driver::DELIMITER . // comparison
+            "%d" . Driver::DELIMITER . // key list count
+            "%s" . Driver::DELIMITER . // key list
+            "%d" . Driver::DELIMITER . // limit
+            "%d" . // offset
+            "%s" . // in list
+            "%s", // filter list
+            $this->getIndexId(),
+            $this->getComparison(),
+            count($this->getKeyList()),
+            Driver::prepareSendDataStatic($this->getKeyList()),
+            $this->getLimit(),
+            $this->getOffset(),
             $this->getIn(),
             $this->getFilterList()
         );

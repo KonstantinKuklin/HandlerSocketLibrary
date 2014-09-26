@@ -4,7 +4,7 @@ namespace HS;
 
 use HS\Builder\QueryBuilderInterface;
 use HS\Exception\Exception;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\Query\OpenIndexQuery;
 use HS\Query\QueryInterface;
 use PHP_Timer;
@@ -39,9 +39,6 @@ abstract class CommonClient
     /** @var array */
     private $keysList = array();
 
-    /** @var Driver */
-    private $driver = null;
-
     /** @var null|string */
     private $authKey = null;
 
@@ -49,6 +46,15 @@ abstract class CommonClient
     private $debug = false;
 
     public $debugResultList = array();
+
+    /**
+     * @param string $authKey
+     */
+    abstract public function authenticate($authKey);
+
+    abstract public function getIndexId(
+        $dbName, $tableName, $indexName, array $columnList, $returnOnlyId = true, array $filterColumnList = array()
+    );
 
     /**
      * @param string  $url
@@ -63,8 +69,7 @@ abstract class CommonClient
         }
 
         $this->authKey = $authKey;
-        $this->driver = new Driver();
-        $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port, $this->driver);
+        $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port);
         $this->stream->open();
         $this->stream->setBlockingOff();
         $this->stream->setReadTimeOut(0, (float)500000);
@@ -101,8 +106,8 @@ abstract class CommonClient
             }
             $this->getStream()->isReadyForReading();
             try {
-                $result = $this->getStream()->getContents();
-                $query->setResultData($result);
+                $resultList = Driver::prepareReceiveDataStatic($this->getStream()->getContents());
+                $query->setResultData($resultList);
 
                 $ResultObject = $query->getResult();
 
@@ -118,7 +123,7 @@ abstract class CommonClient
                 $resultsList[] = $ResultObject;
                 // add time to general time counter
             } catch (ReadStreamException $e) {
-                // TODO check
+                throw new Exception("Read stream error. Can't read from stream. URL: " . $this->getUrlConnection());
             }
         }
 
@@ -239,7 +244,7 @@ abstract class CommonClient
      */
     protected function sendQuery(QueryInterface $query)
     {
-        if ($this->getStream()->sendContents($query->getQueryParameters()) > 0) {
+        if ($this->getStream()->sendContents($query->getQueryString() . Driver::EOL) > 0) {
             // increment count of queries
             $this->countQueries++;
 
@@ -261,13 +266,13 @@ abstract class CommonClient
     /**
      * @param int $indexId
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return array
      */
     protected function getKeysByIndexId($indexId)
     {
         if (!array_key_exists($indexId, $this->keysList)) {
-            throw new WrongParameterException(sprintf("Don't find any Index with this indexId:%d.", $indexId));
+            throw new InvalidArgumentException(sprintf("Don't find any Index with this indexId:%d.", $indexId));
         }
 
         return $this->keysList[$indexId];
@@ -319,7 +324,7 @@ abstract class CommonClient
     }
 
     /**
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     private function authenticateWithConstructor()
     {

@@ -5,6 +5,7 @@
 
 namespace HS\Tests\Reader;
 
+use HS\Error;
 use HS\Result\ResultAbstract;
 use HS\Tests\TestCommon;
 
@@ -47,19 +48,26 @@ class ErrorTest extends TestCommon
 
         foreach ($this->errorMapList as $cmd => $error) {
             $data = array(1, 2, $cmd, 'simple data');
-            $result = new ResultTest($queryTest, $data);
+            try {
+                $result = new ResultTest($queryTest, $data);
+            } catch (Error $e) {
+                $actualError = get_class($e);
+                $this->assertEquals(
+                    'HS\Errors\\' . $error,
+                    $actualError,
+                    sprintf(
+                        'Returned wrong error class on error %s. Must be %s, but got %s.',
+                        $cmd,
+                        $error,
+                        $actualError
+                    )
+                );
 
-            $actualError = get_class($result->getError());
-            $this->assertEquals(
-                'HS\Errors\\' . $error,
-                $actualError,
-                sprintf(
-                    'Returned wrong error class on error %s. Must be %s, but got %s.',
-                    $cmd,
-                    $error,
-                    $actualError
-                )
-            );
+                continue;
+            }
+
+            $this->fail('Fail, error won"t catched.');
+
         }
     }
 

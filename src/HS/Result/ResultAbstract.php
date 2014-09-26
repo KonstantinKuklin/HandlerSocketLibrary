@@ -48,6 +48,23 @@ abstract class ResultAbstract implements ResultInterface
      * @param QueryInterface      $query
      * @param array               $data
      * @param null|OpenIndexQuery $openIndexQuery
+     *
+     * @throws AuthenticationError
+     * @throws ColumnParseError
+     * @throws CommandError
+     * @throws ComparisonOperatorError
+     * @throws Error
+     * @throws FilterColumnError
+     * @throws FilterTypeError
+     * @throws InListSizeError
+     * @throws IndexOverFlowError
+     * @throws InternalMysqlError
+     * @throws KeyIndexError
+     * @throws KeyLengthError
+     * @throws LockTableError
+     * @throws OpenTableError
+     * @throws ReadOnlyError
+     * @throws UnknownError
      */
     public function __construct(QueryInterface $query, array &$data, $openIndexQuery = null)
     {
@@ -121,6 +138,10 @@ abstract class ResultAbstract implements ResultInterface
                     break;
             }
         }
+        // if got error
+        if ($this->error !== null) {
+            throw $this->error;
+        }
         $this->data = $data;
     }
 
@@ -129,6 +150,7 @@ abstract class ResultAbstract implements ResultInterface
      */
     public function isSuccessfully()
     {
+        // check depended result
         if ($this->openIndexQuery !== null && !$this->openIndexQuery->getResult()->isSuccessfully()) {
             return false;
         }

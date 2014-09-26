@@ -56,7 +56,7 @@ class GetResultTest extends TestCommon
             'PRIMARY',
             array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
         );
-        $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
+        $selectQuery = $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
 
         $expectedResult = array(
             array(

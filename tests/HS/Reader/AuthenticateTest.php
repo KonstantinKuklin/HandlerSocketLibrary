@@ -5,7 +5,7 @@
 
 namespace HS\Tests\Reader;
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\Tests\TestCommon;
 use Stream\Stream;
 
@@ -18,7 +18,7 @@ class AuthenticateTest extends TestCommon
 
         try {
             $reader->authenticate(90);
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
 
@@ -31,7 +31,7 @@ class AuthenticateTest extends TestCommon
 
         try {
             $reader->authenticate(Stream::STR_EMPTY);
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
 
@@ -44,7 +44,7 @@ class AuthenticateTest extends TestCommon
         $authKey = "text";
         try {
             $reader->authenticate($authKey);
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->fail(sprintf("Fail authentication request with valid parameter, sent string:%s.", $authKey));
         }
 

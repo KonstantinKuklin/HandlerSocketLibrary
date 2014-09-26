@@ -5,15 +5,20 @@
 
 namespace HS\Query;
 
+use HS\Driver;
+
 abstract class ModifyStepQueryAbstract extends ModifyQueryAbstract
 {
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
-        $parameters = parent::getQueryParameters();
-        $parameters = array_merge($parameters, $this->getParameter('valueList', array()));
-        return $parameters;
+        $queryString = parent::getQueryString();
+        if (($valueList = $this->getParameter('valueList', array())) && !empty($valueList)) {
+            $queryString .= Driver::prepareSendDataStatic($valueList);
+        }
+
+        return $queryString;
     }
 }

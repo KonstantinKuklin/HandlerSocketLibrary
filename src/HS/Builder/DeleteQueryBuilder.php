@@ -1,7 +1,7 @@
 <?php
 namespace HS\Builder;
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -27,7 +27,7 @@ class DeleteQueryBuilder extends FindQueryBuilderAbstract
      * @param array  $list
      *
      * @return $this
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function where($comparison, array $list)
     {

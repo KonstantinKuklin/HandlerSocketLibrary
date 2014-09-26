@@ -5,7 +5,7 @@
 
 namespace HS;
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 class Validator
 {
@@ -13,65 +13,65 @@ class Validator
     /**
      * @param int $indexId
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return void
      */
     public static function validateIndexId($indexId)
     {
         if (!self::validateInt($indexId)) {
-            self::getWrongParameterException("Wrong indexId value, must be integer >= 0.", $indexId);
+            self::getInvalidArgumentException("Wrong indexId value, must be integer >= 0.", $indexId);
         }
     }
 
     /**
      * @param string $dbName
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return void
      */
     public static function validateDbName($dbName)
     {
         if (!self::validateString($dbName)) {
-            self::getWrongParameterException("Wrong dbName value, must be string and length > 0.", $dbName);
+            self::getInvalidArgumentException("Wrong dbName value, must be string and length > 0.", $dbName);
         }
     }
 
     /**
      * @param string $indexName
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return void
      */
     public static function validateIndexName($indexName)
     {
         if (!self::validateString($indexName)) {
-            self::getWrongParameterException("Wrong indexName value, must be string and length > 0.", $indexName);
+            self::getInvalidArgumentException("Wrong indexName value, must be string and length > 0.", $indexName);
         }
     }
 
     /**
      * @param string $tableName
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return void
      */
     public static function validateTableName($tableName)
     {
         if (!self::validateString($tableName)) {
-            self::getWrongParameterException("Wrong tableName value, must be string and length > 0.", $tableName);
+            self::getInvalidArgumentException("Wrong tableName value, must be string and length > 0.", $tableName);
         }
     }
 
     /**
      * @param array $columnList
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return void
      */
     public static function validateColumnList(array $columnList)
     {
         if (!self::validateArray($columnList, true)) {
-            self::getWrongParameterException("Wrong columnList, must be array and length > 0.", $columnList);
+            self::getInvalidArgumentException("Wrong columnList, must be array and length > 0.", $columnList);
         }
     }
 
@@ -79,11 +79,11 @@ class Validator
      * @param string $message
      * @param mixed  $data
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
-    public static function getWrongParameterException($message, $data)
+    public static function getInvalidArgumentException($message, $data)
     {
-        throw new WrongParameterException(
+        throw new InvalidArgumentException(
             $message . sprintf(
                 "Got %s with values %s.",
                 gettype($data),

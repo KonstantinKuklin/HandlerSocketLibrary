@@ -4,6 +4,7 @@
  */
 namespace HS\Query;
 
+use HS\Driver;
 use HS\Result\InsertResult;
 
 class InsertQuery extends QueryAbstract
@@ -11,21 +12,21 @@ class InsertQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function getQueryParameters()
+    public function getQueryString()
     {
         $valueList = $this->getParameter('valueList', array());
 
-        $returnList = array(
+        $queryString = sprintf(
+            "%d" . Driver::DELIMITER . "+" . Driver::DELIMITER . "%d",
             $this->getIndexId(),
-            '+',
             count($valueList[0])
         );
 
         foreach ($valueList as $row) {
-            $returnList = array_merge($returnList, $row);
+            $queryString .= "\t" . Driver::prepareSendDataStatic($row);
         }
 
-        return $returnList;
+        return $queryString;
     }
 
     /**

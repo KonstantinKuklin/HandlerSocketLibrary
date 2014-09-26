@@ -5,7 +5,7 @@
 
 namespace HS\Component;
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 class InList
 {
@@ -16,12 +16,12 @@ class InList
      * @param int   $position
      * @param array $keyList
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function __construct($position, array $keyList)
     {
         if (!is_numeric($position)) {
-            throw new WrongParameterException("ColumnNumber must be a number");
+            throw new InvalidArgumentException("ColumnNumber must be a number");
         }
         $this->position = $position;
         $this->keyList = $keyList;

@@ -6,8 +6,7 @@
 namespace HS\Query;
 
 use HS\Component\ParameterBag;
-use HS\Driver;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\ReaderInterface;
 use HS\Result\SelectResult;
 use HS\Validator;
@@ -26,11 +25,6 @@ abstract class QueryAbstract implements QueryInterface
         'HS\Query\IncrementQuery' => 'HS\Result\IncrementResult',
         'HS\Query\DecrementQuery' => 'HS\Result\DecrementResult',
     );
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract public function getQueryParameters();
 
     /**
      * @param array $parameterList
@@ -85,10 +79,7 @@ abstract class QueryAbstract implements QueryInterface
     /**
      * {@inheritdoc}
      */
-    public function getQueryString()
-    {
-        return Driver::prepareSendDataStatic($this->getQueryParameters());
-    }
+    abstract public function getQueryString();
 
     /**
      * @return int
@@ -115,7 +106,7 @@ abstract class QueryAbstract implements QueryInterface
 
     /**
      * @return $this
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function execute()
     {
@@ -142,14 +133,14 @@ abstract class QueryAbstract implements QueryInterface
     }
 
     /**
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      * @return ReaderInterface
      */
     protected function getSocket()
     {
         $socket = $this->getParameter('socket');
         if (!($socket instanceof ReaderInterface)) {
-            throw new WrongParameterException('Socket not found');
+            throw new InvalidArgumentException('Socket not found');
         }
 
         return $socket;

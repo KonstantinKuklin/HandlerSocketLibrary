@@ -4,6 +4,6 @@
  */
 namespace HS\Exception;
 
-class ComparisonException extends WrongParameterException
+class ComparisonException extends InvalidArgumentException
 {
 } 

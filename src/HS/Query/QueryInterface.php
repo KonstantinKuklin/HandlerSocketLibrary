@@ -13,11 +13,6 @@ interface QueryInterface
     public function getResult();
 
     /**
-     * @return array
-     */
-    public function getQueryParameters();
-
-    /**
      * @return string
      */
     public function getQueryString();

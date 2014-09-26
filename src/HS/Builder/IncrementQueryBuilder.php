@@ -2,7 +2,7 @@
 
 namespace HS\Builder;
 
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -12,7 +12,7 @@ class IncrementQueryBuilder extends UpdateQueryBuilder
     /**
      * @param array $incrementList
      *
-     * @throws WrongParameterException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $incrementList)
     {
@@ -26,7 +26,7 @@ class IncrementQueryBuilder extends UpdateQueryBuilder
                 $columnList[] = $value;
                 $valueList[] = 1;
             } else {
-                throw new WrongParameterException("Wrong increment parameter.");
+                throw new InvalidArgumentException("Wrong increment parameter.");
             }
 
         }

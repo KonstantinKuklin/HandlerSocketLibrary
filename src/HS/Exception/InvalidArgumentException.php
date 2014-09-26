@@ -5,6 +5,6 @@
 
 namespace HS\Exception;
 
-class WrongParameterException extends Exception
+class InvalidArgumentException extends Exception
 {
 } 

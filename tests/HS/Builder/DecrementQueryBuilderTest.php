@@ -6,7 +6,7 @@
 namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;
-use HS\Exception\WrongParameterException;
+use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
 use HS\Tests\TestCommon;
 
@@ -47,7 +47,7 @@ class DecrementQueryBuilderTest extends TestCommon
                 ->fromDataBase($this->getDatabase())
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('key' => 105));
-        } catch (WrongParameterException $e) {
+        } catch (InvalidArgumentException $e) {
             return true;
         }
         $this->fail('Not fall decrementBuilder with wrong parameters.');
