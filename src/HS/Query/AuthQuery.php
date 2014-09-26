@@ -14,6 +14,6 @@ class AuthQuery extends QueryAbstract
      */
     public function getQueryString()
     {
-        return sprintf("A" . Driver::DELIMITER . "1" . Driver::DELIMITER, $this->getParameter('authKey'));
+        return "A" . Driver::DELIMITER . "1" . Driver::DELIMITER . Driver::encodeData($this->getParameter('authKey'));
     }
 }

@@ -49,6 +49,8 @@ abstract class CommonClient
 
     /**
      * @param string $authKey
+     *
+     * @return \HS\Query\AuthQuery
      */
     abstract public function authenticate($authKey);
 
@@ -74,7 +76,7 @@ abstract class CommonClient
         $this->stream->setBlockingOff();
         $this->stream->setReadTimeOut(0, (float)500000);
         $this->stream->setReceiveMethod(new StreamGetLineMethod(1024, Driver::EOL));
-        $this->authenticateWithConstructor();
+        $this->authenticateOnInit();
     }
 
     /**
@@ -224,7 +226,7 @@ abstract class CommonClient
             throw new Exception("Stream not found to reopen.");
         }
         $this->getStream()->close();
-        $this->authenticateWithConstructor();
+        $this->authenticateOnInit();
     }
 
     /**
@@ -323,12 +325,8 @@ abstract class CommonClient
         $this->indexList[$indexMapValue] = $indexId;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
-    private function authenticateWithConstructor()
+    private function authenticateOnInit()
     {
-        // if auth set then try to auth
         if ($this->authKey !== null) {
             $this->authenticate($this->authKey);
         }

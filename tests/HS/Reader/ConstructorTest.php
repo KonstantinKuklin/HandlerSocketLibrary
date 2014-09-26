@@ -5,6 +5,7 @@
 
 namespace HS\Tests\Reader;
 
+use HS\Errors\AuthenticationError;
 use HS\Reader;
 use HS\Tests\TestCommon;
 use Stream\Exception\PortValidateStreamException;
@@ -47,10 +48,14 @@ class ConstructorTest extends TestCommon
     {
         $portGood = 9999;
         $pass = 'testpass';
-
-        $reader = new Reader($this->getHost(), $portGood, $pass);
-        $this->assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
-        $reader->getResultList();
+        try {
+            $reader = new Reader($this->getHost(), $portGood, $pass);
+            $this->assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
+            $reader->getResultList();
+        } catch (AuthenticationError $e) {
+            return true;
+        }
+        $this->fail("Not fall without auth.");
     }
 
     public function testAuthRequestNotAdded()
