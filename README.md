@@ -42,10 +42,11 @@ How to install
 ------------
 How to install HandlerSocket can be found on the internet or just download PerconaServer or MariaDB.
 
-Start using HandlerSocketLibrary is very simple:
+Start using HandlerSocketLibrary is very simple.
 
-  - you need a composer;
-  - composer require "konstantin-kuklin/handlersocket-library": "dev-master".
+Add to composer.json:
+
+```konstantin-kuklin/handlersocket-library": "dev-master" ```
 
 How to connect
 ------------
