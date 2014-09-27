@@ -39,6 +39,7 @@ $reader->getResultList();
 ```
 
 Here we open the index with identifier 12, columns `key`,` text`, and the column to filter `num`.
+
 This method returns us to the class OpenIndexQuery.
 
 Another way to execute the query.

@@ -19,7 +19,7 @@ $indexId = $reader->getIndexId(
 );
 ```
 
-After we get the index (if the index was already open, we will get it ID, without reopening) execute Select query with `key = 42`
+After we get the index (if the index was already open, we will get it ID, without reopening) execute Select query with `key = 42`.
 
 ```php
 $selectQuery = $reader->selectByIndex($indexId, Comparison::EQUAL, array(42));
@@ -35,32 +35,32 @@ Now the variable `$selectQuery` contain class `\HS\Query\SelectQuery` and we can
 
 `$selectQuery->setReturnType(SelectQuery::ASSOC);`
 
-To send all queries and get the results you need to do:
+To send all queries and get the results you need to do.
 
 ```php
 $resultList = $reader->getResultList();
 ```
 
-Another way to execute the query:
+Another way to execute the query.
 ```php
 $selectQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $selectResult = $selectQuery->getResult();
 ```
 
 The variable `$resultList` contains a list of all results.
-Just the desired result can be obtained:
+Just the desired result can be obtained.
 
 ```php
 $selectResult = $selectQuery->getResult();
 ```
 
-If the command has been successfully executed, the getData() method returns an array of arrays:
+If the command has been successfully executed, the `getData()` method returns an array of arrays.
 
 ```php
 $arrayResultList = $selectResult->getData();
 ```
 
-If the command is unsuccessful, then the `getError ()` returns the class with an error, `null` if no error occurred:
+If the command is unsuccessful, then the `getError ()` returns the class with an error `null` if no error occurred.
 
 ```php
 $selectResult->getError();
@@ -92,7 +92,7 @@ if(!$selectResult->isSuccessfully()){
 
 Select IN
 ------------
-Analogue of the request:
+Analogue of the request.
 
 `USE $this->getDatabase();`
 
@@ -114,15 +114,15 @@ $selectResult = $selectQuery->getResult();
 
 Select with Filter
 ------------
-Analogue of the request:
+Analogue of the request.
 
 `USE $this->getDatabase();`
 
 `SELECT 'key', 'text' FROM $this->getTableName() WHERE key > 1 AND num = 3 LIMIT 0, 99;`
 
-Please note that we have added array ('num'), that is, at the opening of the index will be added filtration column num with number 0.
+Please note that we have added `array ('num')`, that is, at the opening of the index will be added filtration column num with number 0.
 
-When you create a class Filter specify the comparison operation (we have it =) and column filtering 0 (corresponding num), on the value 3.
+When you create a class `Filter` specify the comparison operation (we have it `=`) and column filtering 0 (corresponding num), on the value 3.
 
 Just in our request specified limit, if you are satisfied queries that may return a different number of data - always tells you the limit, otherwise you won't receive all the data.
 
