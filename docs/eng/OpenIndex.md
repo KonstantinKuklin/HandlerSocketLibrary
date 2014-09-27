@@ -24,7 +24,7 @@ $indexId = $reader->getIndexId(
 );
 $reader->getResultList();
 ```
-If there's a situation when we need to open the index with the number 12 (for example) and we don't want to check.
+If there's a situation when we need to open the index with the number 12 (for example) and we don't want to check:
 
 ```php
 $openIndexQuery = $reader->openIndex(
@@ -42,7 +42,7 @@ Here we open the index with identifier 12, columns `key`,` text`, and the column
 
 This method returns us to the class OpenIndexQuery.
 
-Another way to execute the query.
+Another way to execute the query:
 ```php
 $insertQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $insertResult = $insertQuery->getResult();

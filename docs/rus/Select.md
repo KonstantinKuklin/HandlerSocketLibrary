@@ -48,7 +48,7 @@ $selectResult = $selectQuery->getResult();
 ```php
 $arrayResultList = $selectResult->getData();
 ```
-Если команда была выполнена с ошибками, то `getError()` вернет класс с ошибкой `null`, если ошибки не было:
+Если команда была выполнена с ошибками, то `getError()` вернет класс с ошибкой ,`null` - если ошибки не было:
 ```php
 $selectResult->getError();
 ```

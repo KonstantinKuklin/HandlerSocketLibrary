@@ -16,13 +16,13 @@ $indexId = $writer->getIndexId(
 $incrementQuery = $writer->incrementByIndex($indexId, '=', array(106), array(0, 3));
 ```
 
-If you are fully confident in your query, you can simply send it to server,thus save time and memory.
+If you are fully confident in your query, you can simply send it to server,thus save time and memory:
 
 ```php
 $writer->sendQueries();
 ```
 
-If you want to check that the command completed successfully.
+If you want to check that the command completed successfully:
 
 ```php
 $writer->getResultList();
@@ -31,7 +31,7 @@ if($incrementQuery->getResult()->isSuccessfully()){
 }
 ```
 
-Another way to execute the query.
+Another way to execute the query:
 ```php
 $incrementQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $incrementResult = $incrementQuery->getResult();

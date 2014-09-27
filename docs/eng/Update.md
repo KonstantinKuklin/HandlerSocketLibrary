@@ -15,7 +15,7 @@ $indexId = $writer->getIndexId(
 $updateQuery = $writer->updateByIndex($indexId, Comparison::EQUAL, array(2), array(2, 'new'));
 ```
 
-You can find out how many records were modified with command Update.
+You can find out how many records were modified with command `Update`.
 
 ```php
 if($updateQuery->getResult()->getNumberModifiedRows() == 0){

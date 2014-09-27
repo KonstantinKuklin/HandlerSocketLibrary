@@ -20,13 +20,13 @@ $insertQuery = $writer->insertByIndex(
 );
 ```
 
-If you are fully confident in your query, you can simply send it to server, thus save time and memory.
+If you are fully confident in your query, you can simply send it to server, thus save time and memory:
 
 ```php
 $writer->sendQueries();
 ```
 
-If you want to check that the command completed successfully.
+If you want to check that the command completed successfully:
 
 ```php
 $writer->getResultList();
@@ -53,7 +53,7 @@ $insertQuery = $writer->insert(
 );
 ```
 
-Another way to execute the query.
+Another way to execute the query:
 ```php
 $insertQuery->execute(); // query was sent and the results on this query and all from the queue were parsed
 $insertResult = $insertQuery->getResult();

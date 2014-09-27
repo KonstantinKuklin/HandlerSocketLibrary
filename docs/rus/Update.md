@@ -38,7 +38,7 @@ $updateQuery = $writer->update(
     array(2, 'new2')
 );
 ```
-Другой способ выполнить запрос.
+Другой способ выполнить запрос:
 ```php
 $updateQuery->execute(); // отправлен запрос + получен ответ на этот запрос + все, что было в очереди на отправку
 $updateResult = $updateQuery->getResult();
