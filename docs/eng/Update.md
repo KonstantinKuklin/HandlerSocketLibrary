@@ -15,7 +15,7 @@ $indexId = $writer->getIndexId(
 $updateQuery = $writer->updateByIndex($indexId, Comparison::EQUAL, array(2), array(2, 'new'));
 ```
 
-You can find out how many records were modified command Update.
+You can find out how many records were modified with command `Update`.
 
 ```php
 if($updateQuery->getResult()->getNumberModifiedRows() == 0){
@@ -25,8 +25,9 @@ if($updateQuery->getResult()->getNumberModifiedRows() == 0){
 
 Update with the opening index
 ------------
-This command will check whether there is a required index if it is not, first open and then perform Update.
-It will find all lines where key = 2 and replace `key` on `2`, `text` on `new2`.
+This command will check whether there's a required index if it isn't , first open and then perform Update.
+
+It'll find all lines where key = 2 and replace `'key'` on `2`, `'text'` on `'new2'`.
 
 ```php
 $updateQuery = $writer->update(
@@ -50,7 +51,7 @@ Update with QueryBuilder
 ------------
 When initializing specify which columns to which data will be replaced.
 
-where conditions indicate through screening.
+'Where' conditions indicate through screening.
 
 ```php
 $updateQueryBuilder = \HS\QueryBuilder::update(
