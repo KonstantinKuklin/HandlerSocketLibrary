@@ -12,17 +12,27 @@ class InsertQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
+    public function __construct($indexId, $valueList, $socket, $openIndexQuery = null)
+    {
+        parent::__construct();
+        $this->indexId = $indexId;
+        $this->valueList = $valueList;
+        $this->openIndexQuery = $openIndexQuery;
+        $this->socket = $socket;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getQueryString()
     {
-        $valueList = $this->getParameter('valueList', array());
-
         $queryString = sprintf(
             "%d" . Driver::DELIMITER . "+" . Driver::DELIMITER . "%d",
             $this->getIndexId(),
-            count($valueList[0])
+            count($this->valueList[0])
         );
 
-        foreach ($valueList as $row) {
+        foreach ($this->valueList as $row) {
             $queryString .= "\t" . Driver::prepareSendDataStatic($row);
         }
 
@@ -34,9 +44,6 @@ class InsertQuery extends QueryAbstract
      */
     public function setResultData($data)
     {
-        $this->getParameterBag()->setParameter(
-            'resultObject',
-            new InsertResult($this, $data, $this->getParameter('openIndexQuery'))
-        );
+        $this->resultObject = new InsertResult($this, $data, $this->openIndexQuery);
     }
 }

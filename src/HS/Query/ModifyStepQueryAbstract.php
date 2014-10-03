@@ -15,8 +15,8 @@ abstract class ModifyStepQueryAbstract extends ModifyQueryAbstract
     public function getQueryString()
     {
         $queryString = parent::getQueryString();
-        if (($valueList = $this->getParameter('valueList', array())) && !empty($valueList)) {
-            $queryString .= Driver::prepareSendDataStatic($valueList);
+        if (!empty($this->valueList)) {
+            $queryString .= Driver::prepareSendDataStatic($this->valueList);
         }
 
         return $queryString;

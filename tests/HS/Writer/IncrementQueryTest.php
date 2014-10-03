@@ -20,7 +20,7 @@ class IncrementQueryTest extends TestCommon
             'PRIMARY',
             array('key', 'num')
         );
-        $incrementQuery = $writer->incrementByIndex($indexId, '=', array(106), array(0, 3));
+        $incrementQuery = $writer->incrementByIndex($indexId, '=', array(106), array(0, 3), false);
 
         $selectQuery = $writer->selectByIndex($indexId, '=', array(106));
         $writer->getResultList();

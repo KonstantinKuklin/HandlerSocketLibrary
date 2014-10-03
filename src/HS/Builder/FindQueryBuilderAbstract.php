@@ -5,6 +5,7 @@ use HS\Component\Comparison;
 use HS\Component\Filter;
 use HS\Component\InList;
 use HS\Exception\InvalidArgumentException;
+use HS\Query\SelectQuery;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -16,7 +17,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function __construct(array $columnList)
     {
-        parent::__construct(array('columnList' => $columnList));
+        $this->columnList = $columnList;
     }
 
     /**
@@ -26,7 +27,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function fromDataBase($databaseName)
     {
-        $this->getParameterBag()->setParameter('dbName', $databaseName);
+        $this->dbName = $databaseName;
 
         return $this;
     }
@@ -38,7 +39,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function fromTable($tableName)
     {
-        $this->getParameterBag()->setParameter('tableName', $tableName);
+        $this->tableName = $tableName;
 
         return $this;
     }
@@ -50,7 +51,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function fromIndex($indexName)
     {
-        $this->getParameterBag()->setParameter('indexName', $indexName);
+        $this->indexName = $indexName;
 
         return $this;
     }
@@ -60,7 +61,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function getColumnList()
     {
-        return $this->getParameter('columnList', array());
+        return $this->columnList;
     }
 
     /**
@@ -72,9 +73,9 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function where($comparison, array $list)
     {
-        $this->getParameterBag()->setParameter('comparison', $comparison);
-        $keyList = $this->getParameter('keyList', array());
+        $this->comparison = $comparison;
         $columnList = $this->getColumnList();
+
         // check is ordered list of keys
         for ($i = 0, $countWhere = count($list); $i < $countWhere; $i++) {
             $key = $columnList[$i];
@@ -83,9 +84,8 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
                     "The key`s must be set with out skip on select( key1, key2). Where(key2,key1)"
                 );
             }
-            $keyList[] = $list[$key];
+            $this->keyList[] = $list[$key];
         }
-        $this->getParameterBag()->setParameter('keyList', $keyList);
 
         return $this;
     }
@@ -100,14 +100,14 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
     public function whereIn($key, array $values)
     {
         $columnList = $this->getColumnList();
-        $this->getParameterBag()->setParameter('comparison', Comparison::EQUAL);
-        $this->getParameterBag()->setParameter('keyList', array(1));
+        $this->comparison = Comparison::EQUAL;
+        $this->keyList = array(1);
 
         if (false === $index = array_search($key, $columnList)) {
             throw new InvalidArgumentException("Can't find key in columns list.");
         }
         $inList = new InList($index, $values);
-        $this->getParameterBag()->setParameter('inKeyList', $inList);
+        $this->inKeyList = $inList;
 
         return $this;
     }
@@ -122,16 +122,13 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function andWhere($columnName, $comparison, $key, $type = Filter::FILTER_TYPE_SKIP)
     {
-        $filterColumnList = $this->getParameter('filterColumnList', array());
-        $position = array_search($columnName, $filterColumnList);
+        $position = array_search($columnName, $this->filterColumnList);
         if ($position === false) {
-            $filterColumnList[] = $columnName;
-            $position = count($filterColumnList) - 1;
-            $this->getParameterBag()->setParameter('filterColumnList', $filterColumnList);
+            $this->filterColumnList[] = $columnName;
+            $position = count($this->filterColumnList) - 1;
         }
         $filter = new Filter($comparison, $position, $key, $type);
-
-        $this->getParameterBag()->addRowToParameter('filterList', $filter);
+        $this->filterList[] = $filter;
 
         return $this;
     }
@@ -141,7 +138,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function getFilterList()
     {
-        return $this->getParameter('filterList', array());
+        return $this->filterList;
     }
 
     /**
@@ -149,7 +146,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function getFilterColumnList()
     {
-        return $this->getParameter('filterColumnList', array());
+        return $this->filterColumnList;
     }
 
     /**
@@ -159,7 +156,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function limit($limit)
     {
-        $this->getParameterBag()->setParameter('limit', $limit);
+        $this->limit = $limit;
 
         return $this;
     }
@@ -171,7 +168,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function offset($offset)
     {
-        $this->getParameterBag()->setParameter('offset', $offset);
+        $this->offset = $offset;
 
         return $this;
     }
@@ -181,7 +178,7 @@ abstract class FindQueryBuilderAbstract extends QueryBuilderAbstract
      */
     public function withSuffix()
     {
-        $this->getParameterBag()->setParameter('suffix', true);
+        $this->suffix = true;
 
         return $this;
     }

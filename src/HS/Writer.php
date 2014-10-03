@@ -29,18 +29,17 @@ class Writer extends Reader implements WriterHSInterface
         }
 
         $query = new UpdateQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'valueList' => $values,
-                'openIndexQuery' => $openIndexQuery,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            $openIndexQuery,
+            null,
+            array(),
+            $suffix, $values
         );
 
         $this->addQuery($query);
@@ -54,22 +53,23 @@ class Writer extends Reader implements WriterHSInterface
     public function updateByIndex(
         $indexId, $comparisonOperation, array $keys, array $values, $suffix = false, $limit = null, $offset = null
     ) {
-        $updateQuery = new UpdateQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'valueList' => $values,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+        $query = new UpdateQuery(
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            null,
+            null,
+            array(),
+            $suffix, $values
         );
-        $this->addQuery($updateQuery);
 
-        return $updateQuery;
+        $this->addQuery($query);
+
+        return $query;
     }
 
     /**
@@ -88,17 +88,17 @@ class Writer extends Reader implements WriterHSInterface
         }
 
         $deleteQuery = new DeleteQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'openIndexQuery' => $openIndexQuery,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            $openIndexQuery,
+            null,
+            array(),
+            $suffix
         );
         $this->addQuery($deleteQuery);
 
@@ -111,16 +111,17 @@ class Writer extends Reader implements WriterHSInterface
     public function deleteByIndex($indexId, $comparisonOperation, array $keys, $suffix = false, $offset = 0, $limit = 1)
     {
         $deleteQuery = new DeleteQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            null,
+            null,
+            array(),
+            $suffix
         );
         $this->addQuery($deleteQuery);
 
@@ -143,18 +144,17 @@ class Writer extends Reader implements WriterHSInterface
         }
 
         $incrementQuery = new IncrementQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'openIndexQuery' => $openIndexQuery,
-                'valueList' => $valueList,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            $openIndexQuery,
+            null,
+            array(),
+            $suffix, $valueList
         );
         $this->addQuery($incrementQuery);
 
@@ -168,17 +168,17 @@ class Writer extends Reader implements WriterHSInterface
         $indexId, $comparisonOperation, array $keys, array $valueList, $suffix = false, $offset = 0, $limit = 1
     ) {
         $incrementQuery = new IncrementQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'valueList' => $valueList,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            null,
+            null,
+            array(),
+            $suffix, $valueList
         );
         $this->addQuery($incrementQuery);
 
@@ -201,18 +201,17 @@ class Writer extends Reader implements WriterHSInterface
         }
 
         $decrementQuery = new DecrementQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'openIndexQuery' => $openIndexQuery,
-                'valueList' => $valueList,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            $openIndexQuery,
+            null,
+            array(),
+            $suffix, $valueList
         );
         $this->addQuery($decrementQuery);
 
@@ -226,17 +225,17 @@ class Writer extends Reader implements WriterHSInterface
         $indexId, $comparisonOperation, array $keys, array $valueList, $suffix = false, $offset = 0, $limit = 1
     ) {
         $decrementQuery = new DecrementQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'valueList' => $valueList,
-                'socket' => $this,
-                'suffix' => $suffix,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            $limit,
+            null,
+            null,
+            array(),
+            $suffix, $valueList
         );
         $this->addQuery($decrementQuery);
 
@@ -256,14 +255,7 @@ class Writer extends Reader implements WriterHSInterface
             $indexId = $openIndexQuery->getIndexId();
         }
 
-        $insertQuery = new InsertQuery(
-            array(
-                'indexId' => $indexId,
-                'valueList' => $valueList,
-                'openIndexQuery' => $openIndexQuery,
-                'socket' => $this,
-            )
-        );
+        $insertQuery = new InsertQuery($indexId, $valueList, $openIndexQuery);
         $this->addQuery($insertQuery);
 
         return $insertQuery;
@@ -274,16 +266,9 @@ class Writer extends Reader implements WriterHSInterface
      */
     public function insertByIndex($indexId, array $valueList)
     {
-        $updateQuery = new InsertQuery(
-            array(
-                'indexId' => $indexId,
-                'valueList' => $valueList,
-                'socket' => $this,
-            )
-        );
+        $insertQuery = new InsertQuery($indexId, $valueList, null);
+        $this->addQuery($insertQuery);
 
-        $this->addQuery($updateQuery);
-
-        return $updateQuery;
+        return $insertQuery;
     }
 }

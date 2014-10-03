@@ -32,7 +32,7 @@ class DeleteQueryBuilder extends FindQueryBuilderAbstract
     public function where($comparison, array $list)
     {
         $columnList = array_keys($list);
-        $this->getParameterBag()->setParameter('columnList', $columnList);
+        $this->columnList = $columnList;
         parent::where($comparison, $list);
 
         return $this;

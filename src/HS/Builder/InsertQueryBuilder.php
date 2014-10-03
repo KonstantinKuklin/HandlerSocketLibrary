@@ -10,7 +10,6 @@ class InsertQueryBuilder extends QueryBuilderAbstract
 
     public function __construct()
     {
-        parent::__construct(array());
     }
 
     /**
@@ -20,10 +19,10 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function addRow(array $row)
     {
-        if ($this->getParameter('columnList') === null) {
-            $this->getParameterBag()->setParameter('columnList', array_keys($row));
+        if (empty($this->columnList)) {
+            $this->columnList = array_keys($row);
         }
-        $this->getParameterBag()->addRowToParameter('valueList', array_values($row));
+        $this->valueList[] = array_values($row);
 
         return $this;
     }
@@ -49,7 +48,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function toDatabase($dbName)
     {
-        $this->getParameterBag()->setParameter('dbName', $dbName);
+        $this->dbName = $dbName;
 
         return $this;
     }
@@ -61,7 +60,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function toTable($tableName)
     {
-        $this->getParameterBag()->setParameter('tableName', $tableName);
+        $this->tableName = $tableName;
 
         return $this;
     }
@@ -73,7 +72,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function toIndex($indexName)
     {
-        $this->getParameterBag()->setParameter('indexName', $indexName);
+        $this->indexName = $indexName;
 
         return $this;
     }
@@ -83,7 +82,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function getQueryClassPath()
     {
-        return "HS\\Query\\InsertQuery";
+        return 'HS\Query\InsertQuery';
     }
 
     /**
@@ -93,7 +92,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function limit($limit)
     {
-        $this->getParameterBag()->setParameter('limit', $limit);
+        $this->limit = $limit;
 
         return $this;
     }
@@ -105,7 +104,7 @@ class InsertQueryBuilder extends QueryBuilderAbstract
      */
     public function offset($offset)
     {
-        $this->getParameterBag()->setParameter('offset', $offset);
+        $this->offset = $offset;
 
         return $this;
     }

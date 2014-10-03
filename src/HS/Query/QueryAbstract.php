@@ -5,15 +5,11 @@
 
 namespace HS\Query;
 
-use HS\Component\ParameterBag;
 use HS\Exception\InvalidArgumentException;
 use HS\ReaderInterface;
-use HS\Result\SelectResult;
-use HS\Validator;
 
 abstract class QueryAbstract implements QueryInterface
 {
-    private $parameterBag = null;
     static protected $queryResultMap = array(
         'HS\Query\AuthQuery' => 'HS\Result\AuthResult',
         'HS\Query\TextQuery' => 'HS\Result\TextResult',
@@ -26,46 +22,16 @@ abstract class QueryAbstract implements QueryInterface
         'HS\Query\DecrementQuery' => 'HS\Result\DecrementResult',
     );
 
-    /**
-     * @param array $parameterList
-     */
-    public function __construct(array $parameterList)
+    protected $resultObject = null;
+    protected $socket = null;
+    protected $indexId = null;
+    protected $openIndexQuery = null;
+    protected $valueList = array();
+    protected $queryClassName = null;
+
+    public function __construct()
     {
-        $parameterList['queryClassName'] = get_called_class();
-        $this->parameterBag = new ParameterBag($parameterList);
-
-
-        // if indexId was set - check it
-        if ($this->parameterBag->isExists('indexId')) {
-            Validator::validateIndexId($this->getIndexId());
-        }
-
-        if ($this->parameterBag->isExists('dbName')) {
-            Validator::validateDbName($this->getParameter('dbName'));
-        }
-
-        if ($this->parameterBag->isExists('tableName')) {
-            Validator::validateTableName($this->getParameter('tableName'));
-        }
-
-        // init default values if it needs
-        $this->initIndexName();
-
-        if ($this->parameterBag->isExists('indexName')) {
-            Validator::validateIndexName($this->getParameter('indexName'));
-        }
-
-    }
-
-    /**
-     * @param string $parameterName
-     * @param mixed  $defaultValue
-     *
-     * @return mixed
-     */
-    public function getParameter($parameterName, $defaultValue = null)
-    {
-        return $this->getParameterBag()->getParameter($parameterName, $defaultValue);
+        $this->queryClassName = get_called_class();
     }
 
     /**
@@ -73,7 +39,7 @@ abstract class QueryAbstract implements QueryInterface
      */
     public function getResult()
     {
-        return $this->getParameter('resultObject', null);
+        return $this->resultObject;
     }
 
     /**
@@ -86,7 +52,7 @@ abstract class QueryAbstract implements QueryInterface
      */
     public function getIndexId()
     {
-        return $this->getParameter('indexId');
+        return $this->indexId;
     }
 
     /**
@@ -94,22 +60,7 @@ abstract class QueryAbstract implements QueryInterface
      */
     public function setResultData($data)
     {
-        $queryClassName = $this->getQueryClassName();
-        if ($queryClassName === 'HS\Query\SelectQuery' || $this->isSuffix()) {
-            $this->setSelectResultObject($data);
-
-            return true;
-        }
-
-        $this->setResultObject(self::$queryResultMap[$queryClassName], $data);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isSuffix()
-    {
-        return $this->getParameter('suffix', false);
+        $this->setResultObject(self::$queryResultMap[$this->getQueryClassName()], $data);
     }
 
     /**
@@ -129,15 +80,7 @@ abstract class QueryAbstract implements QueryInterface
      */
     protected function getQueryClassName()
     {
-        return $this->getParameter('queryClassName');
-    }
-
-    /**
-     * @return ParameterBag
-     */
-    protected function getParameterBag()
-    {
-        return $this->parameterBag;
+        return $this->queryClassName;
     }
 
     /**
@@ -146,52 +89,19 @@ abstract class QueryAbstract implements QueryInterface
      */
     protected function getSocket()
     {
-        $socket = $this->getParameter('socket');
-        if (!($socket instanceof ReaderInterface)) {
+        if (!($this->socket instanceof ReaderInterface)) {
             throw new InvalidArgumentException('Socket not found');
         }
 
-        return $socket;
+        return $this->socket;
     }
 
     /**
      * @param string $className
      * @param mixed  $data
      */
-    private function setResultObject($className, $data)
+    protected function setResultObject($className, $data)
     {
-        $this->getParameterBag()->setParameter(
-            'resultObject',
-            new $className($this, $data, $this->getParameter('openIndexQuery'))
-        );
-    }
-
-    /**
-     * @param mixed $data
-     */
-    private function setSelectResultObject($data)
-    {
-
-        $this->getParameterBag()->setParameter(
-            'resultObject',
-            new SelectResult(
-                $this,
-                $data,
-                $this->getParameter('columnList', array()),
-                $this->getParameter('returnType', SelectQuery::ASSOC),
-                $this->getParameter('openIndexQuery')
-            )
-        );
-    }
-
-    /**
-     * @return void
-     */
-    private function initIndexName()
-    {
-        $indexName = $this->getParameter('indexName');
-        if (!$this->getParameterBag()->isExists('indexName') || empty($indexName)) {
-            $this->getParameterBag()->setParameter('indexName', 'PRIMARY');
-        }
+        $this->resultObject = new $className($this, $data, $this->openIndexQuery);
     }
 } 

@@ -81,66 +81,7 @@ abstract class ResultAbstract implements ResultInterface
         if ($code !== "0") {
             // 4 because we need to skip 0 \t 1 \t
             $error = substr($data, 4);
-
-            switch ($error) {
-                case 'cmd':
-                case 'syntax':
-                case 'notimpl':
-                    $this->error = new CommandError($error);
-                    break;
-                case 'authtype':
-                case 'unauth':
-                    $this->error = new AuthenticationError($error);
-                    break;
-                case 'open_table':
-                    $this->error = new OpenTableError($error);
-                    break;
-                case 'tblnum':
-                case 'stmtnum':
-                    $this->error = new IndexOverFlowError($error);
-                    break;
-                case 'invalueslen':
-                    $this->error = new InListSizeError($error);
-                    break;
-                case 'filtertype':
-                    $this->error = new FilterTypeError($error);
-                    break;
-                case 'filterfld':
-                    $this->error = new FilterColumnError($error);
-                    break;
-                case 'lock_tables':
-                    $this->error = new LockTableError($error);
-                    break;
-                case 'modop':
-                    $this->error = new LockTableError($error);
-                    break;
-                case 'idxnum':
-                    $this->error = new KeyIndexError($error);
-                    break;
-                case 'kpnum':
-                case 'klen':
-                    $this->error = new KeyLengthError($error);
-                    break;
-                case 'op':
-                    $this->error = new ComparisonOperatorError($error);
-                    break;
-                case 'readonly':
-                    $this->error = new ReadOnlyError($error);
-                    break;
-                case 'fld':
-                    $this->error = new ColumnParseError($error);
-                    break;
-                case 'filterblob': // unknown error TODO
-                default:
-                    // Errors with wrong data
-                    if (is_numeric($error)) {
-                        $this->error = new InternalMysqlError($error);
-                    } else {
-                        $this->error = new UnknownError($error);
-                    }
-                    break;
-            }
-            throw $this->error;
+            $this->throwErrorClass($error);
         } else {
             $this->data = $data;
         }
@@ -221,5 +162,69 @@ abstract class ResultAbstract implements ResultInterface
     public function getTime()
     {
         return $this->time;
+    }
+
+    private function throwErrorClass($error)
+    {
+        $errorClass = null;
+        switch ($error) {
+            case 'cmd':
+            case 'syntax':
+            case 'notimpl':
+                $errorClass = new CommandError($error);
+                break;
+            case 'authtype':
+            case 'unauth':
+                $errorClass = new AuthenticationError($error);
+                break;
+            case 'open_table':
+                $errorClass = new OpenTableError($error);
+                break;
+            case 'tblnum':
+            case 'stmtnum':
+                $errorClass = new IndexOverFlowError($error);
+                break;
+            case 'invalueslen':
+                $errorClass = new InListSizeError($error);
+                break;
+            case 'filtertype':
+                $errorClass = new FilterTypeError($error);
+                break;
+            case 'filterfld':
+                $errorClass = new FilterColumnError($error);
+                break;
+            case 'lock_tables':
+                $errorClass = new LockTableError($error);
+                break;
+            case 'modop':
+                $errorClass = new LockTableError($error);
+                break;
+            case 'idxnum':
+                $errorClass = new KeyIndexError($error);
+                break;
+            case 'kpnum':
+            case 'klen':
+                $errorClass = new KeyLengthError($error);
+                break;
+            case 'op':
+                $errorClass = new ComparisonOperatorError($error);
+                break;
+            case 'readonly':
+                $errorClass = new ReadOnlyError($error);
+                break;
+            case 'fld':
+                $errorClass = new ColumnParseError($error);
+                break;
+            case 'filterblob': // unknown error TODO
+            default:
+                // Errors with wrong data
+                if (is_numeric($error)) {
+                    $errorClass = new InternalMysqlError($error);
+                } else {
+                    $errorClass = new UnknownError($error);
+                }
+                break;
+        }
+        throw $errorClass;
     }
 } 

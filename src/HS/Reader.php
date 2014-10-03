@@ -4,7 +4,6 @@ namespace HS;
 
 use HS\Component\Comparison;
 use HS\Component\Filter;
-use HS\Component\InList;
 use HS\Exception\InvalidArgumentException;
 use HS\Query\AuthQuery;
 use HS\Query\OpenIndexQuery;
@@ -30,7 +29,7 @@ class Reader extends CommonClient implements ReaderInterface
                 )
             );
         }
-        $authQuery = new AuthQuery(array('authKey' => trim($authKey), 'socket' => $this));
+        $authQuery = new AuthQuery($authKey);
         $this->addQuery($authQuery);
 
         return $authQuery;
@@ -44,7 +43,7 @@ class Reader extends CommonClient implements ReaderInterface
      */
     public function text($queryText, $queryClass)
     {
-        $textQuery = new TextQuery(array('text' => $queryText, 'socket' => $this), $queryClass);
+        $textQuery = new TextQuery($queryText, $this, $queryClass);
         $this->addQuery($textQuery);
 
         return $textQuery;
@@ -57,15 +56,13 @@ class Reader extends CommonClient implements ReaderInterface
         $indexId, $dbName, $tableName, $indexName, array $columnList, array $filterColumnList = array()
     ) {
         $indexQuery = new OpenIndexQuery(
-            array(
-                'indexId' => $indexId,
-                'dbName' => $dbName,
-                'tableName' => $tableName,
-                'indexName' => $indexName,
-                'columnList' => $columnList,
-                'filterColumnList' => $filterColumnList,
-                'socket' => $this,
-            )
+            $indexId,
+            $dbName,
+            $tableName,
+            $indexName,
+            $columnList,
+            $this,
+            $filterColumnList
         );
         $this->addQuery($indexQuery);
         $this->setKeysToIndexId($indexId, $columnList);
@@ -110,16 +107,12 @@ class Reader extends CommonClient implements ReaderInterface
         $indexId, $comparisonOperation, array $keys, $offset = null, $limit = null, array $filterList = array()
     ) {
         $selectQuery = new SelectQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'filterList' => $filterList,
-                'socket' => $this,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset, $limit, null, null, $filterList
         );
 
         $this->addQuery($selectQuery);
@@ -137,17 +130,14 @@ class Reader extends CommonClient implements ReaderInterface
         }
 
         $selectQuery = new SelectQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => Comparison::EQUAL,
-                'keyList' => array(1),
-                'offset' => $offset,
-                'limit' => ($limit !== null) ? $limit : count($in),
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'inKeyList' => new InList(0, $in),
-                'filterList' => $filterList,
-                'socket' => $this,
-            )
+            $indexId,
+            Comparison::EQUAL,
+            array(1),
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            ($limit !== null) ? $limit : count($in),
+            null, $in, $filterList
         );
 
         $this->addQuery($selectQuery);
@@ -181,17 +171,12 @@ class Reader extends CommonClient implements ReaderInterface
         }
 
         $selectQuery = new SelectQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => $comparisonOperation,
-                'keyList' => $keys,
-                'offset' => $offset,
-                'limit' => $limit,
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'openIndexQuery' => $openIndexQuery,
-                'filterList' => $filterList,
-                'socket' => $this,
-            )
+            $indexId,
+            $comparisonOperation,
+            $keys,
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset, $limit, $openIndexQuery, null, $filterList
         );
 
         $this->addQuery($selectQuery);
@@ -208,11 +193,13 @@ class Reader extends CommonClient implements ReaderInterface
      * @param int    $offset
      * @param int    $limit
      *
+     * @param array  $filterList
+     *
      * @throws InvalidArgumentException
      * @return SelectQuery
      */
     public function selectIn(
-        $columns, $dbName, $tableName, $indexName, $in, $offset = null, $limit = null
+        $columns, $dbName, $tableName, $indexName, $in, $offset = null, $limit = null, array $filterList = array()
     ) {
         $indexId = $this->getIndexId($dbName, $tableName, $indexName, $columns, false);
         $openIndexQuery = null;
@@ -228,16 +215,14 @@ class Reader extends CommonClient implements ReaderInterface
         }
 
         $selectQuery = new SelectQuery(
-            array(
-                'indexId' => $indexId,
-                'comparison' => Comparison::EQUAL,
-                'keyList' => array(1),
-                'offset' => $offset,
-                'limit' => ($limit !== null) ? $limit : count($in),
-                'columnList' => $this->getKeysByIndexId($indexId),
-                'inKeyList' => new InList(0, $in),
-                'socket' => $this,
-            )
+            $indexId,
+            Comparison::EQUAL,
+            array(1),
+            $this,
+            $this->getKeysByIndexId($indexId),
+            $offset,
+            ($limit !== null) ? $limit : count($in),
+            $openIndexQuery, $in, $filterList
         );
 
         $this->addQuery($selectQuery);

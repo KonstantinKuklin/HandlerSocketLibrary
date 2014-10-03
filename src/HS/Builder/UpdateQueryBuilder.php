@@ -15,8 +15,7 @@ class UpdateQueryBuilder extends FindQueryBuilderAbstract
         $columnList = array_keys($updateList);
         $valueList = array_values($updateList);
         parent::__construct($columnList);
-        $this->getParameterBag()->setParameter('valueList', $valueList);
-
+        $this->valueList = $valueList;
     }
 
     /**

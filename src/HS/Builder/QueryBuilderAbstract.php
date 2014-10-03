@@ -2,14 +2,38 @@
 namespace HS\Builder;
 
 use HS\Component\ParameterBag;
+use HS\Query\DeleteQuery;
+use HS\Query\IncrementQuery;
+use HS\Query\InsertQuery;
 use HS\Query\QueryInterface;
+use HS\Query\SelectQuery;
+use HS\Query\UpdateQuery;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
  */
 abstract class QueryBuilderAbstract implements QueryBuilderInterface
 {
-    private $parameterBag = null;
+    protected $dbName = '';
+    protected $tableName = '';
+    protected $indexName = 'PRIMARY';
+
+    protected $indexId = null;
+    protected $offset = 0;
+    protected $limit = 1;
+
+    protected $columnList = array();
+    protected $valueList = array();
+    protected $filterList = array();
+
+    protected $comparison = null;
+    protected $keyList = array();
+    protected $inKeyList = null;
+    protected $filterColumnList = array();
+
+    protected $suffix = false;
+    protected $returnType = SelectQuery::ASSOC;
+    protected $openIndexQuery = null;
 
     /**
      * @return string
@@ -17,45 +41,84 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
     abstract public function getQueryClassPath();
 
     /**
-     * @param array $parameterList
+     * {@inheritdoc}
      */
-    public function __construct(array $parameterList)
+    public function getQuery($indexId, $socket, $openIndexQuery = null)
     {
-        $this->parameterBag = new ParameterBag($parameterList);
-    }
-
-    /**
-     * @param      $indexId
-     * @param null $openIndexQuery
-     *
-     * @return QueryInterface
-     */
-    public function getQuery($indexId, $openIndexQuery = null)
-    {
-        $this->getParameterBag()->setParameter('indexId', $indexId);
-        $this->getParameterBag()->setParameter('openIndexQuery', $openIndexQuery);
+        $this->indexId = $indexId;
+        $this->openIndexQuery = $openIndexQuery;
         $classPath = $this->getQueryClassPath();
 
-        return new $classPath($this->getParameterBag()->getAsArray());
-    }
+        $query = null;
+        switch ($classPath) {
+            case 'HS\Query\InsertQuery':
+                $query = new InsertQuery($indexId, $this->valueList, $socket, $openIndexQuery);
+                break;
+            case 'HS\Query\DeleteQuery':
+                $query = new DeleteQuery(
+                    $indexId,
+                    $this->comparison,
+                    $this->keyList,
+                    $socket,
+                    $this->columnList,
+                    $this->offset,
+                    $this->limit,
+                    $openIndexQuery,
+                    $this->inKeyList,
+                    $this->filterList,
+                    $this->suffix
+                );
+                break;
+            case 'HS\Query\SelectQuery':
+                $query = new SelectQuery(
+                    $indexId,
+                    $this->comparison,
+                    $this->keyList,
+                    $socket,
+                    $this->columnList,
+                    $this->offset,
+                    $this->limit,
+                    $openIndexQuery,
+                    $this->inKeyList,
+                    $this->filterList, null
 
-    /**
-     * @param string $parameterName
-     * @param mixed  $defaultValue
-     *
-     * @return mixed
-     */
-    public function getParameter($parameterName, $defaultValue = null)
-    {
-        return $this->getParameterBag()->getParameter($parameterName, $defaultValue);
-    }
+                );
+                break;
+            case 'HS\Query\UpdateQuery':
+                $query = new UpdateQuery(
+                    $indexId,
+                    $this->comparison,
+                    $this->keyList,
+                    $socket,
+                    $this->columnList,
+                    $this->offset,
+                    $this->limit,
+                    $openIndexQuery,
+                    $this->inKeyList,
+                    $this->filterList,
+                    $this->suffix,
+                    $this->valueList
+                );
+                break;
+            default:
+                $query = new $classPath(
+                    $indexId,
+                    $this->comparison,
+                    $this->keyList,
+                    $socket,
+                    $this->columnList,
+                    $this->offset,
+                    $this->limit,
+                    $openIndexQuery,
+                    $this->inKeyList,
+                    $this->filterList,
+                    $this->suffix,
+                    $this->valueList
+                );
+                break;
+        }
 
-    /**
-     * @return ParameterBag
-     */
-    public function getParameterBag()
-    {
-        return $this->parameterBag;
+        return $query;
     }
 
     /**
@@ -63,7 +126,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
      */
     public function getDatabase()
     {
-        return $this->getParameter('dbName');
+        return $this->dbName;
     }
 
     /**
@@ -71,7 +134,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
      */
     public function getTable()
     {
-        return $this->getParameter('tableName');
+        return $this->tableName;
     }
 
     /**
@@ -79,7 +142,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
      */
     public function getIndex()
     {
-        return $this->getParameter('indexName', 'PRIMARY');
+        return $this->indexName;
     }
 
     /**
@@ -87,7 +150,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
      */
     public function getColumnList()
     {
-        return $this->getParameter('columnList', array());
+        return $this->columnList;
     }
 
     /**
@@ -95,7 +158,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
      */
     public function getFilterList()
     {
-        return $this->getParameter('filterList', array());
+        return $this->filterList;
     }
 
     /**

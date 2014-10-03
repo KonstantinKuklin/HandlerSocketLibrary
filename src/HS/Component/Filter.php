@@ -5,7 +5,6 @@
 
 namespace HS\Component;
 
-
 use HS\Exception\InvalidArgumentException;
 
 class Filter

@@ -21,7 +21,7 @@ class UpdateQuery extends ModifyQueryAbstract
     {
         $queryString = parent::getQueryString();
 
-        $valueList = $this->getParameter('valueList', array());
+        $valueList = $this->valueList;
         if (!empty($valueList)) {
             $queryString .= Driver::prepareSendDataStatic($valueList);
         }

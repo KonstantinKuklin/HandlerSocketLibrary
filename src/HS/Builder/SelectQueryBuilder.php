@@ -8,12 +8,13 @@ use HS\Query\SelectQuery;
  */
 class SelectQueryBuilder extends FindQueryBuilderAbstract
 {
+
     /**
      * @return $this
      */
     public function returnAsVector()
     {
-        $this->getParameterBag()->setParameter('returnType', SelectQuery::VECTOR);
+        $this->returnType = SelectQuery::VECTOR;
 
         return $this;
     }
@@ -23,7 +24,7 @@ class SelectQueryBuilder extends FindQueryBuilderAbstract
      */
     public function returnAsAssoc()
     {
-        $this->getParameterBag()->setParameter('returnType', SelectQuery::ASSOC);
+        $this->returnType = SelectQuery::ASSOC;
 
         return $this;
     }

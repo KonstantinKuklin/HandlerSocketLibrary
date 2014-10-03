@@ -4,12 +4,12 @@
  */
 namespace HS\Query;
 
-use HS\Component\Comparison;
 use HS\Component\ComparisonInterface;
-use HS\Component\Filter;
 use HS\Component\InList;
 use HS\Driver;
 use HS\Exception\InvalidArgumentException;
+use HS\Result\SelectResult;
+use HS\Validator;
 
 class SelectQuery extends QueryAbstract
 {
@@ -18,9 +18,60 @@ class SelectQuery extends QueryAbstract
 
 //  const OBJECT = 3; TODO
 
+    protected $comparisonOparation = null;
+    protected $keyList = array();
+    protected $offset = 0;
+    protected $limit = 1;
+    protected $columnList = array();
+    protected $suffix = false;
+    /** @var null|InList */
+    protected $inKeyList = null;
+    /** @var \HS\Component\Filter[] */
+    protected $filterList = array();
+
+    protected $returnType = self::ASSOC;
+
+    /**
+     * @param int                 $indexId
+     * @param string              $comparisonOperation
+     * @param array               $keyList
+     * @param null                $socket
+     * @param array               $columnList
+     * @param null|int            $offset
+     * @param null|int            $limit
+     * @param null|OpenIndexQuery $openIndexQuery
+     * @param null                $inKeyList
+     * @param array               $filterList
+     * @param null|int            $position
+     */
+    public function __construct(
+        $indexId, $comparisonOperation, $keyList, $socket, array $columnList, $offset = null,
+        $limit = null, $openIndexQuery = null, $inKeyList = null,
+        array $filterList = array(), $position = null
+    ) {
+        parent::__construct();
+
+        Validator::validateIndexId($indexId);
+        $this->indexId = $indexId;
+
+        $this->comparisonOparation = $comparisonOperation;
+        $this->keyList = $keyList;
+        $this->offset = $offset;
+        $this->limit = $limit;
+        $this->columnList = $columnList;
+        $this->openIndexQuery = $openIndexQuery;
+        $this->socket = $socket;
+        if ($inKeyList instanceof InList) {
+            $this->inKeyList = $inKeyList;
+        } elseif ($inKeyList !== null) {
+            $this->inKeyList = new InList(is_numeric($position) ? $position : 0, $inKeyList);
+        }
+        $this->filterList = $filterList;
+    }
+
     public function getReturnType()
     {
-        return $this->getParameter('returnType', self::VECTOR);
+        return $this->returnType;
     }
 
     /**
@@ -34,11 +85,30 @@ class SelectQuery extends QueryAbstract
             || $type === self::VECTOR
 //          || $type === self::OBJECT TODO
         ) {
-            $this->getParameterBag()->setParameter('returnType', $type);
-
+            $this->returnType = $type;
         } else {
             throw new InvalidArgumentException("Got unknown return type.");
         }
+    }
+
+    public function setResultData($data)
+    {
+        $this->setSelectResultObject($data);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    protected function setSelectResultObject($data)
+    {
+
+        $this->resultObject = new SelectResult(
+            $this,
+            $data,
+            $this->columnList,
+            $this->returnType,
+            $this->openIndexQuery
+        );
     }
 
     /**
@@ -46,7 +116,7 @@ class SelectQuery extends QueryAbstract
      */
     public function getComparison()
     {
-        return $this->getParameter('comparison', Comparison::EQUAL);
+        return $this->comparisonOparation;
     }
 
     /**
@@ -54,7 +124,7 @@ class SelectQuery extends QueryAbstract
      */
     public function getKeyList()
     {
-        return $this->getParameter('keyList', array());
+        return $this->keyList;
     }
 
     /**
@@ -62,7 +132,7 @@ class SelectQuery extends QueryAbstract
      */
     public function getLimit()
     {
-        return $this->getParameter('limit', 1);
+        return $this->limit;
     }
 
     /**
@@ -70,7 +140,7 @@ class SelectQuery extends QueryAbstract
      */
     public function getOffset()
     {
-        return $this->getParameter('offset', 0);
+        return $this->offset;
     }
 
     /**
@@ -78,9 +148,7 @@ class SelectQuery extends QueryAbstract
      */
     public function getIn()
     {
-        /** @var InList $inKeyList */
-        $inKeyList = $this->getParameter('inKeyList');
-        if ($inKeyList === null) {
+        if ($this->inKeyList === null) {
             return '';
         }
 
@@ -89,9 +157,9 @@ class SelectQuery extends QueryAbstract
             Driver::DELIMITER . "%d" . // position
             Driver::DELIMITER . "%d" . // count
             Driver::DELIMITER . "%s", // key list
-            $inKeyList->getPosition(),
-            $inKeyList->getCount(),
-            Driver::prepareSendDataStatic($inKeyList->getKeyList())
+            $this->inKeyList->getPosition(),
+            $this->inKeyList->getCount(),
+            Driver::prepareSendDataStatic($this->inKeyList->getKeyList())
         );
     }
 
@@ -100,14 +168,12 @@ class SelectQuery extends QueryAbstract
      */
     public function getFilterList()
     {
-        /** @var Filter[] $filterList */
-        $filterList = $this->getParameter('filterList');
-        if ($filterList === null) {
+        if (empty($this->filterList)) {
             return '';
         }
 
         $output = '';
-        foreach ($filterList as $filter) {
+        foreach ($this->filterList as $filter) {
             $output .= sprintf(
                 Driver::DELIMITER . "%s" . // type
                 Driver::DELIMITER . "%s" . // comparison

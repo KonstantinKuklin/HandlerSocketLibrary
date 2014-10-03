@@ -30,11 +30,6 @@ interface QueryInterface
     public function getIndexId();
 
     /**
-     * @return boolean
-     */
-    public function isSuffix();
-
-    /**
      * @return $this
      * @throws \HS\Exception\InvalidArgumentException
      */

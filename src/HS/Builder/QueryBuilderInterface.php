@@ -4,6 +4,7 @@
  */
 namespace HS\Builder;
 
+use HS\Query\OpenIndexQuery;
 use HS\Query\QueryInterface;
 
 /**
@@ -12,12 +13,14 @@ use HS\Query\QueryInterface;
 interface QueryBuilderInterface
 {
     /**
-     * @param int  $indexId
-     * @param null $openIndexQuery
+     * @param int                 $indexId
+     * @param \HS\CommonClient    $socket
+     * @param null|OpenIndexQuery $openIndexQuery
+     *
      *
      * @return QueryInterface
      */
-    public function getQuery($indexId, $openIndexQuery = null);
+    public function getQuery($indexId, $socket, $openIndexQuery = null);
 
     /**
      * @param int $limit

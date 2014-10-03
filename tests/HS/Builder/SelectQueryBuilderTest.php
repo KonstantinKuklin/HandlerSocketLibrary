@@ -94,7 +94,7 @@ class SelectQueryBuilderTest extends TestCommon
         );
     }
 
-    public function testBugSingleSelectWithWhereIn()
+    public function testSingleSelectWithWhereIn()
     {
         $selectQueryBuilder = QueryBuilder::select(
             array('key', 'float')

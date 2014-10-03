@@ -182,10 +182,10 @@ abstract class CommonClient
         // if returned int
         if (is_int($openIndexQuery)) {
             /** @var int $openIndexQuery */
-            $queryForAdd = $queryBuilder->getQuery($openIndexQuery);
+            $queryForAdd = $queryBuilder->getQuery($openIndexQuery, $this);
         } else {
             /** @var OpenIndexQuery $openIndexQuery */
-            $queryForAdd = $queryBuilder->getQuery($openIndexQuery->getIndexId(), $openIndexQuery);
+            $queryForAdd = $queryBuilder->getQuery($openIndexQuery->getIndexId(), $this, $openIndexQuery);
         }
         $this->addQuery($queryForAdd);
 
