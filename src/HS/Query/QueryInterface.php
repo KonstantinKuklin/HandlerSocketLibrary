@@ -18,7 +18,7 @@ interface QueryInterface
     public function getQueryString();
 
     /**
-     * @param array $data
+     * @param string $data
      *
      * @return void
      */

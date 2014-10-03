@@ -5,6 +5,7 @@
 
 namespace HS\Tests\Reader;
 
+use HS\Driver;
 use HS\Error;
 use HS\Result\ResultAbstract;
 use HS\Tests\TestCommon;
@@ -47,7 +48,7 @@ class ErrorTest extends TestCommon
         $queryTest = $this->getReader()->text("test", "test");
 
         foreach ($this->errorMapList as $cmd => $error) {
-            $data = array(1, 2, $cmd, 'simple data');
+            $data = Driver::prepareSendDataStatic(array(1, 2, $cmd));
             try {
                 $result = new ResultTest($queryTest, $data);
             } catch (Error $e) {

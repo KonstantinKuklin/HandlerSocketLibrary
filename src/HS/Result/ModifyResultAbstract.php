@@ -13,10 +13,14 @@ class ModifyResultAbstract extends ResultAbstract implements ResultInterface
      */
     public function getNumberModifiedRows()
     {
-        if ($this->isSuccessfully()) {
-            return $this->data[1];
+        if (!$this->isSuccessfully()) {
+            return 0;
         }
 
-        return 0;
+        if ($this->modifyRows === null) {
+            $this->modifyRows = substr($this->data, 2, 1);
+        }
+
+        return $this->modifyRows;
     }
 } 

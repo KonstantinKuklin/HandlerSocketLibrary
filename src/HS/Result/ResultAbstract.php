@@ -5,6 +5,7 @@
 
 namespace HS\Result;
 
+use HS\Driver;
 use HS\Error;
 use HS\Errors\AuthenticationError;
 use HS\Errors\ColumnParseError;
@@ -42,11 +43,14 @@ abstract class ResultAbstract implements ResultInterface
     /** @var double */
     protected $time = 0;
 
+    /** @var null|int */
+    protected $modifyRows = null;
+
     private $openIndexQuery = null;
 
     /**
      * @param QueryInterface      $query
-     * @param array               $data
+     * @param string              $data
      * @param null|OpenIndexQuery $openIndexQuery
      *
      * @throws AuthenticationError
@@ -66,19 +70,18 @@ abstract class ResultAbstract implements ResultInterface
      * @throws ReadOnlyError
      * @throws UnknownError
      */
-    public function __construct(QueryInterface $query, array &$data, $openIndexQuery = null)
+    public function __construct(QueryInterface $query, $data, $openIndexQuery = null)
     {
         $this->openIndexQuery = $openIndexQuery;
         $this->query = $query;
-        $code = array_shift($data);
+
+        $code = substr($data, 0, 1);
         $this->setCode($code);
 
-        if ($this->code != 0) {
-            /* inside data array with indexes:
-                0 - always integer 1
-                1 - human readable error message
-            */
-            $error = $data[1];
+        if ($code !== "0") {
+            // 4 because we need to skip 0 \t 1 \t
+            $error = substr($data, 4);
+
             switch ($error) {
                 case 'cmd':
                 case 'syntax':
@@ -137,12 +140,10 @@ abstract class ResultAbstract implements ResultInterface
                     }
                     break;
             }
-        }
-        // if got error
-        if ($this->error !== null) {
             throw $this->error;
+        } else {
+            $this->data = $data;
         }
-        $this->data = $data;
     }
 
     /**

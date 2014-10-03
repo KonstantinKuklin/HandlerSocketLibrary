@@ -108,8 +108,7 @@ abstract class CommonClient
             }
             $this->getStream()->isReadyForReading();
             try {
-                $resultList = Driver::prepareReceiveDataStatic($this->getStream()->getContents());
-                $query->setResultData($resultList);
+                $query->setResultData($this->getStream()->getContents());
 
                 $ResultObject = $query->getResult();
 

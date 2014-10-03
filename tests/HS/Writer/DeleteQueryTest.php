@@ -33,7 +33,7 @@ class DeleteQueryTest extends TestCommon
         $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteByIndexQuery didn't modified rows.");
 
         $data = $selectQuery->getResult()->getData();
-        $this->assertTrue(empty($data), 'Fall the data won`t succesfuly deleted.');
+        $this->assertTrue(empty($data), 'Fall the data won`t successfully deleted.');
     }
 
     public function testSingleDelete()
@@ -60,7 +60,6 @@ class DeleteQueryTest extends TestCommon
         $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteQuery didn't modified rows.");
 
         $data = $selectQuery->getResult()->getData();
-
         $this->assertTrue(empty($data), 'Fall the data won`t succesfuly deleted.');
     }
 } 
