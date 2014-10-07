@@ -8,9 +8,9 @@ namespace HS\Tests\Writer;
 use HS\Component\Comparison;
 use HS\Result\SelectResult;
 use HS\Result\UpdateResult;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class UpdateQueryTest extends TestCommon
+class UpdateQueryTest extends TestWriterCommon
 {
     public function testSingleUpdateByIndexId()
     {
@@ -23,20 +23,12 @@ class UpdateQueryTest extends TestCommon
             array('key', 'text')
         );
         $updateQuery = $writer->updateByIndex($indexId, Comparison::EQUAL, array(2), array(2, 'new'));
-
-        $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(2));
         $writer->getResultList();
 
-        /** @var UpdateResult $updateResult */
         $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
-
         $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateByIndexQuery didn't modified rows.");
-
-        $data = $selectQuery->getResult()->getData();
-
-        $this->assertEquals('new', $data[0]['text']);
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleUpdate()
@@ -50,22 +42,15 @@ class UpdateQueryTest extends TestCommon
             'PRIMARY',
             Comparison::EQUAL,
             array(2),
-            array(2, 'new2')
+            array(2, 'new next')
         );
-
-        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array(2));
         $writer->getResultList();
 
         /** @var UpdateResult $updateResult */
         $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
-
         $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateQuery didn't modified rows.");
-
-        $data = $selectQuery->getResult()->getData();
-
-        $this->assertEquals('new2', $data[0]['text']);
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleUpdateWithSuffix()
@@ -79,24 +64,19 @@ class UpdateQueryTest extends TestCommon
             'PRIMARY',
             Comparison::EQUAL,
             array(2),
-            array(2, 'new34'),
+            array(2, 'new suffix'),
             true
         );
-
-        $selectQuery = $writer->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array(2));
         $writer->getResultList();
 
         $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
 
         $dataUpdateSelectResult = $updateResult->getData();
         if (!($updateResult instanceof SelectResult)) {
             $this->fail("Returned not a select result object.");
         }
-        $data = $selectQuery->getResult()->getData();
-
-        $this->assertEquals('new34', $data[0]['text']);
-        $this->assertEquals('new2', $dataUpdateSelectResult[0]['text']);
+        $this->assertEquals(array(array('key' => 2, 'text' => '')), $dataUpdateSelectResult);
+        $this->assertTablesHSEqual(__METHOD__);
     }
 } 

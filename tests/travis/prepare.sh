@@ -12,6 +12,6 @@ sudo make install
 sudo cp ../tests/travis/hs.cnf /etc/mysql/conf.d/hs.cnf
 sudo service mysql restart
 mysql -e "SHOW PROCESSLIST;"
-mysql -e 'CREATE DATABASE IF NOT EXISTS hs;'
-mysql -D hs < ../tests/resources/preTests.sql
+mysql -e 'CREATE DATABASE IF NOT EXISTS handlersocket;'
+mysql -D handlersocket < ../tests/resources/preTests.sql
 cd ../

@@ -72,11 +72,8 @@ abstract class CommonClient
 
         $this->authKey = $authKey;
         $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port);
-        $this->stream->open();
-        $this->stream->setBlockingOff();
-        $this->stream->setReadTimeOut(0, (float)500000);
         $this->stream->setReceiveMethod(new StreamGetLineMethod(1024, Driver::EOL));
-        $this->authenticateOnInit();
+        $this->open();
     }
 
     /**
@@ -216,15 +213,36 @@ abstract class CommonClient
      */
     public function reOpen()
     {
+        $this->close();
+        $this->open();
+    }
+
+    /**
+     * @throws \Stream\Exception\StreamException
+     */
+    public function close()
+    {
         $this->currentIndexIterator = 0;
+        $this->countQueries = 0;
         $this->queryListNotSent = array();
         $this->indexList = array();
         $this->keysList = array();
+        $this->stream->close();
+    }
 
-        if ($this->getStream() === null) {
-            throw new Exception("Stream not found to reopen.");
+    /**
+     * @throws Exception
+     * @throws \Stream\Exception\ConnectionStreamException
+     * @throws \Stream\Exception\StreamException
+     */
+    public function open()
+    {
+        if ($this->stream->isOpened()) {
+            throw new Exception("Stream already opened.");
         }
-        $this->getStream()->close();
+        $this->stream->open();
+        $this->stream->setBlockingOff();
+        $this->stream->setReadTimeOut(0, (float)500000);
         $this->authenticateOnInit();
     }
 
@@ -245,7 +263,7 @@ abstract class CommonClient
      */
     protected function sendQuery(QueryInterface $query)
     {
-        if ($this->getStream()->sendContents($query->getQueryString() . Driver::EOL) > 0) {
+        if ($this->stream->sendContents($query->getQueryString() . Driver::EOL) > 0) {
             // increment count of queries
             $this->countQueries++;
 

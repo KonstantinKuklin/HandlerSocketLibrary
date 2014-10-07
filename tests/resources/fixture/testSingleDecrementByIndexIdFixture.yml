@@ -1,0 +1,176 @@
+hs:
+  -
+    key: 1
+    date: "0000-00-00"
+    float: 1
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 2
+    date: "0000-00-00"
+    float: 2
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 3
+    date: "0000-00-00"
+    float: 3
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 4
+    date: "0000-00-00"
+    float: 4
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 5
+    date: "0000-00-00"
+    float: 5
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 12
+    date: "0000-00-00"
+    float: 12345
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0
+
+  -
+    key: 42
+    date: "2010-10-29"
+    float: 3.14159
+    varchar: "variable length"
+    text: "some\r\nbig\r\ntext"
+    set: "a,c"
+    union: "b"
+    "null":
+    num: 0
+
+  -
+    key: 100
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 1
+
+  -
+    key: 101
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text101"
+    set: ""
+    union: "a"
+    "null":
+    num: 3
+
+  -
+    key: 102
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text102"
+    set: ""
+    union: "a"
+    "null":
+    num: 3
+
+  -
+    key: 103
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text103"
+    set: ""
+    union: "a"
+    "null":
+    num: 3
+
+  -
+    key: 104
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text104"
+    set: ""
+    union: "a"
+    "null":
+    num: 10
+
+  -
+    key: 105
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text105"
+    set: ""
+    union: "a"
+    "null":
+    num: 10
+
+  -
+    key: 106
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text106"
+    set: ""
+    union: "a"
+    "null":
+    num: 15
+
+  -
+    key: 107
+    date: "0000-00-00"
+    float: 0
+    varchar: ""
+    text: "text107"
+    set: ""
+    union: "a"
+    "null":
+    num: 13
+
+  -
+    key: 10001
+    date: "2012-01-20"
+    float: 1
+    varchar: "text with special chars"
+    text: ""
+    set: ""
+    union: "a"
+    "null":
+    num: 0

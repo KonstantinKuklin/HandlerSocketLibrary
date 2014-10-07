@@ -7,9 +7,9 @@ namespace HS\Tests\Writer;
 
 use HS\Component\Comparison;
 use HS\Result\DeleteResult;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class DeleteQueryTest extends TestCommon
+class DeleteQueryTest extends TestWriterCommon
 {
     public function testSingleDeleteByIndexId()
     {
@@ -22,18 +22,14 @@ class DeleteQueryTest extends TestCommon
             array('key', 'text')
         );
         $deleteQuery = $writer->deleteByIndex($indexId, Comparison::EQUAL, array(3));
-        $selectQuery = $writer->selectByIndex($indexId, Comparison::EQUAL, array(3));
         $writer->getResultList();
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();
         $this->assertTrue($deleteResult->isSuccessfully(), "Fall deleteByIndexQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
-
         $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteByIndexQuery didn't modified rows.");
 
-        $data = $selectQuery->getResult()->getData();
-        $this->assertTrue(empty($data), 'Fall the data won`t successfully deleted.');
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleDelete()
@@ -48,18 +44,13 @@ class DeleteQueryTest extends TestCommon
             Comparison::EQUAL,
             array(1)
         );
-
-        $selectQuery = $writer->selectByIndex($deleteQuery->getIndexId(), Comparison::EQUAL, array(1));
         $writer->getResultList();
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();
         $this->assertTrue($deleteResult->isSuccessfully(), "Fall deleteQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectQuery return bad status.");
-
         $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteQuery didn't modified rows.");
 
-        $data = $selectQuery->getResult()->getData();
-        $this->assertTrue(empty($data), 'Fall the data won`t succesfuly deleted.');
+        $this->assertTablesHSEqual(__METHOD__);
     }
 } 

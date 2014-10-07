@@ -30,8 +30,9 @@ class ConstructorTest extends TestCommon
     {
         $portGood = 9998;
 
+        $reader = null;
         try {
-            new Reader($this->getHost(), $portGood);
+            $reader = new Reader($this->getHost(), $portGood);
         } catch (\Exception $e) {
             $this->fail(
                 sprintf(
@@ -41,6 +42,7 @@ class ConstructorTest extends TestCommon
                 )
             );
         }
+        $reader->close();
         $this->assertTrue(true);
     }
 
@@ -61,9 +63,9 @@ class ConstructorTest extends TestCommon
     public function testAuthRequestNotAdded()
     {
         $portGood = 9999;
-
         $reader = new Reader($this->getHost(), $portGood);
         $this->assertEquals(0, $reader->getCountQueriesInQueue(), "Auth request added on init hs reader.");
         $reader->getResultList();
+        $reader->close();
     }
 } 

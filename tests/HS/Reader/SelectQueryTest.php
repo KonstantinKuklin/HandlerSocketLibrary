@@ -44,6 +44,7 @@ class GetResultTest extends TestCommon
         $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
         $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
         $this->assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
+        $reader->close();
     }
 
     public function testSelectExistedValue()

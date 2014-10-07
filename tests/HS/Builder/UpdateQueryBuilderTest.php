@@ -7,11 +7,11 @@ namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;
 use HS\QueryBuilder;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class UpdateQueryBuilderTest extends TestCommon
+class UpdateQueryBuilderTest extends TestWriterCommon
 {
-    public function testSingleUpdate()
+    public function testBuilderSingleUpdate()
     {
         $updateQueryBuilder = QueryBuilder::update(
             array(
@@ -24,37 +24,25 @@ class UpdateQueryBuilderTest extends TestCommon
             ->where(Comparison::EQUAL, array('key' => 2));
 
         $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($updateQuery->getIndexId(), Comparison::EQUAL, array('2'));
 
         $this->getWriter()->getResultList();
 
         $updateResult = $updateQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
-
-
-        $this->assertEquals(
-            array(
-                array(
-                    'key' => '2',
-                    'varchar' => 'test update query'
-                )
-            ),
-            $selectQuery->getResult()->getData(),
-            'Fall returned data not valid.'
-        );
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
-    public function testSingleUpdateSuffix()
+    public function testBuilderSingleUpdateSuffix()
     {
         $updateQueryBuilder = QueryBuilder::update(
             array(
-                'key' => 2,
+                'key' => 3,
                 'varchar' => 'test again update query'
             )
         )
             ->fromDataBase($this->getDatabase())
             ->fromTable($this->getTableName())
-            ->where(Comparison::EQUAL, array('key' => 2))->withSuffix();
+            ->where(Comparison::EQUAL, array('key' => 3))->withSuffix();
 
         $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
         $this->getWriter()->getResultList();
@@ -66,12 +54,13 @@ class UpdateQueryBuilderTest extends TestCommon
         $this->assertEquals(
             array(
                 array(
-                    'key' => '2',
-                    'varchar' => 'test update query'
+                    'key' => '3',
+                    'varchar' => ''
                 )
             ),
             $updateQuery->getResult()->getData(),
             'Fall returned data not valid.'
         );
+        $this->assertTablesHSEqual(__METHOD__);
     }
 } 

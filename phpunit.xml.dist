@@ -15,7 +15,18 @@
         >
     <testsuites>
         <testsuite name="HandlerSocket library Test Suite">
-            <directory suffix="Test.php">./tests</directory>
+            <directory suffix="Test.php">./tests/HS/Reader</directory>
+            <directory suffix="Test.php">./tests/HS/Builder</directory>
+            <directory suffix="Test.php">./tests/HS/Writer</directory>
+            <directory suffix="Test.php">./tests/HS/Component</directory>
         </testsuite>
     </testsuites>
+
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=handlersocket;host=127.0.0.1" />
+        <var name="DB_USER" value="root" />
+        <var name="DB_PASSWD" value="" />
+        <var name="DB_DBNAME" value="handlersocket" />
+        <var name="YAML_FILE" value="/../resources/hs_table.yml" />
+    </php>
 </phpunit>

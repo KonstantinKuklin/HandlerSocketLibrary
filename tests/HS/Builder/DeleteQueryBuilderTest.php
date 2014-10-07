@@ -7,11 +7,11 @@ namespace HS\Tests\Builder;
 
 use HS\Component\Comparison;
 use HS\QueryBuilder;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class DeleteQueryBuilderTest extends TestCommon
+class DeleteQueryBuilderTest extends TestWriterCommon
 {
-    public function testSingleDelete()
+    public function testBuilderSingleDelete()
     {
         $deleteQueryBuilder = QueryBuilder::delete();
         $deleteQueryBuilder->fromDataBase($this->getDatabase())->fromTable(
@@ -19,14 +19,10 @@ class DeleteQueryBuilderTest extends TestCommon
         )->where(Comparison::EQUAL, array('key' => 5));
 
         $deleteQuery = $this->getWriter()->addQueryBuilder($deleteQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($deleteQuery->getIndexId(), Comparison::EQUAL, array('5'));
-
         $this->getWriter()->getResultList();
 
         $updateResult = $deleteQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), 'Fall deleteQuery is not successfully done.');
-
-        $data = $selectQuery->getResult()->getData();
-        $this->assertTrue(empty($data), 'Fall returned data not valid.');
+        $this->assertTablesHSEqual(__METHOD__);
     }
-} 
+}

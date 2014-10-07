@@ -8,40 +8,53 @@ namespace HS\Tests;
 use HS\Reader;
 use HS\Result\ResultInterface;
 use HS\Writer;
-use PHPUnit_Framework_TestCase;
 
-class TestCommon extends PHPUnit_Framework_TestCase
+class TestCommon extends \PHPUnit_Framework_TestCase
 {
-
     const HOST = '127.0.0.1';
     const PORT_RO = 9998;
     const PORT_RW = 9999;
-    const DATABASE = 'hs';
-    const TABLE = 'hs_test';
+    const DATABASE = 'handlersocket';
+    const TABLE = 'hs';
 
     const READ_PASSWORD = 'Password_Read1';
     const WRITE_PASSWORD = 'Password_Write1';
 
-    const SQL_FILE = '../tests/resources/preTests.sql';
-
     /**
      * @var Reader
      */
-    protected $reader = null;
+    public static $reader = null;
     /**
      * @var Writer
      */
-    protected $writer = null;
+    public static $writer = null;
 
     public function __construct()
     {
-        if ($this->reader === null) {
-            $this->reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword());
+        if (self::$reader === null) {
+            self::$reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword());
         }
 
-        if ($this->writer === null) {
-            $this->writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
+        if (self::$writer === null) {
+            self::$writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
         }
+    }
+
+    protected function setUp(){
+        try {
+            $this->getWriter()->open();
+            $this->getReader()->open();
+        } catch (\Exception $e){
+            echo ""; // setUp after construct will provide already opened exception
+        }
+        parent::setUp();
+    }
+
+    protected function tearDown()
+    {
+        $this->getWriter()->close();
+        $this->getReader()->close();
+        parent::tearDown();
     }
 
     /**
@@ -50,14 +63,6 @@ class TestCommon extends PHPUnit_Framework_TestCase
     protected function getHost()
     {
         return self::HOST;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getSqlFilePath()
-    {
-        return self::SQL_FILE;
     }
 
     /**
@@ -73,7 +78,7 @@ class TestCommon extends PHPUnit_Framework_TestCase
      */
     protected function getReader()
     {
-        return $this->reader;
+        return self::$reader;
     }
 
     /**
@@ -81,7 +86,7 @@ class TestCommon extends PHPUnit_Framework_TestCase
      */
     protected function getWriter()
     {
-        return $this->writer;
+        return self::$writer;
     }
 
     /**

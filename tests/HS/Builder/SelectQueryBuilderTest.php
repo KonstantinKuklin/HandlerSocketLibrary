@@ -8,9 +8,9 @@ namespace HS\Tests\Builder;
 use HS\Component\Comparison;
 use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class SelectQueryBuilderTest extends TestCommon
+class SelectQueryBuilderTest extends TestWriterCommon
 {
     public function testSingleSelect()
     {
@@ -86,7 +86,7 @@ class SelectQueryBuilderTest extends TestCommon
                     'varchar' => '',
                     'text' => '',
                     'set' => '',
-                    'union' => ''
+                    'union' => 'a'
                 )
             ),
             $selectResult->getData(),

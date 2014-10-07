@@ -8,39 +8,27 @@ namespace HS\Tests\Builder;
 use HS\Component\Comparison;
 use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class IncrementQueryBuilderTest extends TestCommon
+class IncrementQueryBuilderTest extends TestWriterCommon
 {
-    public function testSingleIncrement()
+    public function testBuilderSingleIncrement()
     {
-        $incrementQueryBuilder = QueryBuilder::increment(array('key' => 0, 'num'))
+        $incrementQueryBuilder = QueryBuilder::increment(array('key' => 0, 'num' => 5))
             ->fromDataBase($this->getDatabase())
             ->fromTable($this->getTableName())
             ->where(Comparison::EQUAL, array('key' => 104));
 
         $incrementQuery = $this->getWriter()->addQueryBuilder($incrementQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($incrementQuery->getIndexId(), Comparison::EQUAL, array('104'));
 
         $this->getWriter()->getResultList();
 
         $incrementResult = $incrementQuery->getResult();
         $this->assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
-
-
-        $this->assertEquals(
-            array(
-                array(
-                    'key' => '104',
-                    'num' => '11'
-                )
-            ),
-            $selectQuery->getResult()->getData(),
-            'Fall returned data not valid.'
-        );
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
-    public function testIncrementException()
+    public function testBuilderIncrementException()
     {
         try {
             QueryBuilder::increment(array('key' => 0, 'num' => 'text'))
@@ -51,7 +39,6 @@ class IncrementQueryBuilderTest extends TestCommon
             return true;
         }
         $this->fail('Not fall incrementBuilder with wrong parameters.');
-
     }
 
     // limit value increase num ?? TODO
@@ -64,23 +51,11 @@ class IncrementQueryBuilderTest extends TestCommon
             ->limit(100);
 
         $incrementQuery = $this->getWriter()->addQueryBuilder($incrementQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($incrementQuery->getIndexId(), Comparison::EQUAL, array('104'));
 
         $this->getWriter()->getResultList();
 
         $incrementResult = $incrementQuery->getResult();
         $this->assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
-
-
-        $this->assertEquals(
-            array(
-                array(
-                    'key' => '104',
-                    'num' => '111'
-                )
-            ),
-            $selectQuery->getResult()->getData(),
-            'Fall returned data not valid.'
-        );
+        $this->assertTablesHSEqual(__METHOD__);
     }
 }

@@ -8,11 +8,11 @@ namespace HS\Tests\Builder;
 use HS\Component\Comparison;
 use HS\Exception\InvalidArgumentException;
 use HS\QueryBuilder;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class DecrementQueryBuilderTest extends TestCommon
+class DecrementQueryBuilderTest extends TestWriterCommon
 {
-    public function testSingleDecrement()
+    public function testBuilderSingleDecrement()
     {
         $decrementQueryBuilder = QueryBuilder::decrement(array('key' => 0, 'num'))
             ->fromDataBase($this->getDatabase())
@@ -20,27 +20,15 @@ class DecrementQueryBuilderTest extends TestCommon
             ->where(Comparison::EQUAL, array('key' => 105));
 
         $decrementQuery = $this->getWriter()->addQueryBuilder($decrementQueryBuilder);
-        $selectQuery = $this->getWriter()->selectByIndex($decrementQuery->getIndexId(), Comparison::EQUAL, array('105'));
 
         $this->getWriter()->getResultList();
 
         $updateResult = $decrementQuery->getResult();
         $this->assertTrue($updateResult->isSuccessfully(), 'Fall decrementQuery is not successfully done.');
-
-
-        $this->assertEquals(
-            array(
-                array(
-                    'key' => '105',
-                    'num' => '9'
-                )
-            ),
-            $selectQuery->getResult()->getData(),
-            'Fall returned data not valid.'
-        );
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
-    public function testDecrementException()
+    public function testBuilderDecrementException()
     {
         try {
             QueryBuilder::decrement(array('key' => 0, 'num' => 'text'))
@@ -51,6 +39,5 @@ class DecrementQueryBuilderTest extends TestCommon
             return true;
         }
         $this->fail('Not fall decrementBuilder with wrong parameters.');
-
     }
 } 

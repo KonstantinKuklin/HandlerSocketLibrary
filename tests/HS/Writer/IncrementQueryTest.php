@@ -6,9 +6,9 @@
 namespace HS\Tests\Writer;
 
 use HS\Result\IncrementResult;
-use HS\Tests\TestCommon;
+use HS\Tests\TestWriterCommon;
 
-class IncrementQueryTest extends TestCommon
+class IncrementQueryTest extends TestWriterCommon
 {
     public function testSingleIncrementByIndexId()
     {
@@ -21,23 +21,17 @@ class IncrementQueryTest extends TestCommon
             array('key', 'num')
         );
         $incrementQuery = $writer->incrementByIndex($indexId, '=', array(106), array(0, 3), false);
-
-        $selectQuery = $writer->selectByIndex($indexId, '=', array(106));
         $writer->getResultList();
 
         /** @var IncrementResult $incrementResult */
         $incrementResult = $incrementQuery->getResult();
         $this->assertTrue($incrementResult->isSuccessfully(), "Fall incrementByIndexQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
 
         $this->assertTrue(
             $incrementResult->getNumberModifiedRows() > 0,
             "Fall incrementByIndexQuery didn't modified rows."
         );
-
-        $data = $selectQuery->getResult()->getData();
-
-        $this->assertEquals("18", $data[0]['num']);
+        $this->assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleIncrement()
@@ -53,19 +47,12 @@ class IncrementQueryTest extends TestCommon
             array(106),
             array(0, 5)
         );
-
-        $selectQuery = $writer->selectByIndex($incrementQuery->getIndexId(), '=', array(106));
         $writer->getResultList();
 
         /** @var IncrementResult $incrementResult */
         $incrementResult = $incrementQuery->getResult();
         $this->assertTrue($incrementResult->isSuccessfully(), "Fall incrementQuery return bad status.");
-        $this->assertTrue($selectQuery->getResult()->isSuccessfully(), "Fall incrementQuery return bad status.");
-
         $this->assertTrue($incrementResult->getNumberModifiedRows() > 0, "Fall incrementQuery didn't modified rows.");
-
-        $data = $selectQuery->getResult()->getData();
-
-        $this->assertEquals("23", $data[0]['num']);
+        $this->assertTablesHSEqual(__METHOD__);
     }
 } 

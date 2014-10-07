@@ -1,11 +1,11 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
 --
--- Structure of table `hs_test`
+-- Structure of table `handlersocket`
 --
 
-DROP TABLE IF EXISTS `hs_test`;
-CREATE TABLE `hs_test` (
+DROP TABLE IF EXISTS `hs`;
+CREATE TABLE `hs` (
   `key`     INT(11)             NOT NULL,
   `date`    DATE                NOT NULL,
   `float`   FLOAT               NOT NULL,
@@ -21,10 +21,10 @@ CREATE TABLE `hs_test` (
   DEFAULT CHARSET =utf8;
 
 --
--- Data of table `hs_test`
+-- Data of table `handlersocket`
 --
 
-INSERT INTO `hs_test` (`key`, `date`, `float`, `varchar`, `text`, `set`, `union`, `null`, `num`) VALUES
+INSERT INTO `hs` (`key`, `date`, `float`, `varchar`, `text`, `set`, `union`, `null`, `num`) VALUES
   (1, '0000-00-00', 1, '', '', '', '', NULL, 0),
   (2, '0000-00-00', 2, '', '', '', '', NULL, 0),
   (3, '0000-00-00', 3, '', '', '', '', NULL, 0),
