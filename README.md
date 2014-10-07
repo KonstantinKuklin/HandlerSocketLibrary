@@ -94,14 +94,6 @@ I would be glad to see your suggestions, feedback and reports of bugs found.
 
 If the program is interesting, it'll expand its functionality.
 
-TODO
-------------
-  - the library covers the entire functionality HandlerSocket`a except suffix "?";
-  - filters are temporarily unavailable on teams update;
-  - the work with NULL is not good;
-  - single query execution;
-  - cover all possibly errors with error classes.
-
 License
 -------
 
