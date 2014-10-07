@@ -49,13 +49,15 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
         $this->openIndexQuery = $openIndexQuery;
         $classPath = $this->getQueryClassPath();
 
-        $query = null;
+        $query = array();
         switch ($classPath) {
             case 'HS\Query\InsertQuery':
-                $query = new InsertQuery($indexId, $this->valueList, $socket, $openIndexQuery);
+                foreach ($this->valueList as $rowList) {
+                    $query[] = new InsertQuery($indexId, $rowList, $socket, $openIndexQuery);
+                }
                 break;
             case 'HS\Query\DeleteQuery':
-                $query = new DeleteQuery(
+                $query[] = new DeleteQuery(
                     $indexId,
                     $this->comparison,
                     $this->keyList,
@@ -70,7 +72,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
                 );
                 break;
             case 'HS\Query\SelectQuery':
-                $query = new SelectQuery(
+                $queryTmp = new SelectQuery(
                     $indexId,
                     $this->comparison,
                     $this->keyList,
@@ -83,9 +85,11 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
                     $this->filterList, null
 
                 );
+                $queryTmp->setReturnType($this->returnType);
+                $query[] = $queryTmp;
                 break;
             case 'HS\Query\UpdateQuery':
-                $query = new UpdateQuery(
+                $query[] = new UpdateQuery(
                     $indexId,
                     $this->comparison,
                     $this->keyList,
@@ -101,7 +105,7 @@ abstract class QueryBuilderAbstract implements QueryBuilderInterface
                 );
                 break;
             default:
-                $query = new $classPath(
+                $query[] = new $classPath(
                     $indexId,
                     $this->comparison,
                     $this->keyList,

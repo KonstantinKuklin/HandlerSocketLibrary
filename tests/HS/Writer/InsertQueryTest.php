@@ -22,7 +22,7 @@ class InsertQueryTest extends TestWriterCommon
         );
         $insertQuery = $writer->insertByIndex(
             $indexId,
-            array(array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1'))
+            array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1')
         );
         $writer->getResultList();
 
@@ -40,7 +40,7 @@ class InsertQueryTest extends TestWriterCommon
             $this->getDatabase(),
             $this->getTableName(),
             'PRIMARY',
-            array(array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1'))
+            array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1')
         );
         $writer->getResultList();
 

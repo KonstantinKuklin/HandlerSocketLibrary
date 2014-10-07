@@ -18,23 +18,9 @@ interface QueryBuilderInterface
      * @param null|OpenIndexQuery $openIndexQuery
      *
      *
-     * @return QueryInterface
+     * @return QueryInterface[]
      */
     public function getQuery($indexId, $socket, $openIndexQuery = null);
-
-    /**
-     * @param int $limit
-     *
-     * @return QueryBuilderInterface
-     */
-    public function limit($limit);
-
-    /**
-     * @param int $offset
-     *
-     * @return QueryBuilderInterface
-     */
-    public function offset($offset);
 
     /**
      * @return boolean

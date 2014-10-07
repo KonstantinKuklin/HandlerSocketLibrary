@@ -4,7 +4,7 @@ Insert command is modifying database and can only be done through writing socket
 
 Open an index with columns `'key', 'date', 'float', 'varchar', 'text', 'set', 'union'`.
 
-Paste the data on the index, certainly pass an array of values, where a value for insertion is also an array.
+Paste the data on the index, certainly pass an array of values.
 
 ```php
 $writer = new \HS\Writer('localhost', 9999);
@@ -16,7 +16,7 @@ $indexId = $writer->getIndexId(
 );
 $insertQuery = $writer->insertByIndex(
     $indexId,
-    array(array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1'))
+    array('467', '0000-00-01', '1.02', 'char', 'text467', '1', '1')
 );
 ```
 
@@ -49,7 +49,7 @@ $insertQuery = $writer->insert(
     $this->getDatabase(),
     $this->getTableName(),
     'PRIMARY',
-    array(array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1'))
+    array('468', '0000-00-01', '1.02', 'char', 'text468', '1', '1')
 );
 ```
 

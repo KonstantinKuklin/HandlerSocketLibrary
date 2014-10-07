@@ -24,6 +24,14 @@ class FilterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Comparison::EQUAL, $this->filter->getComparison(), 'Fail returned comparison is wrong.');
     }
 
+    public function testGetComparisonObject()
+    {
+        $this->assertTrue(
+            $this->filter->getComparisonObject() instanceof Comparison,
+            'Fail returned comparisonObject is wrong.'
+        );
+    }
+
     public function testGetPosition()
     {
         $this->assertEquals(5, $this->filter->getPosition(), 'Fail returned position is wrong.');
@@ -37,5 +45,10 @@ class FilterTest extends PHPUnit_Framework_TestCase
     public function testGetDefaultType()
     {
         $this->assertEquals('F', $this->filter->getType(), 'Fail returned type is wrong.');
+    }
+
+    public function testConstructWithComparisonClass()
+    {
+        $filter = new Filter(new Comparison(Comparison::EQUAL), 5, 'key');
     }
 } 

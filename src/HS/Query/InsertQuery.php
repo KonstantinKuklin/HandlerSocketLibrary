@@ -29,13 +29,10 @@ class InsertQuery extends QueryAbstract
         $queryString = sprintf(
             "%d" . Driver::DELIMITER . "+" . Driver::DELIMITER . "%d",
             $this->getIndexId(),
-            count($this->valueList[0])
+            count($this->valueList)
         );
-
-        foreach ($this->valueList as $row) {
-            $queryString .= "\t" . Driver::prepareSendDataStatic($row);
-        }
-
+        $queryString .= "\t" . Driver::prepareSendDataStatic($this->valueList);
+        
         return $queryString;
     }
 

@@ -84,28 +84,4 @@ class InsertQueryBuilder extends QueryBuilderAbstract
     {
         return 'HS\Query\InsertQuery';
     }
-
-    /**
-     * @param int $limit
-     *
-     * @return InsertQueryBuilder
-     */
-    public function limit($limit)
-    {
-        $this->limit = $limit;
-
-        return $this;
-    }
-
-    /**
-     * @param int $offset
-     *
-     * @return InsertQueryBuilder
-     */
-    public function offset($offset)
-    {
-        $this->offset = $offset;
-
-        return $this;
-    }
 }

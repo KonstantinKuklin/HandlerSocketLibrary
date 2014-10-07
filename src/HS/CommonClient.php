@@ -54,6 +54,16 @@ abstract class CommonClient
      */
     abstract public function authenticate($authKey);
 
+    /**
+     * @param string $dbName
+     * @param string $tableName
+     * @param string $indexName
+     * @param array  $columnList
+     * @param bool   $returnOnlyId
+     * @param array  $filterColumnList
+     *
+     * @return int|OpenIndexQuery
+     */
     abstract public function getIndexId(
         $dbName, $tableName, $indexName, array $columnList, $returnOnlyId = true, array $filterColumnList = array()
     );
@@ -77,7 +87,7 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return boolean
      */
     public function isDebug()
     {
@@ -85,7 +95,9 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return \HS\Result\ResultAbstract[]
+     * @throws Exception
+     * @throws \Stream\Exception\StreamException
      */
     public function getResultList()
     {
@@ -131,7 +143,7 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     public function getCountQueriesInQueue()
     {
@@ -139,7 +151,7 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     public function getCountQueries()
     {
@@ -147,7 +159,7 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return float
      */
     public function getTimeQueries()
     {
@@ -155,7 +167,7 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getUrlConnection()
     {
@@ -163,7 +175,10 @@ abstract class CommonClient
     }
 
     /**
-     * {@inheritdoc}
+     * @param QueryBuilderInterface $queryBuilder
+     *
+     * @throws Exception
+     * @return \HS\Query\QueryAbstract
      */
     public function addQueryBuilder(QueryBuilderInterface $queryBuilder)
     {
@@ -178,19 +193,25 @@ abstract class CommonClient
 
         // if returned int
         if (is_int($openIndexQuery)) {
-            /** @var int $openIndexQuery */
-            $queryForAdd = $queryBuilder->getQuery($openIndexQuery, $this);
+            $queryForAddList = $queryBuilder->getQuery($openIndexQuery, $this);
         } else {
-            /** @var OpenIndexQuery $openIndexQuery */
-            $queryForAdd = $queryBuilder->getQuery($openIndexQuery->getIndexId(), $this, $openIndexQuery);
+            $queryForAddList = $queryBuilder->getQuery($openIndexQuery->getIndexId(), $this, $openIndexQuery);
         }
-        $this->addQuery($queryForAdd);
+
+        if (count($queryForAddList) === 0) {
+            throw new Exception("Returned empty list queries.");
+        }
+
+        $queryForAdd = null;
+        foreach ($queryForAddList as $queryForAdd) {
+            $this->addQuery($queryForAdd);
+        }
 
         return $queryForAdd;
     }
 
     /**
-     * {@inheritdoc}
+     * @param QueryInterface $query
      */
     public function addQuery(QueryInterface $query)
     {
@@ -208,9 +229,6 @@ abstract class CommonClient
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reOpen()
     {
         $this->close();

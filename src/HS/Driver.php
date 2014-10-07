@@ -5,17 +5,13 @@
 
 namespace HS;
 
-use Stream\StreamDriverInterface;
-
-class Driver implements StreamDriverInterface
+class Driver
 {
     const EOL = "\x0a"; // "\n" char
     const DELIMITER = "\x09"; // "\t" char
     const NULL = "\0";
 
     private static $encodeMap = array(
-        // NULL is expressed as a single NUL(0x00).
-        null => "\x00",
         // A character in the range [0x00 - 0x0f] is prefixed by 0x01 and shifted by 0x40
         "\x00" => "\x01\x40",
         "\x01" => "\x01\x41",
@@ -68,14 +64,6 @@ class Driver implements StreamDriverInterface
     }
 
     /**
-     * @{inheritdoc}
-     */
-    public function prepareSendData($data)
-    {
-        return self::prepareSendDataStatic($data);
-    }
-
-    /**
      * @param string $data
      *
      * @return array
@@ -85,14 +73,6 @@ class Driver implements StreamDriverInterface
         $dataList = explode(self::DELIMITER, $data);
 
         return array_map('self::decodeData', $dataList);
-    }
-
-    /**
-     * @{inheritdoc}
-     */
-    public function prepareReceiveData($data)
-    {
-        return self::prepareReceiveDataStatic($data);
     }
 
     /**
@@ -112,10 +92,12 @@ class Driver implements StreamDriverInterface
      */
     public static function encodeData($data)
     {
-        if (false === $newStr = strtr($data, self::$encodeMap)) {
-            return $data;
-        } else {
-            return $newStr;
+        // NULL is expressed as a single NUL(0x00).
+        // null => "\x00",
+        if ($data === null) {
+            return "\x00";
         }
+
+        return strtr($data, self::$encodeMap);
     }
 }

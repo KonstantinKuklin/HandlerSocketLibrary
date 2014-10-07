@@ -19,8 +19,9 @@ class SelectQueryBuilderTest extends TestWriterCommon
         )
             ->fromDataBase($this->getDatabase())
             ->fromTable($this->getTableName())
-            ->where(Comparison::EQUAL, array('key' => 42));
+            ->where(Comparison::EQUAL, array('key' => 42))->returnAsAssoc();
 
+        $this->assertEquals('HS\Query\SelectQuery', $selectQueryBuilder->getQueryClassPath());
         $selectQuery = $this->getReader()->addQueryBuilder($selectQueryBuilder);
         $this->getReader()->getResultList();
 
@@ -38,6 +39,39 @@ class SelectQueryBuilderTest extends TestWriterCommon
                     'set' => 'a,c',
                     'union' => 'b',
                     'null' => null
+                )
+            ),
+            $selectResult->getData(),
+            'Fall returned data not valid.'
+        );
+    }
+
+    public function testSingleSelectAsVector()
+    {
+        $selectQueryBuilder = QueryBuilder::select(
+            array('key', 'date', 'float', 'varchar', 'text', 'set', 'null', 'union')
+        )
+            ->fromDataBase($this->getDatabase())
+            ->fromTable($this->getTableName())
+            ->where(Comparison::EQUAL, array('key' => 42))->returnAsVector();
+
+        $selectQuery = $this->getReader()->addQueryBuilder($selectQueryBuilder);
+        $this->getReader()->getResultList();
+
+        $selectResult = $selectQuery->getResult();
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
+
+        $this->assertEquals(
+            array(
+                array(
+                    '42',
+                    '2010-10-29',
+                    '3.14159',
+                    'variable length',
+                    "some\r\nbig\r\ntext",
+                    'a,c',
+                    null,
+                    'b'
                 )
             ),
             $selectResult->getData(),
