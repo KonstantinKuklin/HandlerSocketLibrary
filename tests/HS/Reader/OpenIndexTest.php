@@ -233,6 +233,7 @@ class OpenIndexTest extends TestCommon
                 get_class($e),
                 "Error object os not instance of OpenTableError"
             );
+
             return true;
         }
         $this->fail("Not fall with missed database.");
@@ -252,5 +253,17 @@ class OpenIndexTest extends TestCommon
 
         $reader->getResultList();
         $this->assertTrue($openIndexSecond->getResult()->isSuccessfully(), "Fall reopen index");
+    }
+
+    public function testIndexIncreasing()
+    {
+        $reader = $this->getReader();
+        $openIndex = null;
+        $openIndexSecond = null;
+        $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("text"));
+        $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("key"));
+        $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("num"));
+        $id = $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("varchar"));
+        $this->assertEquals(4, $id, 'Id index increased wrong.');
     }
 } 

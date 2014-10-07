@@ -64,8 +64,7 @@ abstract class QueryAbstract implements QueryInterface
     }
 
     /**
-     * @return $this
-     * @throws InvalidArgumentException
+     * {@inheritdoc}
      */
     public function execute()
     {

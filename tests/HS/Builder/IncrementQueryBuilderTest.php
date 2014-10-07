@@ -64,7 +64,6 @@ class IncrementQueryBuilderTest extends TestCommon
             ->limit(100);
 
         $incrementQuery = $this->getWriter()->addQueryBuilder($incrementQueryBuilder);
-        var_dump($incrementQuery->getQueryString());
         $selectQuery = $this->getWriter()->selectByIndex($incrementQuery->getIndexId(), Comparison::EQUAL, array('104'));
 
         $this->getWriter()->getResultList();

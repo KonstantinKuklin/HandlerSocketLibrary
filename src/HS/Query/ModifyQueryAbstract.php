@@ -12,8 +12,25 @@ abstract class ModifyQueryAbstract extends SelectQuery
     protected $suffix = false;
     protected $valueList = array();
 
+    /**
+     * @return string
+     */
     abstract public function getModificator();
 
+    /**
+     * @param int                                              $indexId
+     * @param string                                           $comparisonOperation
+     * @param array                                            $keyList
+     * @param null|\HS\ReaderHSInterface|\HS\WriterHSInterface $socket
+     * @param array                                            $columnList
+     * @param null|int                                         $offset
+     * @param null|int                                         $limit
+     * @param null|\HS\Query\OpenIndexQuery                    $openIndexQuery
+     * @param null|\HS\Component\InList                        $inKeyList
+     * @param \HS\Component\Filter[]                           $filterList
+     * @param bool                                             $suffix
+     * @param array                                            $valueList
+     */
     public function __construct(
         $indexId, $comparisonOperation, $keyList, $socket, array $columnList, $offset = null,
         $limit = null, $openIndexQuery = null, $inKeyList = null,
@@ -42,7 +59,7 @@ abstract class ModifyQueryAbstract extends SelectQuery
     public function setResultData($data)
     {
         $queryClassName = $this->getQueryClassName();
-        if ($this->isSuffix()) {
+        if ($this->suffix) {
             $this->setSelectResultObject($data);
         } else {
             $this->setResultObject(self::$queryResultMap[$queryClassName], $data);
@@ -65,7 +82,7 @@ abstract class ModifyQueryAbstract extends SelectQuery
         $queryString = parent::getQueryString();
         $mod = $this->getModificator();
 
-        if ($this->isSuffix()) {
+        if ($this->suffix) {
             $mod .= '?';
         }
         $queryString .= Driver::DELIMITER . $mod . Driver::DELIMITER;

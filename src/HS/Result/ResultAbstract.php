@@ -46,29 +46,15 @@ abstract class ResultAbstract implements ResultInterface
     /** @var null|int */
     protected $modifyRows = null;
 
-    private $openIndexQuery = null;
+    /** @var OpenIndexQuery|null */
+    protected $openIndexQuery = null;
 
     /**
      * @param QueryInterface      $query
      * @param string              $data
      * @param null|OpenIndexQuery $openIndexQuery
      *
-     * @throws AuthenticationError
-     * @throws ColumnParseError
-     * @throws CommandError
-     * @throws ComparisonOperatorError
-     * @throws Error
-     * @throws FilterColumnError
-     * @throws FilterTypeError
-     * @throws InListSizeError
-     * @throws IndexOverFlowError
-     * @throws InternalMysqlError
-     * @throws KeyIndexError
-     * @throws KeyLengthError
-     * @throws LockTableError
-     * @throws OpenTableError
-     * @throws ReadOnlyError
-     * @throws UnknownError
+     * @throws \HS\Error
      */
     public function __construct(QueryInterface $query, $data, $openIndexQuery = null)
     {
@@ -164,7 +150,7 @@ abstract class ResultAbstract implements ResultInterface
         return $this->time;
     }
 
-    private function throwErrorClass($error)
+    protected function throwErrorClass($error)
     {
         $errorClass = null;
         switch ($error) {

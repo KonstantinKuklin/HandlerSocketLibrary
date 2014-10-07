@@ -5,7 +5,6 @@
 
 namespace HS\Tests\Writer;
 
-use HS\Result\DecrementResult;
 use HS\Tests\TestCommon;
 
 class DecrementQueryTest extends TestCommon

@@ -8,7 +8,7 @@ namespace HS\Query;
 interface QueryInterface
 {
     /**
-     * @return \HS\Result\ResultInterface
+     * @return \HS\Result\ResultInterface|\HS\Result\InsertResult|\HS\Result\ModifyResultAbstract
      */
     public function getResult();
 
