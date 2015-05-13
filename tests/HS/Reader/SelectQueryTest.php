@@ -10,8 +10,9 @@ use HS\Component\Filter;
 use HS\Query\SelectQuery;
 use HS\Reader;
 use HS\Tests\TestCommon;
+use HS\Exception\InvalidArgumentException;
 
-class GetResultTest extends TestCommon
+class SelectQueryTest extends TestCommon
 {
     public function testSelectExistedValueWithDebug()
     {
@@ -44,6 +45,7 @@ class GetResultTest extends TestCommon
         $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
         $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
         $this->assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
+
         $reader->close();
     }
 
@@ -363,5 +365,73 @@ class GetResultTest extends TestCommon
             $selectResult->getData(),
             "Fall selectByIndex query executed by self."
         );
+    }
+
+    public function testSelectByIndexWithIncorrectLength()
+    {
+        $reader = $this->getReader();
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'text'),
+            true,
+            array('num')
+        );
+
+        try {
+            $selectQuery = $reader->selectByIndex(
+                $indexId,
+                Comparison::MORE,
+                array(1),
+                10,
+                0,
+                array(new Filter(Comparison::EQUAL, 0, 1))
+            );
+        } catch (InvalidArgumentException $e) {
+            return;
+        }
+
+        $this->fail('Incorrect behavior on limit < 1');
+
+    }
+
+    public function testSelectByIndexExistedValueWithSmallReadLength()
+    {
+        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), true, 5);
+
+        $indexId = $reader->getIndexId(
+            $this->getDatabase(),
+            $this->getTableName(),
+            'PRIMARY',
+            array('key', 'text'),
+            true,
+            array('num')
+        );
+        $selectQuery = $reader->selectByIndex(
+            $indexId,
+            Comparison::MORE,
+            array(1),
+            0,
+            99,
+            array(new Filter(Comparison::EQUAL, 0, 1))
+        );
+
+        $selectResult = $selectQuery->execute()->getResult();
+
+        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query executed by self.');
+        $this->assertEquals(
+            array(
+                array(
+                    'key' => '100',
+                    'text' => ''
+                )
+            ),
+            $selectResult->getData(),
+            "Fall selectByIndex query executed by self."
+        );
+
+        $reader->close();
     }
 } 

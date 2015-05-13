@@ -45,6 +45,9 @@ abstract class CommonClient
     /** @var boolean */
     private $debug = false;
 
+    /** @var int */
+    private $lengthToRead = 1024;
+
     public $debugResultList = array();
 
     /**
@@ -73,16 +76,25 @@ abstract class CommonClient
      * @param int     $port
      * @param string  $authKey
      * @param boolean $debug
+     * @param int     $lengthToRead
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
-    public function __construct($url, $port, $authKey = null, $debug = false)
+    public function __construct($url, $port, $authKey = null, $debug = false, $lengthToRead = 1024)
     {
         if ($debug) {
             $this->debug = true;
         }
 
+        $this->lengthToRead = (int)$lengthToRead;
+        if ($this->lengthToRead < 1) {
+            throw new Exception('Read chunk size can`t be < 1.');
+        }
+
         $this->authKey = $authKey;
         $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port);
-        $this->stream->setReceiveMethod(new StreamGetLineMethod(1024, Driver::EOL));
+        $this->stream->setReceiveMethod(new StreamGetLineMethod($lengthToRead, Driver::EOL));
         $this->open();
     }
 
@@ -117,7 +129,16 @@ abstract class CommonClient
             }
             $this->getStream()->isReadyForReading();
             try {
-                $query->setResultData($this->getStream()->getContents());
+
+                $content = '';
+                do {
+                    $contentChunk = $this->getStream()->getContents();
+                    $content .= $contentChunk;
+                    // content + 1 ( for "\n" symbol )
+                    $contentSize = strlen($contentChunk) + 1;
+                } while ($contentSize >= $this->lengthToRead);
+
+                $query->setResultData($content);
 
                 $ResultObject = $query->getResult();
 

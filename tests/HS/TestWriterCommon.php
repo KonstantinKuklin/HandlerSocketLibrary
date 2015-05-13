@@ -19,28 +19,42 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
     private $conn = null;
     private static $dataset = null;
 
+    /**
+     * @var Reader
+     */
+    private $reader = null;
+    /**
+     * @var Writer
+     */
+    private $writer = null;
+
     public function __construct()
     {
-        if (TestCommon::$reader === null) {
-            TestCommon::$reader = new Reader(TestCommon::HOST, TestCommon::PORT_RO, TestCommon::READ_PASSWORD);
+        if ($this->reader === null) {
+            $this->reader = new Reader(TestCommon::HOST, TestCommon::PORT_RO, TestCommon::READ_PASSWORD);
+            $this->reader->close();
         }
 
-        if (TestCommon::$writer === null) {
-            TestCommon::$writer = new Writer(TestCommon::HOST, TestCommon::PORT_RW, TestCommon::WRITE_PASSWORD);
+        if ($this->writer === null) {
+            $this->writer = new Writer(TestCommon::HOST, TestCommon::PORT_RW, TestCommon::WRITE_PASSWORD);
+            $this->writer->close();
         }
+        parent::__construct();
     }
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->getWriter()->open();
         $this->getReader()->open();
-        parent::setUp();
     }
 
     protected function tearDown()
     {
         $this->getWriter()->close();
         $this->getReader()->close();
+
         parent::tearDown();
     }
 
@@ -85,7 +99,7 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
      */
     protected function getReader()
     {
-        return TestCommon::$reader;
+        return $this->reader;
     }
 
     /**
@@ -93,7 +107,7 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
      */
     protected function getWriter()
     {
-        return TestCommon::$writer;
+        return $this->writer;
     }
 
     /**
@@ -122,7 +136,7 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
         $list = explode('::', $methodName);
         $methodName = $list[1];
 
-        $filePath = __DIR__ .'/../resources/fixture/'. $methodName . 'Fixture.yml';
+        $filePath = __DIR__ . '/../resources/fixture/' . $methodName . 'Fixture.yml';
         if (!file_exists($filePath)) {
             throw new \Exception(sprintf("File '%s' not exists.", $filePath));
         }
