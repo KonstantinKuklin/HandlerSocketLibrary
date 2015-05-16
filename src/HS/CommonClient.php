@@ -7,11 +7,11 @@ use HS\Exception\Exception;
 use HS\Exception\InvalidArgumentException;
 use HS\Query\OpenIndexQuery;
 use HS\Query\QueryInterface;
-use PHP_Timer;
 use Stream\Connection;
 use Stream\Exception\ReadStreamException;
 use Stream\ReceiveMethod\StreamGetLineMethod;
 use Stream\Stream;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @author KonstantinKuklin <konstantin.kuklin@gmail.com>
@@ -42,8 +42,8 @@ abstract class CommonClient
     /** @var null|string */
     private $authKey = null;
 
-    /** @var boolean */
-    private $debug = false;
+    /** @var Stopwatch */
+    private $stopWatch;
 
     public $debugResultList = array();
 
@@ -69,15 +69,15 @@ abstract class CommonClient
     );
 
     /**
-     * @param string  $url
-     * @param int     $port
-     * @param string  $authKey
-     * @param boolean $debug
+     * @param string $url
+     * @param int    $port
+     * @param string $authKey
+     * @param bool   $debug
      */
     public function __construct($url, $port, $authKey = null, $debug = false)
     {
         if ($debug) {
-            $this->debug = true;
+            $this->stopWatch = new Stopwatch();
         }
 
         $this->authKey = $authKey;
@@ -87,11 +87,13 @@ abstract class CommonClient
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isDebug()
     {
-        return $this->debug;
+        $isDebug = ($this->stopWatch !== null);
+
+        return $isDebug;
     }
 
     /**
@@ -112,18 +114,19 @@ abstract class CommonClient
             // if debug mode enabled
             if ($this->isDebug()) {
                 // enable time counting
-                PHP_Timer::start();
+                $this->stopWatch->start('send_read_data');
                 $this->sendQuery($query);
             }
-            $this->getStream()->isReadyForReading();
+            $this->stream->isReadyForReading();
             try {
-                $query->setResultData($this->getStream()->getContents());
+                $query->setResultData($this->stream->getContents());
 
                 $ResultObject = $query->getResult();
 
                 // if debug mode enabled
                 if ($this->isDebug()) {
-                    $currentQueryTime = PHP_Timer::stop();
+                    // get query time in seconds.milliseconds
+                    $currentQueryTime = $this->stopWatch->stop('send_read_data')->getDuration() / 1000;
 
                     // add info of spent time for this Query
                     $ResultObject->setTime($currentQueryTime);
@@ -171,7 +174,7 @@ abstract class CommonClient
      */
     public function getUrlConnection()
     {
-        return $this->getStream()->getConnection()->getUrlConnection();
+        return $this->stream->getConnection()->getUrlConnection();
     }
 
     /**
@@ -365,13 +368,5 @@ abstract class CommonClient
         if ($this->authKey !== null) {
             $this->authenticate($this->authKey);
         }
-    }
-
-    /**
-     * @return Stream
-     */
-    private function getStream()
-    {
-        return $this->stream;
     }
 }
