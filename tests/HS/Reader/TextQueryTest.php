@@ -19,7 +19,7 @@ class TextQueryTest extends TestCommon
         } catch (CommandError $e) {
             return;
         }
-        $this->fail('Wrong instance of error.');
+        self::fail('Wrong instance of error.');
     }
 
     public function testSelectTextQuery()

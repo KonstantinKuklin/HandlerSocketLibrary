@@ -25,33 +25,32 @@ class TestCommon extends PHPUnit_Framework_TestCase
     /**
      * @var Reader
      */
-    public static $reader = null;
+    private $reader = null;
     /**
      * @var Writer
      */
-    public static $writer = null;
+    private $writer = null;
 
     public function __construct()
     {
-        if (self::$reader === null) {
-            self::$reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword());
+        if ($this->reader === null) {
+            $this->reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword());
+            $this->reader->close();
         }
 
-        if (self::$writer === null) {
-            self::$writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
+        if ($this->writer === null) {
+            $this->writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
+            $this->writer->close();
         }
-
+        
         parent::__construct();
     }
 
     protected function setUp()
     {
-        try {
-            $this->getWriter()->open();
-            $this->getReader()->open();
-        } catch (Exception $e) {
-            // setUp after construct will provide already opened exception
-        }
+        $this->getReader()->open();
+        $this->getWriter()->open();
+
         parent::setUp();
     }
 
@@ -59,6 +58,7 @@ class TestCommon extends PHPUnit_Framework_TestCase
     {
         $this->getWriter()->close();
         $this->getReader()->close();
+
         parent::tearDown();
     }
 
@@ -83,7 +83,7 @@ class TestCommon extends PHPUnit_Framework_TestCase
      */
     protected function getReader()
     {
-        return self::$reader;
+        return $this->reader;
     }
 
     /**
@@ -91,7 +91,7 @@ class TestCommon extends PHPUnit_Framework_TestCase
      */
     protected function getWriter()
     {
-        return self::$writer;
+        return $this->writer;
     }
 
     /**

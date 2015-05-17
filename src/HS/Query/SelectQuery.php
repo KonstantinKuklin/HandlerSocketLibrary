@@ -43,6 +43,8 @@ class SelectQuery extends QueryAbstract
      * @param null                $inKeyList
      * @param array               $filterList
      * @param null|int            $position
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(
         $indexId, $comparisonOperation, $keyList, $socket, array $columnList, $offset = null,
@@ -50,6 +52,10 @@ class SelectQuery extends QueryAbstract
         array $filterList = array(), $position = null
     ) {
         parent::__construct();
+
+        if ($limit !== null && $limit < 1) {
+            throw new InvalidArgumentException("Limit must be more than 0");
+        }
 
         Validator::validateIndexId($indexId);
         $this->indexId = $indexId;
