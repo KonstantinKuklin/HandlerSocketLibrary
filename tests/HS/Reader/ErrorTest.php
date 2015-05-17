@@ -12,7 +12,6 @@ use HS\Tests\TestCommon;
 
 class ResultTest extends ResultAbstract
 {
-
 }
 
 class ErrorTest extends TestCommon
@@ -53,7 +52,7 @@ class ErrorTest extends TestCommon
                 $result = new ResultTest($queryTest, $data);
             } catch (Error $e) {
                 $actualError = get_class($e);
-                $this->assertEquals(
+                self::assertEquals(
                     'HS\Errors\\' . $error,
                     $actualError,
                     sprintf(
@@ -67,9 +66,7 @@ class ErrorTest extends TestCommon
                 continue;
             }
 
-            $this->fail('Fail, error won"t catched.');
-
+            self::fail('Fail, error won"t catched.');
         }
     }
-
 }

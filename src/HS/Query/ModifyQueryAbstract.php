@@ -56,11 +56,11 @@ abstract class ModifyQueryAbstract extends SelectQuery
     /**
      * {@inheritdoc}
      */
-    public function setResultData($data)
+    public function setResultData($data, $debug = false)
     {
         $queryClassName = $this->getQueryClassName();
         if ($this->suffix) {
-            $this->setSelectResultObject($data);
+            $this->setSelectResultObject($data, $debug);
         } else {
             $this->setResultObject(self::$queryResultMap[$queryClassName], $data);
         }

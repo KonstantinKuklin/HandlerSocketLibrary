@@ -121,7 +121,7 @@ abstract class CommonClient
             try {
                 $query->setResultData($this->stream->getContents());
 
-                $ResultObject = $query->getResult();
+                $resultObject = $query->getResult();
 
                 // if debug mode enabled
                 if ($this->isDebug()) {
@@ -129,11 +129,11 @@ abstract class CommonClient
                     $currentQueryTime = $this->stopWatch->stop('send_read_data')->getDuration() / 1000;
 
                     // add info of spent time for this Query
-                    $ResultObject->setTime($currentQueryTime);
+                    $resultObject->setTime($currentQueryTime);
                     $this->addTimeQueries($currentQueryTime);
-                    $this->debugResultList[] = $ResultObject;
+                    $this->debugResultList[] = $resultObject;
                 }
-                $resultsList[] = $ResultObject;
+                $resultsList[] = $resultObject;
                 // add time to general time counter
             } catch (ReadStreamException $e) {
                 throw new Exception("Read stream error. Can't read from stream. URL: " . $this->getUrlConnection());

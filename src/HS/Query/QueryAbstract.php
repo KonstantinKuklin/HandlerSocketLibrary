@@ -58,9 +58,9 @@ abstract class QueryAbstract implements QueryInterface
     /**
      * {@inheritdoc}
      */
-    public function setResultData($data)
+    public function setResultData($data, $debug = false)
     {
-        $this->setResultObject(self::$queryResultMap[$this->getQueryClassName()], $data);
+        $this->setResultObject(self::$queryResultMap[$this->getQueryClassName()], $data, $debug);
     }
 
     /**
@@ -98,9 +98,10 @@ abstract class QueryAbstract implements QueryInterface
     /**
      * @param string $className
      * @param mixed  $data
+     * @param bool   $debug
      */
-    protected function setResultObject($className, $data)
+    protected function setResultObject($className, $data, $debug = false)
     {
-        $this->resultObject = new $className($this, $data, $this->openIndexQuery);
+        $this->resultObject = new $className($this, $data, $this->openIndexQuery, $debug);
     }
 } 

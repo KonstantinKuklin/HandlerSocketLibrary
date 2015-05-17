@@ -28,8 +28,8 @@ class UpdateQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testBuilderSingleUpdateSuffix()
@@ -48,10 +48,10 @@ class UpdateQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+        self::assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
 
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     'key' => '3',
@@ -61,6 +61,55 @@ class UpdateQueryBuilderTest extends TestWriterCommon
             $updateQuery->getResult()->getData(),
             'Fall returned data not valid.'
         );
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
+    }
+
+    public function testBuilderSingleUpdateSuffixWithNullValue()
+    {
+        $updateQueryBuilder = QueryBuilder::update(
+            array(
+                'key' => 200,
+                'num' => null
+            )
+        )
+            ->fromDataBase($this->getDatabase())
+            ->fromTable($this->getTableName())
+            ->where(Comparison::EQUAL, array('key' => 3))->withSuffix();
+
+        $updateQuery = $this->getWriter()->addQueryBuilder($updateQueryBuilder);
+        $this->getWriter()->getResultList();
+
+        $updateResult = $updateQuery->getResult();
+        self::assertTrue($updateResult->isSuccessfully(), 'Fall updateQuery is not successfully done.');
+
+
+        $dataUpdated = $updateQuery->getResult()->getData();
+        self::assertEquals(
+            array(
+                array(
+                    'key' => '3',
+                    'num' => 0
+                )
+            ),
+            $dataUpdated,
+            'Fall returned data not valid.'
+        );
+
+        $selectQb = QueryBuilder::select(array('key', 'num', 'null'))
+            ->fromDataBase($this->getDatabase())
+            ->fromTable($this->getTableName())
+            ->where(Comparison::EQUAL, array('key' => 200))->withSuffix();
+
+        $selectQuery = $this->getReader()->addQueryBuilder($selectQb);
+
+        $this->getReader()->getResultList();
+
+        self::assertEquals(
+            array(array('key' => 200, 'num' => null, 'null' => null)),
+            $selectQuery->getResult()->getData(),
+            'Fail with wrong data in Db'
+        );
+
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

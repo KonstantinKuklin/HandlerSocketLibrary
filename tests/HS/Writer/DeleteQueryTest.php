@@ -26,10 +26,10 @@ class DeleteQueryTest extends TestWriterCommon
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();
-        $this->assertTrue($deleteResult->isSuccessfully(), "Fall deleteByIndexQuery return bad status.");
-        $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteByIndexQuery didn't modified rows.");
+        self::assertTrue($deleteResult->isSuccessfully(), "Fall deleteByIndexQuery return bad status.");
+        self::assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteByIndexQuery didn't modified rows.");
 
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleDelete()
@@ -48,9 +48,9 @@ class DeleteQueryTest extends TestWriterCommon
 
         /** @var DeleteResult $deleteResult */
         $deleteResult = $deleteQuery->getResult();
-        $this->assertTrue($deleteResult->isSuccessfully(), "Fall deleteQuery return bad status.");
-        $this->assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteQuery didn't modified rows.");
+        self::assertTrue($deleteResult->isSuccessfully(), "Fall deleteQuery return bad status.");
+        self::assertTrue($deleteResult->getNumberModifiedRows() > 0, "Fall deleteQuery didn't modified rows.");
 
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

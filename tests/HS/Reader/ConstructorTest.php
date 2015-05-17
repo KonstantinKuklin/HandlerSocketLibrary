@@ -23,7 +23,7 @@ class ConstructorTest extends TestCommon
             return;
         }
 
-        $this->fail("Reader constructor didn't fall with exception PortValidateStreamException on wrong port set.");
+        self::fail("Reader constructor didn't fall with exception PortValidateStreamException on wrong port set.");
     }
 
     public function testGoodConnectionToReadPort()
@@ -34,7 +34,7 @@ class ConstructorTest extends TestCommon
         try {
             $reader = new Reader($this->getHost(), $portGood);
         } catch (\Exception $e) {
-            $this->fail(
+            self::fail(
                 sprintf(
                     "Fall with valid parameters to constructor. Host:%s, port:%s",
                     $this->getHost(),
@@ -43,7 +43,6 @@ class ConstructorTest extends TestCommon
             );
         }
         $reader->close();
-        $this->assertTrue(true);
     }
 
     public function testAuthRequestAdded()
@@ -52,19 +51,19 @@ class ConstructorTest extends TestCommon
         $pass = 'testpass';
         try {
             $reader = new Reader($this->getHost(), $portGood, $pass);
-            $this->assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
+            self::assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
             $reader->getResultList();
         } catch (AuthenticationError $e) {
-            return true;
+            return;
         }
-        $this->fail("Not fall without auth.");
+        self::fail("Not fall without auth.");
     }
 
     public function testAuthRequestNotAdded()
     {
         $portGood = 9999;
         $reader = new Reader($this->getHost(), $portGood);
-        $this->assertEquals(0, $reader->getCountQueriesInQueue(), "Auth request added on init hs reader.");
+        self::assertEquals(0, $reader->getCountQueriesInQueue(), "Auth request added on init hs reader.");
         $reader->getResultList();
         $reader->close();
     }

@@ -22,6 +22,12 @@
         </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/</directory>
+        </whitelist>
+    </filter>
+
     <php>
         <var name="DB_DSN" value="mysql:dbname=handlersocket;host=127.0.0.1" />
         <var name="DB_USER" value="root" />

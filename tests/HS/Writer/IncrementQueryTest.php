@@ -25,13 +25,13 @@ class IncrementQueryTest extends TestWriterCommon
 
         /** @var IncrementResult $incrementResult */
         $incrementResult = $incrementQuery->getResult();
-        $this->assertTrue($incrementResult->isSuccessfully(), "Fall incrementByIndexQuery return bad status.");
+        self::assertTrue($incrementResult->isSuccessfully(), "Fall incrementByIndexQuery return bad status.");
 
-        $this->assertTrue(
+        self::assertTrue(
             $incrementResult->getNumberModifiedRows() > 0,
             "Fall incrementByIndexQuery didn't modified rows."
         );
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleIncrement()
@@ -51,8 +51,8 @@ class IncrementQueryTest extends TestWriterCommon
 
         /** @var IncrementResult $incrementResult */
         $incrementResult = $incrementQuery->getResult();
-        $this->assertTrue($incrementResult->isSuccessfully(), "Fall incrementQuery return bad status.");
-        $this->assertTrue($incrementResult->getNumberModifiedRows() > 0, "Fall incrementQuery didn't modified rows.");
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($incrementResult->isSuccessfully(), "Fall incrementQuery return bad status.");
+        self::assertTrue($incrementResult->getNumberModifiedRows() > 0, "Fall incrementQuery didn't modified rows.");
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

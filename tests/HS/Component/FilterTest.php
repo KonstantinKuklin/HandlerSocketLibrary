@@ -7,7 +7,6 @@ namespace HS\Tests\Component;
 
 use HS\Component\Comparison;
 use HS\Component\Filter;
-use HS\Exception\ComparisonException;
 use PHPUnit_Framework_TestCase;
 
 class FilterTest extends PHPUnit_Framework_TestCase
@@ -17,16 +16,17 @@ class FilterTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         $this->filter = new Filter(Comparison::EQUAL, 5, 'key');
+        parent::__construct();
     }
 
     public function testGetComparison()
     {
-        $this->assertEquals(Comparison::EQUAL, $this->filter->getComparison(), 'Fail returned comparison is wrong.');
+        self::assertEquals(Comparison::EQUAL, $this->filter->getComparison(), 'Fail returned comparison is wrong.');
     }
 
     public function testGetComparisonObject()
     {
-        $this->assertTrue(
+        self::assertTrue(
             $this->filter->getComparisonObject() instanceof Comparison,
             'Fail returned comparisonObject is wrong.'
         );
@@ -34,17 +34,17 @@ class FilterTest extends PHPUnit_Framework_TestCase
 
     public function testGetPosition()
     {
-        $this->assertEquals(5, $this->filter->getPosition(), 'Fail returned position is wrong.');
+        self::assertEquals(5, $this->filter->getPosition(), 'Fail returned position is wrong.');
     }
 
     public function testGetKey()
     {
-        $this->assertEquals('key', $this->filter->getKey(), 'Fail returned key is wrong.');
+        self::assertEquals('key', $this->filter->getKey(), 'Fail returned key is wrong.');
     }
 
     public function testGetDefaultType()
     {
-        $this->assertEquals('F', $this->filter->getType(), 'Fail returned type is wrong.');
+        self::assertEquals('F', $this->filter->getType(), 'Fail returned type is wrong.');
     }
 
     public function testConstructWithComparisonClass()

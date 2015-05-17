@@ -20,9 +20,9 @@ interface QueryInterface
     /**
      * @param string $data
      *
-     * @return void
+     * @param        $debug
      */
-    public function setResultData($data);
+    public function setResultData($data, $debug = false);
 
     /**
      * @return int

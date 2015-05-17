@@ -15,7 +15,7 @@ CREATE TABLE `hs` (
   `union`   ENUM('a', 'b', 'c') NOT NULL,
   `null`    INT(11) DEFAULT NULL,
   `num`     INT(11) DEFAULT 0,
-  PRIMARY KEY (`key`, `num`)
+  PRIMARY KEY (`key`)
 )
   ENGINE =InnoDB
   DEFAULT CHARSET =utf8;

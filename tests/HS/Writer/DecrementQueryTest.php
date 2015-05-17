@@ -23,14 +23,14 @@ class DecrementQueryTest extends TestWriterCommon
         $writer->getResultList();
 
         $decrementResult = $decrementQuery->getResult();
-        $this->assertTrue($decrementResult->isSuccessfully(), "Fall incrementByIndexQuery return bad status.");
+        self::assertTrue($decrementResult->isSuccessfully(), "Fall incrementByIndexQuery return bad status.");
 
-        $this->assertTrue(
+        self::assertTrue(
             $decrementResult->getNumberModifiedRows() > 0,
             "Fall incrementByIndexQuery didn't modified rows."
         );
 
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleDecrement()
@@ -49,9 +49,9 @@ class DecrementQueryTest extends TestWriterCommon
         $writer->getResultList();
 
         $decrementResult = $decrementQuery->getResult();
-        $this->assertTrue($decrementResult->isSuccessfully(), "Fall incrementQuery return bad status.");
-        $this->assertTrue($decrementResult->getNumberModifiedRows() > 0, "Fall incrementQuery didn't modified rows.");
+        self::assertTrue($decrementResult->isSuccessfully(), "Fall incrementQuery return bad status.");
+        self::assertTrue($decrementResult->getNumberModifiedRows() > 0, "Fall incrementQuery didn't modified rows.");
 
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

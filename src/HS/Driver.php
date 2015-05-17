@@ -32,7 +32,6 @@ class Driver
     );
 
     private static $decodeMap = array(
-        self::NULL => null,
         "\x01\x40" => "\x00",
         "\x01\x41" => "\x01",
         "\x01\x42" => "\x02",
@@ -56,7 +55,7 @@ class Driver
      *
      * @return string
      */
-    public static function prepareSendDataStatic($data)
+    public static function prepareSendDataStatic(array $data)
     {
         $encodedData = array_map('self::encodeData', $data);
 
@@ -82,20 +81,24 @@ class Driver
      */
     public static function decodeData($data)
     {
+        // convert (0x00) to null
+        if (self::NULL === $data) {
+            return null;
+        }
+
         return strtr($data, self::$decodeMap);
     }
 
     /**
-     * @param string $data
+     * @param string|null $data
      *
      * @return string
      */
     public static function encodeData($data)
     {
-        // NULL is expressed as a single NUL(0x00).
-        // null => "\x00",
+        // NULL is expressed as a single NUL(0x00)
         if ($data === null) {
-            return "\x00";
+            return self::NULL;
         }
 
         return strtr($data, self::$encodeMap);

@@ -41,9 +41,9 @@ class GetResultTest extends TestCommon
         $this->checkAssertionLastResponseData($reader, 'first test method with debug ', $expectedResult);
         /** @var \HS\Result\ResultAbstract $response */
         $response = $selectRequest->getResult();
-        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
-        $this->assertTrue($response->getTime() > 0, "Time for query is wrong.");
-        $this->assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
+        self::assertEquals(3, $reader->getCountQueries(), "The count of queries with debug is wrong.");
+        self::assertTrue($response->getTime() > 0, "Time for query is wrong.");
+        self::assertTrue($reader->getTimeQueries() > 0, "Time for all query list is wrong");
         $reader->close();
     }
 
@@ -73,7 +73,7 @@ class GetResultTest extends TestCommon
         );
 
         $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
-        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
+        self::assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
     }
 
     public function testSelectExistedValueAsVector()
@@ -103,7 +103,7 @@ class GetResultTest extends TestCommon
         );
 
         $this->checkAssertionLastResponseData($reader, 'first test method', $expectedResult);
-        $this->assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
+        self::assertEquals(3, $reader->getCountQueries(), "The count of queries wrong.");
     }
 
     public function testSelectWithZeroValue()
@@ -144,8 +144,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
+        self::assertEquals(
             array(
                 array(
                     'key' => '42',
@@ -190,8 +190,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query returned error code.');
+        self::assertEquals(
             array(
                 array(
                     'key' => '42',
@@ -240,8 +240,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail select query with filter returned error code.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail select query with filter returned error code.');
+        self::assertEquals(
             array(
                 array("key" => '101', "text" => 'text101'),
                 array("key" => '102', "text" => 'text102'),
@@ -277,8 +277,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query with filter returned error code.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail selectIn query with filter returned error code.');
+        self::assertEquals(
             array(
                 array(
                     'key' => '100',
@@ -316,8 +316,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query with filter returned error code.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query with filter returned error code.');
+        self::assertEquals(
             array(
                 array(
                     'key' => '100',
@@ -352,8 +352,8 @@ class GetResultTest extends TestCommon
 
         $selectResult = $selectQuery->execute()->getResult();
 
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query executed by self.');
-        $this->assertEquals(
+        self::assertTrue($selectResult->isSuccessfully(), 'Fail selectByIndex query executed by self.');
+        self::assertEquals(
             array(
                 array(
                     'key' => '100',

@@ -16,21 +16,22 @@ class InListTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         $this->inList = new InList(0, array('value1', 'value2'));
+        parent::__construct();
     }
 
     public function testGetPosition()
     {
-        $this->assertEquals(0, $this->inList->getPosition());
+        self::assertEquals(0, $this->inList->getPosition());
     }
 
     public function testGetCount()
     {
-        $this->assertEquals(2, $this->inList->getCount());
+        self::assertEquals(2, $this->inList->getCount());
     }
 
     public function testGetKeyList()
     {
-        $this->assertEquals(array('value1', 'value2'), $this->inList->getKeyList());
+        self::assertEquals(array('value1', 'value2'), $this->inList->getKeyList());
     }
 
     public function testConstructorException()
@@ -38,9 +39,9 @@ class InListTest extends PHPUnit_Framework_TestCase
         try {
             new InList('s', array());
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
 
-        $this->fail("Not fall with string as position.");
+        self::fail("Not fall with string as position.");
     }
 } 

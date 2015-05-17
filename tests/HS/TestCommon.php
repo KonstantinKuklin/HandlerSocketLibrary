@@ -5,11 +5,13 @@
 
 namespace HS\Tests;
 
+use Exception;
 use HS\Reader;
 use HS\Result\ResultInterface;
 use HS\Writer;
+use PHPUnit_Framework_TestCase;
 
-class TestCommon extends \PHPUnit_Framework_TestCase
+class TestCommon extends PHPUnit_Framework_TestCase
 {
     const HOST = '127.0.0.1';
     const PORT_RO = 9998;
@@ -38,14 +40,17 @@ class TestCommon extends \PHPUnit_Framework_TestCase
         if (self::$writer === null) {
             self::$writer = new Writer(self::HOST, self::PORT_RW, $this->getWritePassword());
         }
+
+        parent::__construct();
     }
 
-    protected function setUp(){
+    protected function setUp()
+    {
         try {
             $this->getWriter()->open();
             $this->getReader()->open();
-        } catch (\Exception $e){
-            echo ""; // setUp after construct will provide already opened exception
+        } catch (Exception $e) {
+            // setUp after construct will provide already opened exception
         }
         parent::setUp();
     }
@@ -123,17 +128,17 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     ) {
         $resultList = $socket->getResultList();
         if (empty($resultList)) {
-            $this->fail("Fail because response list is empty.");
+            self::fail("Fail because response list is empty.");
         }
 
         $lastResult = array_pop($resultList);
         if (!($lastResult instanceof ResultInterface)) {
-            $this->fail("Fail because result is not implemented ResultInterface.");
+            self::fail("Fail because result is not implemented ResultInterface.");
 
         }
 
         // equal actual and expected
-        $this->assertEquals($expectedData, $lastResult->getData(), $assertMessage);
+        self::assertEquals($expectedData, $lastResult->getData(), $assertMessage);
     }
 
     /**
@@ -144,7 +149,7 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     protected function checkCountRequestSent($socket, $assertMessage, $expectedCount)
     {
         $resultList = $socket->getResultList();
-        $this->assertEquals($expectedCount, count($resultList), $assertMessage);
+        self::assertEquals($expectedCount, count($resultList), $assertMessage);
     }
 
     /**
@@ -156,16 +161,16 @@ class TestCommon extends \PHPUnit_Framework_TestCase
     {
         $resultList = $socket->getResultList();
         if (empty($resultList)) {
-            $this->fail("Fail because response list is empty.");
+            self::fail("Fail because response list is empty.");
         }
 
         $lastResult = array_pop($resultList);
         if ($lastResult->isSuccessfully()) {
-            $this->fail("Fail because response is successfully finished.");
+            self::fail("Fail because response is successfully finished.");
         }
         $errorObject = $lastResult->getError();
         $errorClass = get_class($errorObject);
 
-        $this->assertEquals($expectedError, $errorClass, $assertMessage);
+        self::assertEquals($expectedError, $errorClass, $assertMessage);
     }
 }

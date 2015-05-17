@@ -18,10 +18,11 @@ class SelectResult extends ResultAbstract
      * @param array               $keys
      * @param int                 $returnType
      * @param null|OpenIndexQuery $openIndexQuery
+     * @param bool                $debug
      */
-    public function __construct($query, $data, $keys, $returnType, $openIndexQuery = null)
+    public function __construct($query, $data, $keys, $returnType, $openIndexQuery = null, $debug = false)
     {
-        parent::__construct($query, $data, $openIndexQuery);
+        parent::__construct($query, $data, $openIndexQuery, $debug);
 
         if ($this->isSuccessfully()) {
             // if returned only numbers without data
@@ -31,16 +32,16 @@ class SelectResult extends ResultAbstract
 
                 $listData = Driver::prepareReceiveDataStatic(substr($data, 4));
 
-                $dataChunked = array_chunk($listData, $columnCount);
+                $chunkList = array_chunk($listData, $columnCount);
 
                 // modify row to assoc array
                 if ($returnType === SelectQuery::ASSOC && !empty($keys)) {
-                    foreach ($dataChunked as &$row) {
+                    foreach ($chunkList as &$row) {
                         $row = array_combine($keys, $row);
                     }
                 }
 
-                $this->data = $dataChunked;
+                $this->data = $chunkList;
             } else {
                 $this->data = array();
             }

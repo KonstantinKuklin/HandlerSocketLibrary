@@ -19,10 +19,10 @@ class AuthenticateTest extends TestCommon
         try {
             $reader->authenticate(90);
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
 
-        $this->fail("Not fail authentication request with wrong auth key, sent int.");
+        self::fail("Not fail authentication request with wrong auth key, sent int.");
     }
 
     public function testEmptyString()
@@ -32,10 +32,10 @@ class AuthenticateTest extends TestCommon
         try {
             $reader->authenticate(Stream::STR_EMPTY);
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
 
-        $this->fail("Not fail authentication request with wrong auth key, sent empty string.");
+        self::fail("Not fail authentication request with wrong auth key, sent empty string.");
     }
 
     public function testValidMissedStringToAuth()
@@ -45,9 +45,9 @@ class AuthenticateTest extends TestCommon
         try {
             $reader->authenticate($authKey);
         } catch (InvalidArgumentException $e) {
-            $this->fail(sprintf("Fail authentication request with valid parameter, sent string:%s.", $authKey));
+            self::fail(sprintf("Fail authentication request with valid parameter, sent string:%s.", $authKey));
         }
 
-        return true;
+        return;
     }
 }

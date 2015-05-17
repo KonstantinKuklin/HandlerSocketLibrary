@@ -22,17 +22,6 @@ hs:
     num: 0
 
   -
-    key: 3
-    date: "0000-00-00"
-    float: 3
-    varchar: ""
-    text: ""
-    set: ""
-    union: "a"
-    "null":
-    num: 0
-
-  -
     key: 4
     date: "0000-00-00"
     float: 4
@@ -165,15 +154,15 @@ hs:
     num: 15
 
   -
-    key: 123
+    key: 200
     date: "0000-00-00"
-    float: 1.02
-    varchar: "char"
-    text: "text"
-    set: "a"
+    float: 3
+    varchar: ""
+    text: ""
+    set: ""
     union: "a"
     "null":
-    num: 0
+    num:
 
   -
     key: 10001
