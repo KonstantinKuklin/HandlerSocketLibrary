@@ -5,12 +5,15 @@
 
 namespace HS\Tests;
 
+use Exception;
 use HS\Reader;
 use HS\Writer;
 use PHPUnit_Extensions_Database_DataSet_IDataSet;
+use PHPUnit_Extensions_Database_DataSet_YamlDataSet;
 use PHPUnit_Extensions_Database_DB_IDatabaseConnection;
+use PHPUnit_Extensions_Database_TestCase;
 
-class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
+class TestWriterCommon extends PHPUnit_Extensions_Database_TestCase
 {
     // only instantiate pdo once for test clean-up/fixture load
     static private $pdo = null;
@@ -23,11 +26,15 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
     {
         if (TestCommon::$reader === null) {
             TestCommon::$reader = new Reader(TestCommon::HOST, TestCommon::PORT_RO, TestCommon::READ_PASSWORD);
+            TestCommon::$reader->close();
         }
 
         if (TestCommon::$writer === null) {
             TestCommon::$writer = new Writer(TestCommon::HOST, TestCommon::PORT_RW, TestCommon::WRITE_PASSWORD);
+            TestCommon::$writer->close();
         }
+
+        parent::__construct();
     }
 
     protected function setUp()
@@ -122,13 +129,13 @@ class TestWriterCommon extends \PHPUnit_Extensions_Database_TestCase
         $list = explode('::', $methodName);
         $methodName = $list[1];
 
-        $filePath = __DIR__ .'/../resources/fixture/'. $methodName . 'Fixture.yml';
+        $filePath = __DIR__ . '/../resources/fixture/' . $methodName . 'Fixture.yml';
         if (!file_exists($filePath)) {
-            throw new \Exception(sprintf("File '%s' not exists.", $filePath));
+            throw new Exception(sprintf("File '%s' not exists.", $filePath));
         }
 
-        $yamlFixtures = new \PHPUnit_Extensions_Database_DataSet_YamlDataSet($filePath);
+        $yamlFixtures = new PHPUnit_Extensions_Database_DataSet_YamlDataSet($filePath);
 
-        return parent::assertTablesEqual($yamlFixtures->getTable($this->getTableName()), $this->getActualTable());
+        parent::assertTablesEqual($yamlFixtures->getTable($this->getTableName()), $this->getActualTable());
     }
 }

@@ -24,8 +24,8 @@ class DecrementQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $updateResult = $decrementQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall decrementQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($updateResult->isSuccessfully(), 'Fall decrementQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testBuilderDecrementException()
@@ -36,8 +36,8 @@ class DecrementQueryBuilderTest extends TestWriterCommon
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('key' => 105));
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
-        $this->fail('Not fall decrementBuilder with wrong parameters.');
+        self::fail('Not fall decrementBuilder with wrong parameters.');
     }
 } 

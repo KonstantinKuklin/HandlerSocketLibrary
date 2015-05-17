@@ -15,7 +15,7 @@ class ComparisonTest extends PHPUnit_Framework_TestCase
     {
         foreach (array('=', '>', '>=', '<', '<=') as $comparisonOperation) {
             $comparison = new Comparison($comparisonOperation);
-            $this->assertEquals($comparisonOperation, $comparison->getComparison(), "Not equal.");
+            self::assertEquals($comparisonOperation, $comparison->getComparison(), "Not equal.");
         }
     }
 
@@ -24,9 +24,9 @@ class ComparisonTest extends PHPUnit_Framework_TestCase
         try {
             new Comparison('?');
         } catch (ComparisonException $e) {
-            return true;
+            return;
         }
 
-        $this->fail("Not fall with wrong comparison parameter.");
+        self::fail("Not fall with wrong comparison parameter.");
     }
 } 

@@ -91,15 +91,16 @@ class SelectQuery extends QueryAbstract
         }
     }
 
-    public function setResultData($data)
+    public function setResultData($data, $debug = false)
     {
-        $this->setSelectResultObject($data);
+        $this->setSelectResultObject($data, $debug);
     }
 
     /**
      * @param mixed $data
+     * @param bool  $debug
      */
-    protected function setSelectResultObject($data)
+    protected function setSelectResultObject($data, $debug = false)
     {
 
         $this->resultObject = new SelectResult(
@@ -107,7 +108,8 @@ class SelectQuery extends QueryAbstract
             $data,
             $this->columnList,
             $this->returnType,
-            $this->openIndexQuery
+            $this->openIndexQuery,
+            $debug
         );
     }
 

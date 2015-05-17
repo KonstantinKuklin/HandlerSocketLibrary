@@ -36,7 +36,7 @@ class TextQuery extends QueryAbstract
     /**
      * {@inheritdoc}
      */
-    public function setResultData($data)
+    public function setResultData($data, $debug = false)
     {
         if ($this->getQueryClassName() === 'HS\Query\SelectQuery') {
             $this->resultObject = new SelectResult(
@@ -44,10 +44,11 @@ class TextQuery extends QueryAbstract
                 $data,
                 array(),
                 SelectQuery::VECTOR,
-                $this->openIndexQuery
+                $this->openIndexQuery,
+                $debug
             );
         } else {
-            $this->setResultObject(self::$queryResultMap[$this->getQueryClassName()], $data);
+            $this->setResultObject(self::$queryResultMap[$this->getQueryClassName()], $data, $debug);
 
         }
     }

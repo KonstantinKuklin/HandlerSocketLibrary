@@ -27,8 +27,8 @@ class InsertQueryTest extends TestWriterCommon
         $writer->getResultList();
 
         $insertResult = $insertQuery->getResult();
-        $this->assertTrue($insertResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($insertResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleInsert()
@@ -46,7 +46,7 @@ class InsertQueryTest extends TestWriterCommon
 
         /** @var InsertResult $insertResult */
         $insertResult = $insertQuery->getResult();
-        $this->assertTrue($insertResult->isSuccessfully(), "Fall updateQuery return bad status.");
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($insertResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        self::assertTablesHSEqual(__METHOD__);
     }
 }

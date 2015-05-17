@@ -26,9 +26,9 @@ class UpdateQueryTest extends TestWriterCommon
         $writer->getResultList();
 
         $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
-        $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateByIndexQuery didn't modified rows.");
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($updateResult->isSuccessfully(), "Fall updateByIndexQuery return bad status.");
+        self::assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateByIndexQuery didn't modified rows.");
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleUpdate()
@@ -48,9 +48,9 @@ class UpdateQueryTest extends TestWriterCommon
 
         /** @var UpdateResult $updateResult */
         $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
-        $this->assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateQuery didn't modified rows.");
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        self::assertTrue($updateResult->getNumberModifiedRows() > 0, "Fall updateQuery didn't modified rows.");
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testSingleUpdateWithSuffix()
@@ -70,13 +70,13 @@ class UpdateQueryTest extends TestWriterCommon
         $writer->getResultList();
 
         $updateResult = $updateQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
+        self::assertTrue($updateResult->isSuccessfully(), "Fall updateQuery return bad status.");
 
         $dataUpdateSelectResult = $updateResult->getData();
         if (!($updateResult instanceof SelectResult)) {
             $this->fail("Returned not a select result object.");
         }
-        $this->assertEquals(array(array('key' => 2, 'text' => '')), $dataUpdateSelectResult);
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertEquals(array(array('key' => 2, 'text' => '')), $dataUpdateSelectResult);
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

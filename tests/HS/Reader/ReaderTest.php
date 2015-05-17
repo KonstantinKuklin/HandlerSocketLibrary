@@ -16,14 +16,14 @@ class ReaderTest extends TestCommon
     {
         $reader = $this->getReader();
 
-        $this->assertEquals('tcp://127.0.0.1:9998', $reader->getUrlConnection(), 'Fall wrong url connection.');
+        self::assertEquals('tcp://127.0.0.1:9998', $reader->getUrlConnection(), 'Fall wrong url connection.');
     }
 
     public function testIsDebug()
     {
         $reader = $this->getReader();
 
-        $this->assertFalse($reader->isDebug(), 'Fall reader with debug on.');
+        self::assertFalse($reader->isDebug(), 'Fall reader with debug on.');
     }
 
     public function testExceptionOnMissedIndexId()
@@ -41,12 +41,10 @@ class ReaderTest extends TestCommon
                 array(new Filter(Comparison::EQUAL, 0, 1))
             );
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
 
-        $this->fail('Not fall with out opening index.');
-
-        return true;
+        self::fail('Not fall with out opening index.');
     }
 
     public function testReopen()
@@ -63,7 +61,7 @@ class ReaderTest extends TestCommon
             array('num')
         );
 
-        $this->assertEquals(2, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
+        self::assertEquals(2, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
 
         $selectQuery = $reader->selectByIndex(
             $indexId,
@@ -74,14 +72,14 @@ class ReaderTest extends TestCommon
             array(new Filter(Comparison::EQUAL, 0, 1))
         );
 
-        $this->assertEquals(3, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
+        self::assertEquals(3, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
         $data = $selectQuery->execute()->getResult()->getData();
 
         // auth query + open index + select = 3
-        $this->assertEquals(4, $reader->getCountQueries(), 'Wrong count queries.');
-        $this->assertEquals(0, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
+        self::assertEquals(4, $reader->getCountQueries(), 'Wrong count queries.');
+        self::assertEquals(0, $reader->getCountQueriesInQueue(), 'Wrong count queries.');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     'key' => '100',

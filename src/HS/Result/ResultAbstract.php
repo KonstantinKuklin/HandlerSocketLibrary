@@ -49,17 +49,27 @@ abstract class ResultAbstract implements ResultInterface
     /** @var OpenIndexQuery|null */
     protected $openIndexQuery = null;
 
+    /** @var string */
+    protected $rawData;
+
     /**
      * @param QueryInterface      $query
      * @param string              $data
      * @param null|OpenIndexQuery $openIndexQuery
      *
+     * @param bool                $debug
+     *
      * @throws \HS\Error
      */
-    public function __construct(QueryInterface $query, $data, $openIndexQuery = null)
+    public function __construct(QueryInterface $query, $data, $openIndexQuery = null, $debug = false)
     {
         $this->openIndexQuery = $openIndexQuery;
         $this->query = $query;
+
+        if ($debug) {
+            $this->rawData = $data;
+        }
+
 
         $code = substr($data, 0, 1);
         $this->setCode($code);
@@ -148,6 +158,14 @@ abstract class ResultAbstract implements ResultInterface
     public function getTime()
     {
         return $this->time;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawData()
+    {
+        return $this->rawData;
     }
 
     protected function throwErrorClass($error)

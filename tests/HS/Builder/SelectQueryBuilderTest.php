@@ -21,14 +21,14 @@ class SelectQueryBuilderTest extends TestWriterCommon
             ->fromTable($this->getTableName())
             ->where(Comparison::EQUAL, array('key' => 42))->returnAsAssoc();
 
-        $this->assertEquals('HS\Query\SelectQuery', $selectQueryBuilder->getQueryClassPath());
+        self::assertEquals('HS\Query\SelectQuery', $selectQueryBuilder->getQueryClassPath());
         $selectQuery = $this->getReader()->addQueryBuilder($selectQueryBuilder);
         $this->getReader()->getResultList();
 
         $selectResult = $selectQuery->getResult();
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
+        self::assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     'key' => '42',
@@ -59,9 +59,9 @@ class SelectQueryBuilderTest extends TestWriterCommon
         $this->getReader()->getResultList();
 
         $selectResult = $selectQuery->getResult();
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
+        self::assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     '42',
@@ -91,9 +91,9 @@ class SelectQueryBuilderTest extends TestWriterCommon
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('float' => 42));
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
-        $this->fail('Fail where not throw exception on wrong key position.');
+        self::fail('Fail where not throw exception on wrong key position.');
     }
 
     public function testSingleSelectWithFilter()
@@ -110,9 +110,9 @@ class SelectQueryBuilderTest extends TestWriterCommon
         $this->getReader()->getResultList();
 
         $selectResult = $selectQuery->getResult();
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
+        self::assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     'key' => '3',
@@ -142,9 +142,9 @@ class SelectQueryBuilderTest extends TestWriterCommon
         $this->getReader()->getResultList();
 
         $selectResult = $selectQuery->getResult();
-        $this->assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
+        self::assertTrue($selectResult->isSuccessfully(), 'Fall selectQuery is not successfully done.');
 
-        $this->assertEquals(
+        self::assertEquals(
             array(
                 array(
                     'key' => '42',

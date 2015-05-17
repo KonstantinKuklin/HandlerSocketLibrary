@@ -5,6 +5,7 @@
 
 namespace HS\Tests\Reader;
 
+use Exception;
 use HS\Errors\OpenTableError;
 use HS\Exception\InvalidArgumentException;
 use HS\Tests\TestCommon;
@@ -22,7 +23,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall string set as indexId.");
+        self::fail("Not fall string set as indexId.");
     }
 
     public function testZeroIndexId()
@@ -31,7 +32,7 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(0, $this->getDatabase(), $this->getTableName(), '', array('text'));
         } catch (InvalidArgumentException $e) {
-            $this->fail(sprintf("Fall zero set as indexId: %s", $e->getMessage()));
+            self::fail(sprintf("Fall zero set as indexId: %s", $e->getMessage()));
         }
 
     }
@@ -45,7 +46,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall negative int set as indexId.");
+        self::fail("Not fall negative int set as indexId.");
     }
 
     public function testEmptyDatabase()
@@ -57,7 +58,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall empty string set as databaseName.");
+        self::fail("Not fall empty string set as databaseName.");
     }
 
     public function testNullDatabase()
@@ -69,7 +70,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall null set as databaseName.");
+        self::fail("Not fall null set as databaseName.");
     }
 
     public function testEmptyTableName()
@@ -81,7 +82,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall empty string set as tableName.");
+        self::fail("Not fall empty string set as tableName.");
     }
 
     public function testNullTableName()
@@ -93,7 +94,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall null set as tableName.");
+        self::fail("Not fall null set as tableName.");
     }
 
     public function testIntTableName()
@@ -105,7 +106,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall int set as tableName.");
+        self::fail("Not fall int set as tableName.");
     }
 
     public function testNullIndexName()
@@ -114,7 +115,7 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), null, array('text'));
         } catch (InvalidArgumentException $e) {
-            $this->fail(sprintf("Fall null set as indexName: %s", $e->getMessage()));
+            self::fail(sprintf("Fall null set as indexName: %s", $e->getMessage()));
         }
     }
 
@@ -124,7 +125,7 @@ class OpenIndexTest extends TestCommon
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), Stream::STR_EMPTY, array('text'));
         } catch (InvalidArgumentException $e) {
-            $this->fail("Fall empty string set as indexName.");
+            self::fail("Fall empty string set as indexName.");
         }
 
     }
@@ -138,7 +139,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall int set as indexName.");
+        self::fail("Not fall int set as indexName.");
     }
 
     public function testStringColumns()
@@ -146,11 +147,11 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', "columns");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
-        $this->fail("Not fall string set as columns.");
+        self::fail("Not fall string set as columns.");
     }
 
     public function testNullColumns()
@@ -158,11 +159,11 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', null);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
-        $this->fail("Not fall null set as columns.");
+        self::fail("Not fall null set as columns.");
     }
 
     public function testEmptyColumns()
@@ -170,11 +171,11 @@ class OpenIndexTest extends TestCommon
         $reader = $this->getReader();
         try {
             $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
-        $this->fail("Not fall empty array set as columns.");
+        self::fail("Not fall empty array set as columns.");
     }
 
     public function testColumnsContainObject()
@@ -186,7 +187,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall object added to array of columns.");
+        self::fail("Not fall object added to array of columns.");
     }
 
     public function testColumnsContainArray()
@@ -198,7 +199,7 @@ class OpenIndexTest extends TestCommon
             return;
         }
 
-        $this->fail("Not fall array added to array of columns.");
+        self::fail("Not fall array added to array of columns.");
     }
 
     public function testMissedDatabaseSuccessfully()
@@ -209,13 +210,12 @@ class OpenIndexTest extends TestCommon
             $openIndex = $reader->openIndex(1, "randomdatabase", $this->getTableName(), '', array("text"));
             $reader->getResultList();
         } catch (InvalidArgumentException $e) {
-            $this->fail("Fall with valid parameters.");
+            self::fail("Fall with valid parameters.");
         } catch (OpenTableError $e) {
-            return true;
+            return;
         }
 
-        $this->fail('Not fall with missed database name.');
-
+        self::fail('Not fall with missed database name.');
     }
 
     public function testMissedDatabaseError()
@@ -226,17 +226,17 @@ class OpenIndexTest extends TestCommon
             $openIndex = $reader->openIndex(1, "randomdatabase", $this->getTableName(), '', array("text"));
             $reader->getResultList();
         } catch (InvalidArgumentException $e) {
-            $this->fail("Fall with valid parameters.");
+            self::fail("Fall with valid parameters.");
         } catch (OpenTableError $e) {
-            $this->assertEquals(
+            self::assertEquals(
                 'HS\Errors\OpenTableError',
                 get_class($e),
                 "Error object os not instance of OpenTableError"
             );
 
-            return true;
+            return;
         }
-        $this->fail("Not fall with missed database.");
+        self::fail("Not fall with missed database.");
     }
 
     public function testReopenIndex()
@@ -248,11 +248,11 @@ class OpenIndexTest extends TestCommon
             $openIndex = $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text"));
             $openIndexSecond = $reader->openIndex(1, $this->getDatabase(), $this->getTableName(), '', array("text"));
         } catch (InvalidArgumentException $e) {
-            $this->fail("Fall with valid parameters.");
+            self::fail("Fall with valid parameters.");
         }
 
         $reader->getResultList();
-        $this->assertTrue($openIndexSecond->getResult()->isSuccessfully(), "Fall reopen index");
+        self::assertTrue($openIndexSecond->getResult()->isSuccessfully(), "Fall reopen index");
     }
 
     public function testIndexIncreasing()
@@ -264,6 +264,6 @@ class OpenIndexTest extends TestCommon
         $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("key"));
         $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("num"));
         $id = $reader->getIndexId($this->getDatabase(), $this->getTableName(), '', array("varchar"));
-        $this->assertEquals(4, $id, 'Id index increased wrong.');
+        self::assertEquals(4, $id, 'Id index increased wrong.');
     }
 } 

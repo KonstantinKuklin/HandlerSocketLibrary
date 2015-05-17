@@ -17,7 +17,7 @@ class TextQueryTest extends TestCommon
             $textQuery = $reader->text("dfgsdgsd", 'HS\Query\SelectQuery');
             $result = $textQuery->execute()->getResult();
         } catch (CommandError $e) {
-            return true;
+            return;
         }
         $this->fail('Wrong instance of error.');
     }
@@ -35,8 +35,8 @@ class TextQueryTest extends TestCommon
         $textQuery = $writer->text(sprintf("%d\t=\t1\t105\t1\t0", $indexId), 'HS\Query\SelectQuery');
         $writer->getResultList();
 
-        $this->assertTrue($textQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
+        self::assertTrue($textQuery->getResult()->isSuccessfully(), "Fall selectByIndexQuery return bad status.");
         $data = $textQuery->getResult()->getData();
-        $this->assertEquals(array(array('105', 'text105')), $data, 'Wrong data was returned with textQuery');
+        self::assertEquals(array(array('105', 'text105')), $data, 'Wrong data was returned with textQuery');
     }
 } 

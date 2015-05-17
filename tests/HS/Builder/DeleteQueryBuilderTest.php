@@ -22,7 +22,7 @@ class DeleteQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $updateResult = $deleteQuery->getResult();
-        $this->assertTrue($updateResult->isSuccessfully(), 'Fall deleteQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($updateResult->isSuccessfully(), 'Fall deleteQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 }

@@ -24,7 +24,7 @@ class InsertQueryBuilderTest extends TestWriterCommon
                 'text' => 'text',
                 'set' => 'a',
                 'union' => 'a',
-                // TODO fix bug with 'null' => null
+                'null' => null
             )
         );
 
@@ -32,8 +32,8 @@ class InsertQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $insertResult = $insertQuery->getResult();
-        $this->assertTrue($insertResult->isSuccessfully(), 'Fall insertQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($insertResult->isSuccessfully(), 'Fall insertQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testBuilderMultiInsert()
@@ -51,7 +51,7 @@ class InsertQueryBuilderTest extends TestWriterCommon
                     'text' => 'text',
                     'set' => 'a',
                     'union' => 'a',
-                    // TODO fix bug with 'null' => null
+                    'null' => null
                 ),
                 array(
                     'key' => '124',
@@ -61,7 +61,7 @@ class InsertQueryBuilderTest extends TestWriterCommon
                     'text' => 'text',
                     'set' => 'a',
                     'union' => 'a',
-                    // TODO fix bug with 'null' => null
+                    'null' => null
                 )
             )
         );
@@ -70,7 +70,7 @@ class InsertQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $insertResult = $insertQuery->getResult();
-        $this->assertTrue($insertResult->isSuccessfully(), 'Fall insertQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($insertResult->isSuccessfully(), 'Fall insertQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 } 

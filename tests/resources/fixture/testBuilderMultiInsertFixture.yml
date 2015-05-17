@@ -172,7 +172,7 @@ hs:
     text: "text"
     set: "a"
     union: "a"
-    "null": 0
+    "null":
     num: 0
 
   -
@@ -183,7 +183,7 @@ hs:
     text: "text"
     set: "a"
     union: "a"
-    "null": 0
+    "null":
     num: 0
 
   -

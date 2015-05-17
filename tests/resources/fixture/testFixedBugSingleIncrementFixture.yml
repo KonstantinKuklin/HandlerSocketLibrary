@@ -129,7 +129,7 @@ hs:
     set: ""
     union: "a"
     "null":
-    num: 110
+    num: 11
 
   -
     key: 105

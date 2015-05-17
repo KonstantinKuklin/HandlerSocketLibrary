@@ -24,8 +24,8 @@ class IncrementQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $incrementResult = $incrementQuery->getResult();
-        $this->assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 
     public function testBuilderIncrementException()
@@ -36,13 +36,13 @@ class IncrementQueryBuilderTest extends TestWriterCommon
                 ->fromTable($this->getTableName())
                 ->where(Comparison::EQUAL, array('key' => 104));
         } catch (InvalidArgumentException $e) {
-            return true;
+            return;
         }
-        $this->fail('Not fall incrementBuilder with wrong parameters.');
+        self::fail('Not fall incrementBuilder with wrong parameters.');
     }
 
-    // limit value increase num ?? TODO
-    public function testBugSingleIncrement()
+    // limit now no effect on increase operation
+    public function testFixedBugSingleIncrement()
     {
         $incrementQueryBuilder = QueryBuilder::increment(array('key' => 0, 'num'))
             ->fromDataBase($this->getDatabase())
@@ -55,7 +55,7 @@ class IncrementQueryBuilderTest extends TestWriterCommon
         $this->getWriter()->getResultList();
 
         $incrementResult = $incrementQuery->getResult();
-        $this->assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
-        $this->assertTablesHSEqual(__METHOD__);
+        self::assertTrue($incrementResult->isSuccessfully(), 'Fall incrementQuery is not successfully done.');
+        self::assertTablesHSEqual(__METHOD__);
     }
 }
