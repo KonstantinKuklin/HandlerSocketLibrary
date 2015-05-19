@@ -50,7 +50,7 @@ class ConstructorTest extends TestCommon
         $portGood = 9999;
         $pass = 'testpass';
         try {
-            $reader = new Reader($this->getHost(), $portGood, $pass);
+            $reader = new Reader($this->getHost(), $portGood, $pass, false);
             self::assertEquals(1, $reader->getCountQueriesInQueue(), "Auth request not added on init hs reader.");
             $reader->getResultList();
         } catch (AuthenticationError $e) {

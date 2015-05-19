@@ -16,7 +16,7 @@ class SelectQueryTest extends TestCommon
 {
     public function testSelectExistedValueWithDebug()
     {
-        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), true);
+        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), false, true);
 
         $indexId = $reader->getIndexId(
             $this->getDatabase(),
@@ -398,7 +398,8 @@ class SelectQueryTest extends TestCommon
 
     public function testSelectByIndexExistedValueWithSmallReadLength()
     {
-        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), true, 5);
+        $reader = new Reader(self::HOST, self::PORT_RO, $this->getReadPassword(), true, true, 5);
+        $reader->open();
 
         $indexId = $reader->getIndexId(
             $this->getDatabase(),

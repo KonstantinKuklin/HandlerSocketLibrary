@@ -75,13 +75,13 @@ abstract class CommonClient
      * @param string $url
      * @param int    $port
      * @param string $authKey
+     * @param bool   $lazyConnect
      * @param bool   $debug
      * @param int    $lengthToRead
      *
      * @throws Exception
-     * @throws InvalidArgumentException
      */
-    public function __construct($url, $port, $authKey = null, $debug = false, $lengthToRead = 1024)
+    public function __construct($url, $port, $authKey = null, $lazyConnect = true, $debug = false, $lengthToRead = 1024)
     {
         if ($debug) {
             $this->stopWatch = new Stopwatch();
@@ -95,7 +95,10 @@ abstract class CommonClient
         $this->authKey = $authKey;
         $this->stream = new Stream($url, Connection::PROTOCOL_TCP, $port);
         $this->stream->setReceiveMethod(new StreamGetLineMethod($lengthToRead, Driver::EOL));
-        $this->open();
+
+        if (!$lazyConnect) {
+            $this->open();
+        }
     }
 
     /**
@@ -116,6 +119,11 @@ abstract class CommonClient
     public function getResultList()
     {
         $resultsList = array();
+
+        // open stream, if it was not opened with lazy connection
+        if(!$this->stream->isOpened()) {
+            $this->stream->open();
+        }
 
         // if debug mode enabled
         if (!$this->isDebug()) {
