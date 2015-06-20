@@ -25,14 +25,18 @@ class SelectResult extends ResultAbstract
         parent::__construct($query, $data, $openIndexQuery, $debug);
 
         if ($this->isSuccessfully()) {
-            // if returned only numbers without data
-            if (strlen($data) !== 3) {
-                // second parameter is number of count columns
-                $columnCount = substr($data, 2, 1);
 
-                $listData = Driver::prepareReceiveDataStatic(substr($data, 4));
+        	// Sanitize the result before parsing for anything
+        	$data = Driver::prepareReceiveDataStatic($data);
 
-                $chunkList = array_chunk($listData, $columnCount);
+        	// Remove 'response code' column, get column count
+        	$response = array_shift($data);
+        	$columns =  array_shift($data);
+
+        	// Ensure at least one record returned
+        	if (count($data)) {
+
+	        	$chunkList = array_chunk($data, $columns);
 
                 // modify row to assoc array
                 if ($returnType === SelectQuery::ASSOC && !empty($keys)) {
@@ -42,7 +46,7 @@ class SelectResult extends ResultAbstract
                 }
 
                 $this->data = $chunkList;
-            } else {
+        	} else {
                 $this->data = array();
             }
         }
